@@ -4,9 +4,7 @@
 package net.eldm.jvmmodel
 
 import com.google.inject.Inject
-import net.eldm.eldmDsl.Entity
-import net.eldm.eldmDsl.Operation
-import net.eldm.eldmDsl.Property
+import net.eldm.eldmDsl.Module
 import org.eclipse.xtext.common.types.JvmDeclaredType
 import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
@@ -46,11 +44,8 @@ class EldmDslJvmModelInferrer extends AbstractModelInferrer {
    *            rely on linking using the index if isPreIndexingPhase is
    *            <code>true</code>.
    */
-  def dispatch void infer(Entity element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-    acceptor.accept(element.toClass(element.fullyQualifiedName)) [
-      if (element.superType !== null)
-        superTypes += element.superType.cloneWithProxies
-      
+  def dispatch void infer(Module element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+    /*acceptor.accept(element.toClass(element.fullyQualifiedName)) [
       for (feature : element.features) {
         switch feature {
           Property: {
@@ -68,6 +63,6 @@ class EldmDslJvmModelInferrer extends AbstractModelInferrer {
           }
         }
       }
-    ]
+    ]*/
   }
 }

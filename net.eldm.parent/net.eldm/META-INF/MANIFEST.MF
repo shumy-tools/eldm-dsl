@@ -28,5 +28,6 @@ Export-Package: net.eldm.validation,
  net.eldm.parser.antlr.internal,
  net.eldm.eldmDsl.impl,
  net.eldm.parser.antlr,
- net.eldm.jvmmodel
+ net.eldm.jvmmodel,
+ net.eldm.parser.antlr.lexer
 Import-Package: org.apache.log4j

@@ -2,6 +2,62 @@ grammar net.eldm.EldmDsl with org.eclipse.xtext.xbase.Xbase
 
 generate eldmDsl "http://www.eldm.net/EldmDsl"
 
+import "http://www.eclipse.org/xtext/common/JavaVMTypes" as types
+
+Module:
+  'module'
+  MapDef
+;
+
+Expression:
+  '<expression>'
+;
+
+VariableDef:
+  'let' (name=ValidID (':' type=ValueDef)? '=' right=Expression)
+    | (mut?='mut' name=ValidID (':' type=ValueDef)? ('=' right=Expression)?) // check-error-if (mut == true && type === null && right === null)
+;
+
+
+
+  
+// JSON struct definition
+ValueDef:
+  {ValueDef}
+  NativeDef|ListDef|MapDef
+;
+
+MapDef:
+  {MapDef}
+  '{' (elements+=KeyDef (',' elements+=KeyDef)*)? '}'
+;
+
+KeyDef:
+  name=ValidID ((opt?='?'? ':' type=ValueDef) | ('=' right=Literal))
+;
+
+ListDef:
+  '[' type=NativeDef ']'
+;
+
+NativeDef:
+  'any' | 'bool' | 'str' | 'int' | 'flt'
+;
+
+
+// literals
+Literal:
+  BoolLiteral
+;
+
+
+BoolLiteral:
+  ('false' | isTrue?='true')
+;
+
+
+
+/*
 Domainmodel:
   importSection=XImportSection?
   elements+=AbstractElement*;
@@ -10,14 +66,16 @@ AbstractElement:
   PackageDeclaration | Entity;
 
 PackageDeclaration:
-  'package' name=QualifiedName '{'
-      elements+=AbstractElement*
-  '}';
+  'package' name=QualifiedName
+  BEGIN
+    elements+=AbstractElement*
+  END;
 
 Entity:
-  'entity' name=ValidID ('extends' superType=JvmTypeReference)? '{'
-      features+=Feature*
-  '}';
+  'entity' name=ValidID
+  BEGIN
+    features+=Feature*
+  END;
 
 Feature:
   Property | Operation;
@@ -27,7 +85,302 @@ Property:
 
 Operation:
   'op' name=ValidID '('(params+=FullJvmFormalParameter (',' params+=FullJvmFormalParameter)*)?')' ':' type=JvmTypeReference 
-    body=XBlockExpression;
+   body=XBlockExpression;
+
+
 
 // Xbase Overrides
 // -----------------------------------------------------------------------------------------------------------------------------------
+// Operation Expressions
+// -----------------------------------------------------------------------------------------------------------------------------------
+@Override
+XExpression returns XExpression:
+  XAssignment;
+
+@Override
+XAssignment returns XExpression:
+  {XAssignment} feature=[types::JvmIdentifiableElement] OpSingleAssign value=XAssignment
+  | XOrExpression (=>({XBinaryOperation.leftOperand=current} feature=[types::JvmIdentifiableElement|OpMultiAssign]) rightOperand=XAssignment)?;
+
+@Override
+XOrExpression returns XExpression:
+  XAndExpression (=>({XBinaryOperation.leftOperand=current} feature=[types::JvmIdentifiableElement|OpOr]) rightOperand=XAndExpression)*;
+
+@Override
+XAndExpression returns XExpression:
+  XEqualityExpression (=>({XBinaryOperation.leftOperand=current} feature=[types::JvmIdentifiableElement|OpAnd]) rightOperand=XEqualityExpression)*;
+
+@Override
+XEqualityExpression returns XExpression:
+  XRelationalExpression (=>({XBinaryOperation.leftOperand=current} feature=[types::JvmIdentifiableElement|OpEquality]) rightOperand=XRelationalExpression)*;
+
+@Override
+XRelationalExpression returns XExpression:
+  XAdditiveExpression
+  (=>({XInstanceOfExpression.expression=current} 'instanceof') type=JvmTypeReference
+  | =>({XBinaryOperation.leftOperand=current} feature=[types::JvmIdentifiableElement|OpCompare]) rightOperand=XAdditiveExpression)*;
+
+@Override
+XAdditiveExpression returns XExpression:
+  XMultiplicativeExpression (=>({XBinaryOperation.leftOperand=current} feature=[types::JvmIdentifiableElement|OpAdd]) rightOperand=XMultiplicativeExpression)*;
+
+@Override
+XMultiplicativeExpression returns XExpression:
+  XUnaryOperation (=>({XBinaryOperation.leftOperand=current} feature=[types::JvmIdentifiableElement|OpMulti]) rightOperand=XUnaryOperation)*;
+
+@Override
+XUnaryOperation returns XExpression:
+  {XUnaryOperation} feature=[types::JvmIdentifiableElement|OpUnary] operand=XUnaryOperation
+  | XCastedExpression;
+
+@Override
+XCastedExpression returns XExpression:
+  XPostfixOperation (=>({XCastedExpression.target=current} 'as') type=JvmTypeReference)*
+;
+
+@Override
+XPostfixOperation returns XExpression:
+  XMemberFeatureCall =>({XPostfixOperation.operand=current} feature=[types::JvmIdentifiableElement|OpPostfix])?
+;
+
+@Override
+XPrimaryExpression returns XExpression:
+  XConstructorCall
+  | XBlockExpression
+  | XSwitchExpression
+  | XFeatureCall
+  | XLiteral
+  | XIfExpression
+  | XForLoopExpression
+  | XWhileExpression
+  //XThrowExpression
+  | XReturnExpression
+  //XTryCatchFinallyExpression
+  | XParenthesizedExpression;
+
+@Override
+XParenthesizedExpression returns XExpression:
+  '(' XExpression ')';
+
+@Override
+XBlockExpression returns XExpression: 
+  {XBlockExpression}
+  BEGIN
+    (expressions+=XExpressionOrVarDeclaration)*
+  END;
+
+@Override
+XExpressionOrVarDeclaration returns XExpression:
+  XVariableDeclaration | XExpression;
+
+@Override
+XVariableDeclaration returns XExpression:
+  {XVariableDeclaration}
+  ('let' writeable?='mut') (=>(name=ValidID ':' type=JvmTypeReference) | name=ValidID) ('=' right=XExpression)?;
+
+// -----------------------------------------------------------------------------------------------------------------------------------
+// Calls and Returns
+// -----------------------------------------------------------------------------------------------------------------------------------
+@Override
+XMemberFeatureCall returns XExpression:
+  XPrimaryExpression
+  (=>({XAssignment.assignable=current} '.' feature=[types::JvmIdentifiableElement] OpSingleAssign) value=XAssignment
+  |=>({XMemberFeatureCall.memberCallTarget=current} ("."|nullSafe?="?."))
+    feature=[types::JvmIdentifiableElement]
+    (=>explicitOperationCall?='(' (memberCallArguments+=XShortClosure | memberCallArguments+=XExpression (',' memberCallArguments+=XExpression)*)? ')')?
+    memberCallArguments+=XClosure?
+  )*;
+
+@Override
+XFeatureCall returns XExpression:
+  {XFeatureCall}
+  feature=[types::JvmIdentifiableElement]
+  (=>explicitOperationCall?='(' (featureCallArguments+=XShortClosure | featureCallArguments+=XExpression (',' featureCallArguments+=XExpression)*)? ')')?
+  featureCallArguments+=XClosure?;
+
+@Override
+XConstructorCall returns XExpression:
+  {XConstructorCall}
+  'new' constructor=[types::JvmConstructor|QualifiedName]
+  (=>explicitConstructorCall?='(' (arguments+=XShortClosure | arguments+=XExpression (',' arguments+=XExpression)*)? ')')?
+  arguments+=XClosure?;
+
+@Override
+XReturnExpression returns XExpression:
+  {XReturnExpression} 'return' (->expression=XExpression)?;
+
+// -----------------------------------------------------------------------------------------------------------------------------------
+// Closures
+// -----------------------------------------------------------------------------------------------------------------------------------
+@Override
+XShortClosure returns XExpression:
+  =>({XClosure} (declaredFormalParameters+=JvmFormalParameter (',' declaredFormalParameters+=JvmFormalParameter)*)? explicitSyntax?='->') expression=XExpression;
+
+@Override
+XClosure returns XExpression:
+  =>({XClosure} '#[')
+    =>((declaredFormalParameters+=JvmFormalParameter (',' declaredFormalParameters+=JvmFormalParameter)*)? explicitSyntax?='->')?
+    expression=XExpressionInClosure
+']';
+
+@Override
+XExpressionInClosure returns XExpression:
+  {XBlockExpression}
+  (expressions+=XExpressionOrVarDeclaration)*
+;
+
+// -----------------------------------------------------------------------------------------------------------------------------------
+// Control Sequences
+// -----------------------------------------------------------------------------------------------------------------------------------
+@Override
+XIfExpression returns XExpression:
+  {XIfExpression}
+  'if' if=XExpression ':'
+    then=XExpression (=>'else:' else=XExpression)?
+;
+
+@Override
+XForLoopExpression returns XExpression:
+  =>({XForLoopExpression} 'for' declaredParam=JvmFormalParameter 'in') forExpression=XExpression ':'
+    eachExpression=XExpression
+;
+
+@Override
+XWhileExpression returns XExpression:
+  {XWhileExpression}
+  'while' predicate=XExpression ':'
+    body=XExpression
+;
+
+@Override
+XSwitchExpression returns XExpression:
+  {XSwitchExpression}
+  'switch' switch=XExpression ':'
+  BEGIN
+    (cases+=XCasePart)*
+    ('default' ':' default=XExpression )?
+  END
+;
+
+@Override
+XCasePart:
+  {XCasePart}
+  typeGuard=JvmTypeReference? ('case' case=XExpression)? (':' then=XExpression | fallThrough?=',')
+;
+
+// -----------------------------------------------------------------------------------------------------------------------------------
+// Literals
+// -----------------------------------------------------------------------------------------------------------------------------------
+@Override
+XLiteral returns XExpression:
+  XCollectionLiteral
+  //| XMapLiteral
+  | XClosure
+  
+  | XNullLiteral
+  | XBooleanLiteral
+  | XNumberLiteral
+  | XStringLiteral
+  //| XTypeLiteral
+;
+
+@Override
+XNullLiteral returns XExpression:
+  {XNullLiteral} 'null';
+
+@Override
+XBooleanLiteral returns XExpression:
+  {XBooleanLiteral} ('false' | isTrue?='true');
+
+@Override
+XNumberLiteral returns XExpression:
+  {XNumberLiteral} value=Number;
+
+@Override
+XStringLiteral returns XExpression:
+  {XStringLiteral} value=STRING;
+
+// -----------------------------------------------------------------------------------------------------------------------------------
+// Literals Collections
+// -----------------------------------------------------------------------------------------------------------------------------------
+@Override
+XCollectionLiteral:
+  XSetLiteral | XListLiteral
+;
+
+@Override
+XSetLiteral:
+  {XSetLiteral} '{' (elements+=XExpression (',' elements+=XExpression )*)? '}'
+;
+
+@Override
+XListLiteral:
+  {XListLiteral} '[' (elements+=XExpression (',' elements+=XExpression )*)? ']'
+;
+
+//XMapLiteral:
+//  {XMapLiteral} '{' (elements+=XMapLiteralItem (',' elements+=XMapLiteralItem )*)? '}'
+//;
+
+//XMapLiteralItem:
+//  {XMapLiteralItem} key=ValidID ':' value=XExpression
+//;
+
+// -----------------------------------------------------------------------------------------------------------------------------------
+// JVM
+// -----------------------------------------------------------------------------------------------------------------------------------
+@Override
+JvmFormalParameter returns types::JvmFormalParameter:
+   name=ValidID (':' parameterType=JvmTypeReference)?;
+
+@Override
+FullJvmFormalParameter returns types::JvmFormalParameter:
+  name=ValidID ':' parameterType=JvmTypeReference;
+
+// -----------------------------------------------------------------------------------------------------------------------------------
+// Operators
+// -----------------------------------------------------------------------------------------------------------------------------------
+@Override
+OpSingleAssign: '=';
+
+@Override
+OpMultiAssign: '+=' | '-=' | '*=' | '/=' | '%=';
+
+@Override
+OpOr: '|';
+
+@Override
+OpAnd: '&';
+
+@Override
+OpEquality: '==' | '!=';
+
+@Override
+OpCompare: '>=' | '<' '=' | '>' | '<' ;
+
+@Override
+OpAdd: '+' | '-';
+
+@Override
+OpMulti: '*' | '**' | '/' | '%';
+
+@Override
+OpUnary: "!" | "-" | "+";
+
+@Override
+OpPostfix: "++" | "--" ;
+
+// -----------------------------------------------------------------------------------------------------------------------------------
+// @Override
+//Number hidden():
+//  ('+'|'-')? INT ('.' (INT))?;
+
+// -----------------------------------------------------------------------------------------------------------------------------------
+// Terminals
+// -----------------------------------------------------------------------------------------------------------------------------------
+terminal BEGIN: 'synthetic:BEGIN';
+terminal END: 'synthetic:END';
+
+//@Override
+//terminal STRING: '"' .* '"';
+*/

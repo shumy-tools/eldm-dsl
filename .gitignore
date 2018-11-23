@@ -1,6 +1,7 @@
 *.class
 *.log
 *.jar
+*.xml_gen
 
 xtend-gen/
 src-gen/

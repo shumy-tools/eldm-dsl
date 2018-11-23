@@ -1,0 +1,279 @@
+Extended Language for Data Management (.eldm)
+
+----------------------------------------------------------------------------------------------------------------
+languange features:
+  main use-case is to read/write data structures and build WebServices
+  phyton language structure
+  multiline strings without escaping (using """)
+  pure transpiler with minimal dependencies (Java 8 + Std-SPI + Std-SPI impl)
+
+  predictable code:
+    pure functional with path based operations (no classes, only get/set)
+    pure data-structures
+    immutable by default (the rust way)
+    validate input arguments with "typedef" types
+    named and default arguments
+  
+  built-in support for JSON structures
+  built-in reflection
+  built-in promises
+  built-in and compiler validated patterns (regex, mask, path, date, time, etc)
+
+  plugable DSL with string parsers
+  interoperable with java - in controlled way (only for certain data-types) - use patterns and Annotations to add more data-types
+
+----------------------------------------------------------------------------------------------------------------
+native types <type>(Java Type) - <Example>:
+  void(null)          - let x = void
+  any(Object)         - let x = null
+  bool(Boolean)       - let x = true
+  str(String)         - let x = """some text (no need to escape!")"""
+  int(Long)           - let x = 12
+  flt(Double)         - let x = 1.5
+
+composite types <type>(Java Type) - <Example>:
+  map(Map)            - let x = { id: 0, name: "xpto" }
+  set(Set)            - let x = { 1, 2, 2 } // discard the repetition
+  lst(List)           - let x = [ 1, 2 ] or let x: ..int
+  
+  enum(Enum)          - enum sex { id: int, name: str }:
+                          M { id: 1, name: "Male" }
+                          F { id: 2, name: "Female" }
+                          O { id: 3, name: "Other" }
+                        let x sex = M
+  
+  // composite definition example
+  // ? set as optional
+  // .. defines an array-of
+  let mut x: { id?: int, name: str, items: ..{ id: int, start: ldt } }
+  x.items..id.filter#[...]
+
+  // this should be valid for any type
+  let x = obj@"{ id: 0, name: "xpto" }"   // verified at compile
+  let x = "10"; let y = int@x             // verified at runtime
+
+  // usage...
+    all.iterator
+    all.exist(T)
+    all.empty
+    all.size
+    let ext = [tail | list] or {tail | map/set}   // concatenate/join returning another object
+    let ext = [one & two] or {one & map/set}      // interset returning another object with elements in both sets
+
+      // do I need this? Or use list comprehension?
+      setNlist.filter#[it > 2] ALTERNATIVE-TO [ i in setNlist if i > 2: i]
+      setNlist.map#[ { id: it, name: "n-" + it } ] ALTERNATIVE-TO [ i in setNlist: { id: i, name: "n-" + i } ]
+      setNlist.reduce#[ a + b ]
+
+    // mutable methods
+      all.join(S|L|M)                             // push another set, list or map element by element, cannot be used in imutable
+      all.clear                                   // cannot be used in imutable
+      setNlist.add(10)
+      setNlist.remove(10)
+
+    -------------------------------------------------------------------------------------------------
+    let x = list(0)                               // get item at index, error when out of index
+    let x = list(2, 10)                           // get item at index, default to 10 when out of index
+    list.head
+    list.tail
+    // mutable methods
+      list(0) = 10                                // set item at index, error when out of index
+
+    -------------------------------------------------------------------------------------------------
+    let x = map("key")                            // get item at key, error when out non existent
+    let x = map("key", "def")                     // get item at key, default to "def" when non existent
+    map.keys                                      // returns a set
+    map.values                                    // returns a list
+    // mutable methods
+      map("key") = 10                             // set item at key
+
+
+generators and list comprehension:
+  let range = [0..10]
+  let x = [for i in range | i]
+  let x = [for i in 0..10 filter i % 2 == 0 | i * i]
+
+built-in string parsers <type>(Java Type) - <Example>:
+  <type>(<optional named parameters>)@"string"
+
+  lda(LocalDate)      - let x = lda@"2018-10-01"
+  ltm(LocalTime)      - let x = ltm@"14:10:26.562" //miliseconds are optional
+  ldt(LocalDateTime)  - let x = ldt@"2018-10-01 14:10:26.562"
+  
+  error               - let x = error@"the error message"
+  ptr(Pattern)        - let x = ptr@"^[a-z]*$"
+  mask(Mask)          - let x = mask@"###.##"
+  path(Path)          - let x = path@"/user"
+  ref(Class)          - let x = ref@"java.time.LocalDate"
+  tdef(TypeDef)       - let x = tdef@"{ id?: int, name: str, default = 10 }"
+
+special built-in string parsers (code generators) <type> - <Example>:
+  java                - let x = JAVA@"""java.time.LocalDate.parse("2018-10-01")""" // same as let x = lda@"2018-10-01"
+  dsl                 - let x = SQL@($i=id){ SELECT * FROM table WHERE id = $i }@
+
+custom string parsers (validated at compile time when string source is available):
+  typedef <name> <pattern | mask | filter> @"boolean-expression" [return @"java-code"]
+
+  typedef email pattern @"regex" return @"new my.data.Email(it)"
+  typedef card mask @"mask"
+  typedef date filter @"java-boolean-expression" return @"java.time.LocalDate.parse(it)"
+
+  let x = email@"mic@gmail.com" or let x: email = @"mic@gmail.com"
+  let x = sql@"SELECT * FROM users"
+
+  // ideas -> return HEAD | TAIL
+  let mod = "XC"
+  let res = CYPHER@ ($mod = mod) {
+    MATH (s:Study) {
+      study: s.uid,
+      series: (s)-[:HAS]->(e:Series) WHERE e.modality = $mod | e {
+        id: id(e),
+        .uid,
+        mod: e.modality,
+        items: [(e)-[:HAS]->(i:Item) {
+          i-seq: i.seq,
+          i-time: i.time
+        }
+      } ORDER uid SKIP 1 LIMIT 1
+    } ORDER study
+  }@
+
+      // result of DSL generation
+      MATCH (s:Study)
+      OPTIONAL MATCH (s)-[:HAS]->(e:Series) WHERE e.modality = "XC"
+      OPTIONAL MATCH (e)-[:HAS]->(i:Item)
+      WITH s, e, i ORDER BY s.uid, e.uid, i.seq
+      WITH s, e, collect( i { .seq, .time }) as _items
+      WITH s, collect(e { id: id(e), .uid, mod: e.modality, items: _items })[1..2] as _series
+      RETURN { study: s.uid , series: _series }
+
+operators-----------------------------------------------------------------------------------------------------------------------------
+
+control expressions-------------------------------------------------------------------------------------------------------------------
+[<result> =] if <bool-exp>:
+  <exp>
+[else:
+  <exp>]
+
+// this is not a generator. The result will be calculated in place
+[<result> =] for <var> in <list|generator> [filter <bool-exp>]:
+  <exp>
+
+// generator or Java enumerator.
+[<result> =] [ <for-exp> ]
+
+[<result> =] switch <var>:
+  case <exp>: <exp>
+  default: <exp>
+
+modules and imports----------------------------------------------------------------------------------------------------------------------
+
+  module @"/oper"
+
+  import @"/alias" from @"/other/big/path/to/handle" // import all operations from the module path
+    // import strutures
+    import Handler as HandlerAlias, OtherStruct from @"/other/big/path/to/handle"
+    import @"/other/big/path/to/handle".Handler as HandlerAlias
+
+  import @"/ext" from my.java.Opers.* // special java class with static methods, marked with DSL annotations
+    // import java strutures
+    import MyStruct as Struct, OtherStruct from my.java // special java class with public fields, marked with DSL annotations
+    import my.java.MyStruct as Struct
+
+  // normal Java class import
+  import text.TextFile  // marked with DSL annotations
+
+  // import custom DSL
+  plug-dsl SQL from @"dsl-validator&generator" // special gradle-plugin class, marked with DSL annotations
+
+  // we still have to use absolute paths...
+  get @"/alias/<oper>" <params>
+  get @"/ext/<method>" <params>
+
+  let x: Struct = { with valid mandatory fields }
+  let x: HandlerAlias = { with valid mandatory fields }
+
+  // using java class
+  let file = TextFile("text.txt", File.READ)
+  file.line#[ println(it) ]
+
+structs and operations----------------------------------------------------------------------------------------------------------------
+// input parameter is always a obj stucture
+// input parameter name is "it"
+// input parameters can only have: [0..1] struct + [0..1] callback
+
+// pure structure definitions------------------
+struct Subject {
+  id?: int
+  name: str
+  birthday: lda
+  default = 10
+}
+
+// pure operation definitions-------------------
+def get @"/db/data" { id = 0 }: // operation with default id = 0
+  ...some code...
+
+def set @"/callback" Subject:
+  ...some code...
+
+// define a sub-path
+def @"/subject"
+
+  // syncronous, returning Subject
+  def get { id: int } -> Subject:
+    let res = get @"/db/data" { id: it.id }
+    ...some pure read-only code...
+
+  // asyncronous with callback, returning void
+  def get @"/async" { id: int } #(Subject -> void) -> void:
+    ...some code...
+
+  // asyncronous, returning promise
+  def get @"/promise" { id: int } -> ?Subject:
+    ...some code...
+
+  def set { id?: int, udi: str, sex: sex, birthday: lda }:
+    assert-if !udi.empty else @"Field [id] is required!" // if true continue else throw Error(ASSERT, msg)
+
+    let res = if id == null:
+      get /* implicit path to @"/subject" */ it | { .id }
+    else:
+      0
+    
+    ...some code...
+
+    return result
+
+// not accessible in imports for external modules
+private def get @"/private":
+  ...some code...
+
+private def @"/private-sub-path":
+  get ... // all sub operations are private
+
+// usage example---------------------------------------------------------------------------------------------------------------
+let mut subject: Subject // set at void
+
+// syncronous call
+subject = get@"/subject" { id: 3 }
+
+// asyncronous call with reflective behavior
+let callback = path@"/callback"
+get@"/subject/async" { id: 3 } callback
+
+// asyncronous call with callback closure
+let inlineCallback = #[ Subject -> subject = it ] or let inlineCallback: #(Subject -> void) = #[ subject = it ]
+get@"/subject/async" { id: 3 } #[ subject = it ]
+get@"/subject/async" { id: 3 } inlineCallback
+
+// asyncronous call with promise
+let callback = path@"/callback"
+get@"/subject/promise" { id: 3 } ?#[ subject = it ]
+get@"/subject/promise" { id: 3 } ?@"/callback"
+get@"/subject/promise" { id: 3 } ?callback: #[ log.error(it) ]
+
+----------------------------------------------------------------------------------------------------------------
+
+
+
