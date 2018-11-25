@@ -3,11 +3,14 @@
  */
 package net.eldm.validation
 
-import org.eclipse.xtext.validation.Check
-import net.eldm.eldmDsl.TypeDef
 import net.eldm.eldmDsl.EldmDslPackage
+import net.eldm.eldmDsl.EnumDef
 import net.eldm.eldmDsl.MapDef
-import net.eldm.eldmDsl.KeyDef
+import net.eldm.eldmDsl.MapEntryDef
+import net.eldm.eldmDsl.TypeDef
+import org.eclipse.xtext.validation.Check
+
+import static extension net.eldm.validation.TypeValidator.*
 
 /**
  * This class contains custom validation rules. 
@@ -27,16 +30,24 @@ class EldmDslValidator extends AbstractEldmDslValidator {
   }
   
   @Check
-  def void checkKeyDefCase(KeyDef it) {
+  def void checkKeyDefCase(MapEntryDef it) {
     if (name != name.toLowerCase)
-      warning("Incorrect name for key! Set all chars to lower-case.", it, EldmDslPackage.Literals.KEY_DEF__NAME)
+      warning("Incorrect name for key! Set all chars to lower-case.", it, EldmDslPackage.Literals.MAP_ENTRY_DEF__NAME)
   }
   
   @Check
-  def void checkMapDefUniqueKeys(KeyDef kd) {
+  def void checkMapDefUniqueKeys(MapEntryDef kd) {
     val parent = (kd.eContainer as MapDef)
     if (parent.defs.filter[name == kd.name].size > 1)
-      error("Multiple keys with the same name.", kd, EldmDslPackage.Literals.KEY_DEF__NAME)
+      error("Multiple keys with the same name.", kd, EldmDslPackage.Literals.MAP_ENTRY_DEF__NAME)
   }
-	
+  
+  @Check
+  def void checkEnumDef(EnumDef ed) {
+    ed.defs.forEach[
+      val msg = ed.type.isValidAssignment(value)
+      if (msg !== null)
+        error(msg, it, EldmDslPackage.Literals.ENUM_ITEM_DEF__VALUE)
+    ]
+  }
 }

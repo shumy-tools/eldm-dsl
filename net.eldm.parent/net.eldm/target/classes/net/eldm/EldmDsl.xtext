@@ -116,7 +116,7 @@ Definition: //TODO: create Java annotations to define these
   ;
   
     EnumItemDef:
-      key=ID value=MapLiteral
+      name=ID value=MapLiteral
     ;
 
 LambdaDef:
@@ -125,25 +125,25 @@ LambdaDef:
 
 ElementTypeDef:
   ValueDef
-  | xdef=[Definition]
+  | ref=[Definition]
 ;
 
-  ValueDef: {ValueDef}
-    NativeDef
+  ValueDef:
+    native=NativeDef
     | ListDef
     | MapDef
   ;
 
   MapDef:
-    => ({MapDef} '{' (defs+=KeyDef (',' defs+=KeyDef)*)? '}')
+    => ({MapDef} '{' (defs+=MapEntryDef (',' defs+=MapEntryDef)*)? '}')
     | ({MapDef} '{'
     BEGIN
-      (defs+=KeyDef ( BREAK defs+=KeyDef)*)?
+      (defs+=MapEntryDef ( BREAK defs+=MapEntryDef)*)?
     END
     '}')
   ;
   
-    KeyDef:
+    MapEntryDef:
       name=ID ((opt?='?'? ':' type=ElementTypeDef) | ('=' value=Literal))
     ;
   
@@ -152,7 +152,8 @@ ElementTypeDef:
   ;
   
   NativeDef:
-    'any' | 'bool' | 'str' | 'int' | 'flt' | 'path'
+    'any' | 'bool' | 'str' | 'int' | 'flt'
+    | 'lda' | 'ltm' | 'ldt' | 'path'
   ;
 
 // ------------------------------------------------------------------------------------------------------------------------------
@@ -164,10 +165,15 @@ Literal:
   | StrLiteral
   | IntLiteral
   | FltLiteral
+  | DateLiteral
+  | TimeLiteral
+  | DateTimeLiteral
+  
   | ListLiteral
   | MapLiteral
   | EnumLiteral
   | PatternLiteral
+  | path=Path
 ;
 
   NullLiteral: {NullLiteral} 'null';
@@ -175,6 +181,9 @@ Literal:
   StrLiteral: value=TEXT;
   IntLiteral: value=NATURAL;
   FltLiteral: value=FLOAT;
+  DateLiteral: 'lda@' value=TEXT;
+  TimeLiteral: 'ltm@' value=TEXT;
+  DateTimeLiteral: 'ldt@' value=TEXT;
 
   
   ListLiteral: {ListLiteral}
@@ -182,19 +191,19 @@ Literal:
   ;
   
   MapLiteral: {MapLiteral}
-    '{' (vals+=KeyLiteral (',' vals+=KeyLiteral)*)? '}'
+    '{' (entries+=MapEntryLiteral (',' entries+=MapEntryLiteral)*)? '}'
   ;
   
-    KeyLiteral:
-      key=ID ':' value=Literal
+    MapEntryLiteral:
+      name=ID ':' value=Literal
     ;
     
   EnumLiteral: {EnumLiteral}
-    type=[EnumDef] '.' value=ID
+    ref=[EnumItemDef]
   ;
   
   PatternLiteral: {PatternLiteral}
-    (type=[ValueDef])? '@'TEXT //TODO: check-if STRING is-assignable-to TypeDef
+    (ref=[ValueDef])? '@'TEXT //TODO: check-if STRING is-assignable-to TypeDef
   ;
 
 Path: PID =>PID*;

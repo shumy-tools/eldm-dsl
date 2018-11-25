@@ -37,7 +37,44 @@ class TestDefinition {
     ''', "Multiple keys with the same name.")
   }
   
-  //TODO: test invalid types for enum
+  @Test
+  def void testEnumInvalidType() {
+    ph.testExpectedError('''
+      module /test
+      
+      defs
+        enum SEX { desc: str }:
+          M { desc: 10 }
+          F { desc: 'Female' }
+      
+    ''', "Value not assignable to type.")
+  }
+  
+  @Test
+  def void testEnumNonExistentDef() {
+    ph.testExpectedError('''
+      module /test
+      
+      defs
+        enum SEX { desc: str }:
+          M { des: 'Male' }
+          F { desc: 'Female' }
+      
+    ''', "KeyDef 'des' does not exist.")
+  }
+  
+  @Test
+  def void testEnumMandatoryDefNotSet() {
+    ph.testExpectedError('''
+      module /test
+      
+      defs
+        enum SEX { id: int, desc: str }:
+          M { id: 10, desc: 'Male' }
+          F { desc: 'Female' }
+      
+    ''', "Mandatory KeyDef 'id' not set.")
+  }
   
   @Test
   def void testCorrect() {
