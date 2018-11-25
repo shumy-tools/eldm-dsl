@@ -8,11 +8,21 @@ import net.eldm.eldmDsl.Module
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
 import org.eclipse.xtext.testing.util.ParseHelper
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
+
+import static extension net.eldm.tests.TestHelper.*
 
 @ExtendWith(InjectionExtension)
 @InjectWith(EldmDslInjectorProvider)
 class EldmDslParsingTest {
-  @Inject
-  ParseHelper<Module> parseHelper
+  @Inject ParseHelper<Module> ph
+  
+  @Test
+  def void testModule() {
+    ph.test('''
+      module /mod/test
+      
+    ''')
+  }
 }

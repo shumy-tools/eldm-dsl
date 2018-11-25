@@ -112,11 +112,9 @@ special built-in string parsers (code generators) <type> - <Example>:
   dsl                 - let x = SQL@($i=id){ SELECT * FROM table WHERE id = $i }@
 
 custom string parsers (validated at compile time when string source is available):
-  typedef <name> <pattern | mask | filter> @"boolean-expression" [return @"java-code"]
-
-  typedef email pattern @"regex" return @"new my.data.Email(it)"
-  typedef card mask @"mask"
-  typedef date filter @"java-boolean-expression" return @"java.time.LocalDate.parse(it)"
+  typedef email pattern "regex" return "new my.data.Email(it)"
+  typedef card mask "mask" return """new my.Number(it)"""
+  typedef date return "java.time.LocalDate.parse(it)"
 
   let x = email@"mic@gmail.com" or let x: email = @"mic@gmail.com"
   let x = sql@"SELECT * FROM users"
@@ -168,17 +166,15 @@ control expressions-------------------------------------------------------------
 
 modules and imports----------------------------------------------------------------------------------------------------------------------
 
-  module @"/oper"
+  module /oper
 
-  import @"/alias" from @"/other/big/path/to/handle" // import all operations from the module path
+  import /alias from /other/big/path/to/handle // import all operations from the module path
     // import strutures
-    import Handler as HandlerAlias, OtherStruct from @"/other/big/path/to/handle"
-    import @"/other/big/path/to/handle".Handler as HandlerAlias
+    import Handler as HandlerAlias, OtherStruct from /other/big/path/to/handle
 
-  import @"/ext" from my.java.Opers.* // special java class with static methods, marked with DSL annotations
+  import /ext from my.java.Opers.* // special java class with static methods, marked with DSL annotations
     // import java strutures
-    import MyStruct as Struct, OtherStruct from my.java // special java class with public fields, marked with DSL annotations
-    import my.java.MyStruct as Struct
+    import MyStruct as Struct, OtherStruct from my.java.* // special java class with public fields, marked with DSL annotations
 
   // normal Java class import
   import text.TextFile  // marked with DSL annotations
@@ -187,8 +183,8 @@ modules and imports-------------------------------------------------------------
   plug-dsl SQL from @"dsl-validator&generator" // special gradle-plugin class, marked with DSL annotations
 
   // we still have to use absolute paths...
-  get @"/alias/<oper>" <params>
-  get @"/ext/<method>" <params>
+  get /alias/<oper> <params>
+  get /ext/<method> <params>
 
   let x: Struct = { with valid mandatory fields }
   let x: HandlerAlias = { with valid mandatory fields }
@@ -203,7 +199,7 @@ structs and operations----------------------------------------------------------
 // input parameters can only have: [0..1] struct + [0..1] callback
 
 // pure structure definitions------------------
-struct Subject {
+typedef Subject {
   id?: int
   name: str
   birthday: lda
@@ -211,14 +207,14 @@ struct Subject {
 }
 
 // pure operation definitions-------------------
-def get @"/db/data" { id = 0 }: // operation with default id = 0
+def get /db/data { id = 0 }: // operation with default id = 0
   ...some code...
 
-def set @"/callback" Subject:
+def set /callback Subject:
   ...some code...
 
 // define a sub-path
-def @"/subject"
+def /subject
 
   // syncronous, returning Subject
   def get { id: int } -> Subject:
@@ -226,11 +222,11 @@ def @"/subject"
     ...some pure read-only code...
 
   // asyncronous with callback, returning void
-  def get @"/async" { id: int } #(Subject -> void) -> void:
+  def get /async { id: int } #(Subject -> void) -> void:
     ...some code...
 
   // asyncronous, returning promise
-  def get @"/promise" { id: int } -> ?Subject:
+  def get /promise { id: int } -> ?Subject:
     ...some code...
 
   def set { id?: int, udi: str, sex: sex, birthday: lda }:
@@ -246,32 +242,35 @@ def @"/subject"
     return result
 
 // not accessible in imports for external modules
-private def get @"/private":
+private def get /private:
   ...some code...
 
-private def @"/private-sub-path":
+private def /private-sub-path:
   get ... // all sub operations are private
 
 // usage example---------------------------------------------------------------------------------------------------------------
 let mut subject: Subject // set at void
 
 // syncronous call
-subject = get@"/subject" { id: 3 }
+subject = get /subject { id: 3 }
 
 // asyncronous call with reflective behavior
 let callback = path@"/callback"
-get@"/subject/async" { id: 3 } callback
+get /subject/async { id: 3 } callback
 
 // asyncronous call with callback closure
 let inlineCallback = #[ Subject -> subject = it ] or let inlineCallback: #(Subject -> void) = #[ subject = it ]
-get@"/subject/async" { id: 3 } #[ subject = it ]
-get@"/subject/async" { id: 3 } inlineCallback
+get /subject/async { id: 3 } #[ subject = it ]
+get /subject/async { id: 3 } inlineCallback
 
 // asyncronous call with promise
 let callback = path@"/callback"
-get@"/subject/promise" { id: 3 } ?#[ subject = it ]
-get@"/subject/promise" { id: 3 } ?@"/callback"
-get@"/subject/promise" { id: 3 } ?callback: #[ log.error(it) ]
+
+let promise = async get /subject/promise { id: 3 }
+promise ?#[ subject = it ]
+
+async get /subject/promise { id: 3 } ?@"/callback"
+async get /subject/promise { id: 3 } ?callback: #[ log.error(it) ]
 
 ----------------------------------------------------------------------------------------------------------------
 

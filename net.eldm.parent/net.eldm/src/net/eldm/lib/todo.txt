@@ -1,0 +1,2 @@
+This lib will be used for dls-plugins also in the future, and should be extrated as a separate project.
+For now it's here.

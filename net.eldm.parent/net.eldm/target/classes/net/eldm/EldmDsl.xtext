@@ -1,59 +1,239 @@
-grammar net.eldm.EldmDsl with org.eclipse.xtext.xbase.Xbase
+grammar net.eldm.EldmDsl hidden(WS, ML_COMMENT, SL_COMMENT)
 
 generate eldmDsl "http://www.eldm.net/EldmDsl"
 
-import "http://www.eclipse.org/xtext/common/JavaVMTypes" as types
+import "http://www.eclipse.org/xtext/common/JavaVMTypes"
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
+// ------------------------------------------------------------------------------------------------------------------------------
+// Module Header
+// ------------------------------------------------------------------------------------------------------------------------------
 Module:
-  'module'
-  MapDef
+  'module' name=Path
+  (imports+=Import)*
+  (plugs+=PlugDsl)*
+  
+  ('defs'
+  BEGIN
+    (defs+=Definition)+
+  END)?
+  
+  (opers+=Operation)*
+  (paths+=SubPath)*
 ;
 
-Expression:
-  '<expression>'
+PlugDsl:
+  'plug-dsl' name=ID adaptor=PatternLiteral
+;
+
+Import:
+  ImportOperation | ImportDefinition
+;
+
+  ImportOperation:
+    name=Path 'from' module=ExternalModule
+  ;
+  
+  ImportDefinition:
+    (defs+=ExternalDef (',' defs+=ExternalDef)*) 'from' module=ExternalModule
+  ;
+  
+    ExternalDef:
+      (ref=ID ('as' name=ID)?) | =>name=ID //TODO: check-if is a valid reference to a Definition ID
+    ;
+    
+    ExternalModule:
+      ref=Path | (javaRef=[JvmDeclaredType|QualifiedNameInStaticImport] '*')
+    ;
+
+// ------------------------------------------------------------------------------------------------------------------------------
+// Operations
+// ------------------------------------------------------------------------------------------------------------------------------
+SubPath:
+  'def' name=Path
+  BEGIN
+    (opers+=Operation)+
+  END
+;
+
+Operation:
+  'def' (isGet?='get' | 'set') name=Path? param=ParamDef? ('->' result=ElementTypeDef)? ':'
+    body=BlockExpression
+;
+
+  ParamDef:
+    def=MapDef | ref=[MapDef]
+  ;
+
+// ------------------------------------------------------------------------------------------------------------------------------
+// Expressions
+// ------------------------------------------------------------------------------------------------------------------------------
+BlockExpression:
+  BEGIN
+    '<block>'
+  END
 ;
 
 VariableDef:
-  'let' (name=ValidID (':' type=ValueDef)? '=' right=Expression)
-    | (mut?='mut' name=ValidID (':' type=ValueDef)? ('=' right=Expression)?) // check-error-if (mut == true && type === null && right === null)
+  'let' (name=ID (':' type=ElementTypeDef)? '=' right=Expression)
+    | (mut?='mut' name=ID (':' type=ElementTypeDef)? ('=' right=Expression)?) //TODO: check-error-if (mut == true && type === null && right === null)
+;
+
+OperationCall:
+  async?='async'? (isGet?='get' | 'set') ref=[Operation|Path] param=MapExpression
 ;
 
 
+Expression:
+  '<exp>'
+;
+
+MapExpression:
+  '{test:10}'
+;
+
+// LiteralExpression //TODO: use for default params
+
+// ------------------------------------------------------------------------------------------------------------------------------
+// Type Definitions
+// ------------------------------------------------------------------------------------------------------------------------------
+Definition: //TODO: create Java annotations to define these
+  TypeDef | EnumDef | ExternalDef
+;
+
+  TypeDef:
+    'typedef' name=ID (
+      (parser=('regex' | 'mask' | 'return') code=TEXT)
+      | type=ValueDef
+    )
+  ;
+  
+  EnumDef:
+    'enum' name=ID type=MapDef ':'
+    BEGIN
+      (defs+=EnumItemDef)+ //TODO: check-if MapLiteral is-assignable-to MapDef of EnumDef
+    END
+  ;
+  
+    EnumItemDef:
+      key=ID value=MapLiteral
+    ;
+
+LambdaDef:
+  '#(' param=ElementTypeDef ('->' result=ElementTypeDef)? ')'
+;
+
+ElementTypeDef:
+  ValueDef
+  | xdef=[Definition]
+;
+
+  ValueDef: {ValueDef}
+    NativeDef
+    | ListDef
+    | MapDef
+  ;
+
+  MapDef:
+    => ({MapDef} '{' (defs+=KeyDef (',' defs+=KeyDef)*)? '}')
+    | ({MapDef} '{'
+    BEGIN
+      (defs+=KeyDef ( BREAK defs+=KeyDef)*)?
+    END
+    '}')
+  ;
+  
+    KeyDef:
+      name=ID ((opt?='?'? ':' type=ElementTypeDef) | ('=' value=Literal))
+    ;
+  
+  ListDef: {ListDef}
+    '..' type=ElementTypeDef
+  ;
+  
+  NativeDef:
+    'any' | 'bool' | 'str' | 'int' | 'flt' | 'path'
+  ;
+
+// ------------------------------------------------------------------------------------------------------------------------------
+// Literals
+// ------------------------------------------------------------------------------------------------------------------------------
+Literal:
+  NullLiteral
+  | BoolLiteral
+  | StrLiteral
+  | IntLiteral
+  | FltLiteral
+  | ListLiteral
+  | MapLiteral
+  | EnumLiteral
+  | PatternLiteral
+;
+
+  NullLiteral: {NullLiteral} 'null';
+  BoolLiteral: {BoolLiteral} ('false' | isTrue?='true');
+  StrLiteral: value=TEXT;
+  IntLiteral: value=NATURAL;
+  FltLiteral: value=FLOAT;
 
   
-// JSON struct definition
-ValueDef:
-  {ValueDef}
-  NativeDef|ListDef|MapDef
-;
+  ListLiteral: {ListLiteral}
+    '[' (vals+=Literal (',' vals+=Literal)*)? ']'
+  ;
+  
+  MapLiteral: {MapLiteral}
+    '{' (vals+=KeyLiteral (',' vals+=KeyLiteral)*)? '}'
+  ;
+  
+    KeyLiteral:
+      key=ID ':' value=Literal
+    ;
+    
+  EnumLiteral: {EnumLiteral}
+    type=[EnumDef] '.' value=ID
+  ;
+  
+  PatternLiteral: {PatternLiteral}
+    (type=[ValueDef])? '@'TEXT //TODO: check-if STRING is-assignable-to TypeDef
+  ;
 
-MapDef:
-  {MapDef}
-  '{' (elements+=KeyDef (',' elements+=KeyDef)*)? '}'
-;
+Path: PID =>PID*;
+QualifiedNameInStaticImport: (ID '.')+;
 
-KeyDef:
-  name=ValidID ((opt?='?'? ':' type=ValueDef) | ('=' right=Literal))
-;
+BREAK: ('\n'|'\r')*;
 
-ListDef:
-  '[' type=NativeDef ']'
-;
+// ------------------------------------------------------------------------------------------------------------------------------
+// Terminals
+// ------------------------------------------------------------------------------------------------------------------------------
+terminal BEGIN: 'synthetic:BEGIN';
+terminal END  : 'synthetic:END';
 
-NativeDef:
-  'any' | 'bool' | 'str' | 'int' | 'flt'
-;
+terminal PID: '/' ('a'..'z'|'-'|'0'..'9')+;
+terminal ID : '^'? ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'-'|'_'|'0'..'9')*;
+
+terminal INT    : ('0'..'9')+;
+terminal NATURAL: '-'? INT;
+terminal FLOAT  : NATURAL ('.' INT)?;
+
+/*terminal STRING:
+  '"' ( '\\' . | !('\\'|'"') )* '"'
+  | '"""' -> '"""';
+*/
+
+terminal TEXT: "'" -> "'" | '"""' -> '"""';
+
+terminal ML_COMMENT: '/*' -> '*/';
+terminal SL_COMMENT: '//' !('\n'|'\r')* ('\r'? '\n')?;
+terminal WS        : (' '|'\t'|'\r'|'\n')+;
+
+terminal ANY_OTHER: .;
 
 
-// literals
-Literal:
-  BoolLiteral
-;
 
 
-BoolLiteral:
-  ('false' | isTrue?='true')
-;
+
+
+
 
 
 

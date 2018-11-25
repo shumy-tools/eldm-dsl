@@ -4,10 +4,14 @@
 package net.eldm.ui
 
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
+import org.eclipse.xtext.ui.editor.syntaxcoloring.AbstractAntlrTokenToAttributeIdMapper
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
  */
 @FinalFieldsConstructor
 class EldmDslUiModule extends AbstractEldmDslUiModule {
+  def Class<? extends AbstractAntlrTokenToAttributeIdMapper> bindAbstractAntlrTokenToAttributeIdMapper() {
+    return net.eldm.ui.syntaxcoloring.IldmAntlrTokenToAttributeIdMapper
+  }
 }

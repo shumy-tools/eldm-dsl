@@ -3,6 +3,11 @@
  */
 package net.eldm.validation
 
+import org.eclipse.xtext.validation.Check
+import net.eldm.eldmDsl.TypeDef
+import net.eldm.eldmDsl.EldmDslPackage
+import net.eldm.eldmDsl.MapDef
+import net.eldm.eldmDsl.KeyDef
 
 /**
  * This class contains custom validation rules. 
@@ -11,15 +16,27 @@ package net.eldm.validation
  */
 class EldmDslValidator extends AbstractEldmDslValidator {
 	
-//	public static val INVALID_NAME = 'invalidName'
-//
-//	@Check
-//	def checkGreetingStartsWithCapital(Greeting greeting) {
-//		if (!Character.isUpperCase(greeting.name.charAt(0))) {
-//			warning('Name should start with a capital', 
-//					EldmDslPackage.Literals.GREETING__NAME,
-//					INVALID_NAME)
-//		}
-//	}
+  @Check
+  def checkTypeDefCase(TypeDef it) {
+    if (parser !== null) {
+      if (name != name.toLowerCase)
+        warning("Incorrect name for string-type! Set all chars to lower-case.", it, EldmDslPackage.Literals.DEFINITION__NAME)
+    } else
+      if (name != name.toFirstUpper)
+        warning("Incorrect name for structure! Set the first char to upper-case.", it, EldmDslPackage.Literals.DEFINITION__NAME)
+  }
+  
+  @Check
+  def void checkKeyDefCase(KeyDef it) {
+    if (name != name.toLowerCase)
+      warning("Incorrect name for key! Set all chars to lower-case.", it, EldmDslPackage.Literals.KEY_DEF__NAME)
+  }
+  
+  @Check
+  def void checkMapDefUniqueKeys(KeyDef kd) {
+    val parent = (kd.eContainer as MapDef)
+    if (parent.defs.filter[name == kd.name].size > 1)
+      error("Multiple keys with the same name.", kd, EldmDslPackage.Literals.KEY_DEF__NAME)
+  }
 	
 }
