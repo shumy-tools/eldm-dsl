@@ -22,6 +22,7 @@
 	</properties>
 	<modules>
 		<module>net.eldm</module>
+		<module>net.eldm.parser</module>
 		<module>net.eldm.ide</module>
 		<module>net.eldm.ui</module>
 		<module>net.eldm.target</module>

@@ -16,7 +16,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.4.0</version>
-				<executions>
+				<!--<executions>
 					<execution>
 						<id>mwe2Launcher</id>
 						<phase>generate-sources</phase>
@@ -34,8 +34,8 @@
 					</arguments>
 					<classpathScope>compile</classpathScope>
 					<includePluginDependencies>true</includePluginDependencies>
-					<cleanupDaemonThreads>false</cleanupDaemonThreads><!-- see https://bugs.eclipse.org/bugs/show_bug.cgi?id=475098#c3 -->
-				</configuration>
+					<cleanupDaemonThreads>false</cleanupDaemonThreads>
+				</configuration>-->
 				<dependencies>
 					<dependency>
 						<groupId>org.eclipse.emf</groupId>
@@ -104,8 +104,6 @@
 								<include>**/*</include>
 							</includes>
 						</fileset>
-						<!--<fileset> <directory>${basedir}/../net.eldm.ui.tests/src-gen/</directory> 
-							<includes> <include>**/*</include> </includes> </fileset> -->
 						<fileset>
 							<directory>${basedir}/model/generated/</directory>
 						</fileset>

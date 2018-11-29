@@ -4,15 +4,14 @@
 package net.eldm.ide
 
 import com.google.inject.Guice
-import net.eldm.EldmDslRuntimeModule
-import net.eldm.EldmDslStandaloneSetup
+import net.eldm.core.EldmDslRuntimeModule
+import net.eldm.core.EldmDslStandaloneSetup
 import org.eclipse.xtext.util.Modules2
 
 /**
  * Initialization support for running Xtext languages as language servers.
  */
 class EldmDslIdeSetup extends EldmDslStandaloneSetup {
-
 	override createInjector() {
 		Guice.createInjector(Modules2.mixin(new EldmDslRuntimeModule, new EldmDslIdeModule))
 	}

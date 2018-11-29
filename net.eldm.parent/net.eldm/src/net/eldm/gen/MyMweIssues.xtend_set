@@ -1,0 +1,29 @@
+package net.eldm.gen
+
+import org.eclipse.xtend.lib.annotations.Accessors
+import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
+import org.eclipse.xtext.xtext.generator.Issues
+
+@FinalFieldsConstructor
+class MyMweIssues implements Issues {
+  
+  @Accessors val MyXtextGenerator owner
+  @Accessors val org.eclipse.emf.mwe.core.issues.Issues delegate
+  
+  override addError(String message) {
+    delegate.addError(owner, message)
+  }
+  
+  override addError(String message, Object source) {
+    delegate.addError(owner, message, source)
+  }
+  
+  override addWarning(String message) {
+    delegate.addWarning(owner, message)
+  }
+  
+  override addWarning(String message, Object source) {
+    delegate.addWarning(owner, message, source)
+  }
+  
+}

@@ -10,7 +10,7 @@ import net.eldm.eldmDsl.MapEntryDef
 import net.eldm.eldmDsl.TypeDef
 import org.eclipse.xtext.validation.Check
 
-import static extension net.eldm.validation.TypeValidator.*
+import static extension net.eldm.TypeValidator.*
 
 /**
  * This class contains custom validation rules. 
@@ -18,7 +18,7 @@ import static extension net.eldm.validation.TypeValidator.*
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
 class EldmDslValidator extends AbstractEldmDslValidator {
-	
+  
   @Check
   def checkTypeDefCase(TypeDef it) {
     if (parser !== null) {

@@ -1,4 +1,4 @@
-package net.eldm.validation
+package net.eldm
 
 import net.eldm.eldmDsl.ElementTypeDef
 import net.eldm.eldmDsl.Literal
@@ -41,9 +41,9 @@ class TypeValidator {
     return kd.type ?: kd.value.type
   }
   
-  /*static def getType(PatternLiteral pl) {
-    return null as ElementTypeDef
-  }*/
+  //static def getType(PatternLiteral pl) {
+  //  return null as ElementTypeDef
+  //}
   
   static def ElementTypeDef getType(Literal value) {
     //TODO: --------  construct list | map | ... on demand!

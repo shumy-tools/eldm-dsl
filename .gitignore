@@ -2,6 +2,7 @@
 *.log
 *.jar
 *.xml_gen
+*._trace
 
 xtend-gen/
 src-gen/

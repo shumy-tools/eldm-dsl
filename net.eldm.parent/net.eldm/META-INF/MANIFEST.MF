@@ -4,7 +4,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: net.eldm
 Bundle-Vendor: My Company
 Bundle-Version: 1.0.0.qualifier
-Bundle-SymbolicName: net.eldm; singleton:=true
+Bundle-SymbolicName: net.eldm;singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.xtext,
  org.eclipse.xtext.xbase,
@@ -12,20 +12,13 @@ Require-Bundle: org.eclipse.xtext,
  org.eclipse.emf.ecore,
  org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
  org.eclipse.xtext.util,
+ org.eclipse.xtext.generator,
  org.eclipse.emf.common,
  org.eclipse.xtend.lib;bundle-version="2.14.0",
  org.antlr.runtime;bundle-version="[3.2.0,3.2.1)"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: net.eldm.validation,
- net.eldm,
- net.eldm.services,
- net.eldm.generator,
- net.eldm.serializer,
- net.eldm.scoping,
- net.eldm.eldmDsl.util,
+Export-Package: net.eldm,
  net.eldm.eldmDsl,
- net.eldm.parser.antlr.internal,
- net.eldm.eldmDsl.impl,
- net.eldm.parser.antlr,
- net.eldm.parser.antlr.lexer
+ net.eldm.eldmDsl.util,
+ net.eldm.eldmDsl.impl
 Import-Package: org.apache.log4j

@@ -1,0 +1,139 @@
+package net.eldm.gen
+
+import com.google.inject.Guice
+import com.google.inject.Inject
+import com.google.inject.Injector
+import java.util.HashMap
+import java.util.List
+import org.eclipse.emf.mwe.core.WorkflowContext
+import org.eclipse.emf.mwe.core.issues.Issues
+import org.eclipse.emf.mwe.core.lib.AbstractWorkflowComponent2
+import org.eclipse.emf.mwe.core.monitor.ProgressMonitor
+import org.eclipse.emf.mwe.utils.StandaloneSetup
+import org.eclipse.xtend.lib.annotations.Accessors
+import org.eclipse.xtext.GeneratedMetamodel
+import org.eclipse.xtext.Grammar
+import org.eclipse.xtext.XtextStandaloneSetup
+import org.eclipse.xtext.generator.CompositeGeneratorException
+import org.eclipse.xtext.parser.IEncodingProvider
+import org.eclipse.xtext.resource.IResourceServiceProvider
+import org.eclipse.xtext.util.internal.Log
+import org.eclipse.xtext.xtext.generator.CodeConfig
+import org.eclipse.xtext.xtext.generator.XtextDirectoryCleaner
+import org.eclipse.xtext.xtext.generator.XtextGeneratorLanguage
+import org.eclipse.xtext.xtext.generator.XtextGeneratorStandaloneSetup
+import org.eclipse.xtext.xtext.generator.model.project.IXtextProjectConfig
+
+@Log
+class MyXtextGenerator extends AbstractWorkflowComponent2 {
+
+  @Accessors
+  MyDefaultGeneratorModule configuration = new MyDefaultGeneratorModule
+  
+  @Accessors
+  val List<XtextGeneratorLanguage> languageConfigs = newArrayList
+  
+  @Accessors
+  XtextDirectoryCleaner cleaner = new XtextDirectoryCleaner
+  
+  //@Accessors
+  XtextGeneratorStandaloneSetup standaloneSetup = new XtextGeneratorStandaloneSetup
+  
+  @Accessors
+  String grammarEncoding
+  
+  Injector injector
+  
+  @Inject IXtextProjectConfig projectConfig
+  
+  new() {
+    new XtextStandaloneSetup().createInjectorAndDoEMFRegistration()
+  }
+  
+  /**
+   * Add a language configuration to be included in the code generation process.
+   */
+  def void addLanguage(XtextGeneratorLanguage language) {
+    this.languageConfigs.add(language)
+  }
+  
+  override protected checkConfigurationInternal(Issues issues) {
+    initialize
+    val generatorIssues = new MyMweIssues(this, issues)
+    configuration.checkConfiguration(generatorIssues)
+    val uris = new HashMap<String, Grammar>
+    for (language : languageConfigs) {
+      language.checkConfiguration(generatorIssues)
+      for (generatedMetamodel : language.grammar.metamodelDeclarations.filter(GeneratedMetamodel)) {
+        val nsURI = generatedMetamodel.EPackage.nsURI
+        if (uris.containsKey(nsURI)) {
+          generatorIssues.addError("Duplicate generated grammar with nsURI '" + nsURI + "' in " + uris.get(nsURI).name + " and " + language.grammar.name)
+        } else {
+          uris.put(nsURI, language.grammar)
+        }
+      }
+    }
+  }
+  
+  def void initialize() {
+    if (injector === null) {
+      LOG.info('Initializing Xtext generator')
+      new StandaloneSetup().addRegisterGeneratedEPackage('org.eclipse.xtext.common.types.TypesPackage')
+      initializeEncoding
+      injector = createInjector
+      injector.injectMembers(this)
+      injector.getInstance(CodeConfig) => [initialize(injector)]
+      projectConfig.initialize(injector)
+      cleaner.initialize(injector)
+      standaloneSetup.initialize(injector)
+      for (language : languageConfigs) {
+        val languageInjector = injector.createLanguageInjector(language)
+        language.initialize(languageInjector)
+      }
+    }
+  }
+  
+  protected def initializeEncoding() {
+    val serviceProviderRegistry = IResourceServiceProvider.Registry.INSTANCE
+    val serviceProvider = serviceProviderRegistry.extensionToFactoryMap.get('xtext') as IResourceServiceProvider
+    val encoding = grammarEncoding ?: configuration.code.encoding
+    if (serviceProvider !== null && encoding !== null) {
+      val encodingProvider = serviceProvider.get(IEncodingProvider)
+      if (encodingProvider instanceof IEncodingProvider.Runtime)
+        encodingProvider.defaultEncoding = encoding
+    }
+  }
+  
+  protected def Injector createInjector() {
+    Guice.createInjector(configuration)
+  }
+  
+  protected def Injector createLanguageInjector(Injector parent, XtextGeneratorLanguage language) {
+    parent.createChildInjector(new MyLanguageModule(language))
+  }
+  
+  protected override invokeInternal(WorkflowContext ctx, ProgressMonitor monitor, Issues issues) {
+    initialize
+    try {
+      cleaner.clean
+      for (language : languageConfigs) {
+        try {
+          LOG.info('Generating ' + language.grammar.name)
+          language.generate
+        } catch(Exception e) {
+          handleException(e, issues)
+        }
+      }
+    } catch (Exception e) {
+      handleException(e, issues)
+    }
+  }
+  
+  private def void handleException(Exception ex, Issues issues) {
+    if (ex instanceof CompositeGeneratorException) {
+      ex.exceptions.forEach[handleException(issues)]
+    } else {
+      issues.addError(this, "GeneratorException: ", null, ex, null)
+    }
+  }
+}
