@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2015, 2017 itemis AG (http://www.itemis.eu) and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package net.eldm.gen;
 
 import com.google.common.collect.Iterables;
@@ -26,15 +33,42 @@ import org.eclipse.xtext.resource.IResourceServiceProvider;
 import org.eclipse.xtext.util.internal.Log;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.eclipse.xtext.xbase.lib.Exceptions;
+import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.ObjectExtensions;
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
 import org.eclipse.xtext.xbase.lib.Pure;
 import org.eclipse.xtext.xtext.generator.CodeConfig;
-import org.eclipse.xtext.xtext.generator.XtextDirectoryCleaner;
+import org.eclipse.xtext.xtext.generator.IXtextGeneratorLanguage;
 import org.eclipse.xtext.xtext.generator.XtextGeneratorLanguage;
 import org.eclipse.xtext.xtext.generator.XtextGeneratorStandaloneSetup;
+import org.eclipse.xtext.xtext.generator.XtextGeneratorTemplates;
+import org.eclipse.xtext.xtext.generator.model.IXtextGeneratorFileSystemAccess;
 import org.eclipse.xtext.xtext.generator.model.project.IXtextProjectConfig;
 
+/**
+ * The Xtext language infrastructure generator. Use the {@code configuration} block to add general
+ * configuration for your Xtext project and the generated code, e.g.
+ * <pre>
+ * configuration = {
+ *     project = model.project.StandardProjectConfig {
+ *         baseName = "org.example.language"
+ *         rootPath = ".."
+ *     }
+ *     code = {
+ *         encoding = 'ISO-8859-1'
+ *     }
+ * }
+ * </pre>
+ * You can generate code for one or more Xtext languages within the same project. For each language,
+ * add a {@code language} block, e.g.
+ * <pre>
+ * language = StandardLanguage {
+ *     name = "org.example.language.MyExampleLanguage"
+ * }
+ * </pre>
+ * 
+ * @noextend This class should not be extended by clients.
+ */
 @Log
 @SuppressWarnings("all")
 public class MyXtextGenerator extends AbstractWorkflowComponent2 {
@@ -45,8 +79,6 @@ public class MyXtextGenerator extends AbstractWorkflowComponent2 {
   private final List<XtextGeneratorLanguage> languageConfigs = CollectionLiterals.<XtextGeneratorLanguage>newArrayList();
   
   @Accessors
-  private XtextDirectoryCleaner cleaner = new XtextDirectoryCleaner();
-  
   private XtextGeneratorStandaloneSetup standaloneSetup = new XtextGeneratorStandaloneSetup();
   
   @Accessors
@@ -56,6 +88,9 @@ public class MyXtextGenerator extends AbstractWorkflowComponent2 {
   
   @Inject
   private IXtextProjectConfig projectConfig;
+  
+  @Inject
+  private XtextGeneratorTemplates templates;
   
   public MyXtextGenerator() {
     new XtextStandaloneSetup().createInjectorAndDoEMFRegistration();
@@ -111,7 +146,6 @@ public class MyXtextGenerator extends AbstractWorkflowComponent2 {
       };
       ObjectExtensions.<CodeConfig>operator_doubleArrow(_instance, _function);
       this.projectConfig.initialize(this.injector);
-      this.cleaner.initialize(this.injector);
       this.standaloneSetup.initialize(this.injector);
       for (final XtextGeneratorLanguage language : this.languageConfigs) {
         {
@@ -155,13 +189,15 @@ public class MyXtextGenerator extends AbstractWorkflowComponent2 {
   protected void invokeInternal(final WorkflowContext ctx, final ProgressMonitor monitor, final Issues issues) {
     this.initialize();
     try {
-      this.cleaner.clean();
       for (final XtextGeneratorLanguage language : this.languageConfigs) {
         try {
           String _name = language.getGrammar().getName();
           String _plus = ("Generating " + _name);
           MyXtextGenerator.LOG.info(_plus);
           language.generate();
+          this.generateSetups(language);
+          this.generateModules(language);
+          this.generateExecutableExtensionFactory(language);
         } catch (final Throwable _t) {
           if (_t instanceof Exception) {
             final Exception e = (Exception)_t;
@@ -171,6 +207,7 @@ public class MyXtextGenerator extends AbstractWorkflowComponent2 {
           }
         }
       }
+      MyXtextGenerator.LOG.info("Generating common infrastructure");
     } catch (final Throwable _t_1) {
       if (_t_1 instanceof Exception) {
         final Exception e_1 = (Exception)_t_1;
@@ -192,6 +229,34 @@ public class MyXtextGenerator extends AbstractWorkflowComponent2 {
     }
   }
   
+  protected void generateSetups(final IXtextGeneratorLanguage language) {
+    this.templates.createRuntimeGenSetup(language).writeTo(this.projectConfig.getRuntime().getSrcGen());
+    this.templates.createRuntimeSetup(language).writeTo(this.projectConfig.getRuntime().getSrc());
+    this.templates.createIdeSetup(language).writeTo(this.projectConfig.getGenericIde().getSrc());
+    this.templates.createWebSetup(language).writeTo(this.projectConfig.getWeb().getSrc());
+  }
+  
+  protected void generateModules(final IXtextGeneratorLanguage language) {
+    this.templates.createRuntimeGenModule(language).writeTo(this.projectConfig.getRuntime().getSrcGen());
+    this.templates.createRuntimeModule(language).writeTo(this.projectConfig.getRuntime().getSrc());
+    this.templates.createIdeModule(language).writeTo(this.projectConfig.getGenericIde().getSrc());
+    this.templates.createIdeGenModule(language).writeTo(this.projectConfig.getGenericIde().getSrcGen());
+    this.templates.createEclipsePluginGenModule(language).writeTo(this.projectConfig.getEclipsePlugin().getSrcGen());
+    this.templates.createEclipsePluginModule(language).writeTo(this.projectConfig.getEclipsePlugin().getSrc());
+    this.templates.createIdeaGenModule(language).writeTo(this.projectConfig.getIdeaPlugin().getSrcGen());
+    this.templates.createIdeaModule(language).writeTo(this.projectConfig.getIdeaPlugin().getSrc());
+    this.templates.createWebGenModule(language).writeTo(this.projectConfig.getWeb().getSrcGen());
+    this.templates.createWebModule(language).writeTo(this.projectConfig.getWeb().getSrc());
+  }
+  
+  protected void generateExecutableExtensionFactory(final IXtextGeneratorLanguage language) {
+    IXtextGeneratorFileSystemAccess _srcGen = this.projectConfig.getEclipsePlugin().getSrcGen();
+    boolean _tripleNotEquals = (_srcGen != null);
+    if (_tripleNotEquals) {
+      this.templates.createEclipsePluginExecutableExtensionFactory(language, IterableExtensions.<XtextGeneratorLanguage>head(this.languageConfigs)).writeTo(this.projectConfig.getEclipsePlugin().getSrcGen());
+    }
+  }
+  
   private final static Logger LOG = Logger.getLogger(MyXtextGenerator.class);
   
   @Pure
@@ -209,12 +274,12 @@ public class MyXtextGenerator extends AbstractWorkflowComponent2 {
   }
   
   @Pure
-  public XtextDirectoryCleaner getCleaner() {
-    return this.cleaner;
+  public XtextGeneratorStandaloneSetup getStandaloneSetup() {
+    return this.standaloneSetup;
   }
   
-  public void setCleaner(final XtextDirectoryCleaner cleaner) {
-    this.cleaner = cleaner;
+  public void setStandaloneSetup(final XtextGeneratorStandaloneSetup standaloneSetup) {
+    this.standaloneSetup = standaloneSetup;
   }
   
   @Pure

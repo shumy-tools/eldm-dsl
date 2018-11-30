@@ -1,0 +1,20 @@
+grammar net.eldm.SchDsl with org.eclipse.xtext.common.Terminals
+
+generate schDsl "http://www.eldm.net/SchDsl"
+
+Model:
+  (elements+=Type)*;
+  
+Type:
+  DataType | Entity;
+  
+DataType:
+  'datatype' name=ID;
+  
+Entity:
+  'entity' name=ID ('extends' superType=[Entity])? '{'
+      (features+=Feature)*
+  '}';
+  
+Feature:
+  (many?='many')? name=ID ':' type=[Type];

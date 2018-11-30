@@ -9,7 +9,10 @@ import com.google.inject.Injector;
 import java.util.Collections;
 import java.util.Map;
 import net.eldm.core.EldmDslRuntimeModule;
+import net.eldm.core.SchDslRuntimeModule;
 import net.eldm.ui.EldmDslUiModule;
+import net.eldm.ui.SchDslUiModule;
+
 import org.apache.log4j.Logger;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.xtext.ui.shared.SharedStateModule;
@@ -21,74 +24,83 @@ import org.osgi.framework.BundleContext;
  * introduced subclass. 
  */
 public class EldmActivator extends AbstractUIPlugin {
-
-	public static final String PLUGIN_ID = "net.eldm.ui";
-	public static final String NET_ELDM_ELDMDSL = "net.eldm.EldmDsl";
-	
-	private static final Logger logger = Logger.getLogger(EldmActivator.class);
-	
-	private static EldmActivator INSTANCE;
-	
-	private Map<String, Injector> injectors = Collections.synchronizedMap(Maps.<String, Injector> newHashMapWithExpectedSize(1));
-	
-	@Override
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		INSTANCE = this;
-	}
-	
-	@Override
-	public void stop(BundleContext context) throws Exception {
-		injectors.clear();
-		INSTANCE = null;
-		super.stop(context);
-	}
-	
-	public static EldmActivator getInstance() {
-		return INSTANCE;
-	}
-	
-	public Injector getInjector(String language) {
-		synchronized (injectors) {
-			Injector injector = injectors.get(language);
-			if (injector == null) {
-				injectors.put(language, injector = createInjector(language));
-			}
-			return injector;
-		}
-	}
-	
-	protected Injector createInjector(String language) {
-		try {
-			com.google.inject.Module runtimeModule = getRuntimeModule(language);
-			com.google.inject.Module sharedStateModule = getSharedStateModule();
-			com.google.inject.Module uiModule = getUiModule(language);
-			com.google.inject.Module mergedModule = Modules2.mixin(runtimeModule, sharedStateModule, uiModule);
-			return Guice.createInjector(mergedModule);
-		} catch (Exception e) {
-			logger.error("Failed to create injector for " + language);
-			logger.error(e.getMessage(), e);
-			throw new RuntimeException("Failed to create injector for " + language, e);
-		}
-	}
-	
-	protected com.google.inject.Module getRuntimeModule(String grammar) {
-		if (NET_ELDM_ELDMDSL.equals(grammar)) {
-			return new EldmDslRuntimeModule();
-		}
-		throw new IllegalArgumentException(grammar);
-	}
-	
-	protected com.google.inject.Module getUiModule(String grammar) {
-		if (NET_ELDM_ELDMDSL.equals(grammar)) {
-			return new EldmDslUiModule(this);
-		}
-		throw new IllegalArgumentException(grammar);
-	}
-	
-	protected com.google.inject.Module getSharedStateModule() {
-		return new SharedStateModule();
-	}
-	
-	
+    public static final String PLUGIN_ID = "net.eldm.ui";
+    
+    public static final String NET_ELDM_ELDMDSL = "net.eldm.EldmDsl";
+    public static final String NET_ELDM_SCHDSL = "net.eldm.SchDsl";
+    
+    private static final Logger logger = Logger.getLogger(EldmActivator.class);
+    
+    private static EldmActivator INSTANCE;
+    
+    private Map<String, Injector> injectors = Collections.synchronizedMap(Maps.<String, Injector> newHashMapWithExpectedSize(1));
+    
+    @Override
+    public void start(BundleContext context) throws Exception {
+        super.start(context);
+        INSTANCE = this;
+    }
+    
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        injectors.clear();
+        INSTANCE = null;
+        super.stop(context);
+    }
+    
+    public static EldmActivator getInstance() {
+        return INSTANCE;
+    }
+    
+    public Injector getInjector(String language) {
+        synchronized (injectors) {
+            Injector injector = injectors.get(language);
+            if (injector == null) {
+                injectors.put(language, injector = createInjector(language));
+            }
+            return injector;
+        }
+    }
+    
+    protected Injector createInjector(String language) {
+        try {
+            com.google.inject.Module runtimeModule = getRuntimeModule(language);
+            com.google.inject.Module sharedStateModule = getSharedStateModule();
+            com.google.inject.Module uiModule = getUiModule(language);
+            com.google.inject.Module mergedModule = Modules2.mixin(runtimeModule, sharedStateModule, uiModule);
+            return Guice.createInjector(mergedModule);
+        } catch (Exception e) {
+            logger.error("Failed to create injector for " + language);
+            logger.error(e.getMessage(), e);
+            throw new RuntimeException("Failed to create injector for " + language, e);
+        }
+    }
+    
+    protected com.google.inject.Module getRuntimeModule(String grammar) {
+        if (NET_ELDM_ELDMDSL.equals(grammar)) {
+            return new EldmDslRuntimeModule();
+        }
+        
+        if (NET_ELDM_SCHDSL.equals(grammar)) {
+            return new SchDslRuntimeModule();
+        }
+        
+        throw new IllegalArgumentException(grammar);
+    }
+    
+    protected com.google.inject.Module getUiModule(String grammar) {
+        if (NET_ELDM_ELDMDSL.equals(grammar)) {
+            return new EldmDslUiModule(this);
+        }
+        
+        if (NET_ELDM_SCHDSL.equals(grammar)) {
+            return new SchDslUiModule(this);
+        }
+        
+        throw new IllegalArgumentException(grammar);
+    }
+    
+    protected com.google.inject.Module getSharedStateModule() {
+        return new SharedStateModule();
+    }
 }

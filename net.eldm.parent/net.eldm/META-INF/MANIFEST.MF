@@ -20,5 +20,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: net.eldm,
  net.eldm.eldmDsl,
  net.eldm.eldmDsl.util,
- net.eldm.eldmDsl.impl
+ net.eldm.eldmDsl.impl,
+ net.eldm.schDsl,
+ net.eldm.schDsl.util,
+ net.eldm.schDsl.impl
 Import-Package: org.apache.log4j

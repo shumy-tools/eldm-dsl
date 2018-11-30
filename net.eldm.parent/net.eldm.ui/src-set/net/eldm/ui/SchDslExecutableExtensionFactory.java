@@ -3,19 +3,18 @@
  */
 package net.eldm.ui;
 
+import com.google.inject.Injector;
+import net.eldm.ui.internal.EldmActivator;
+
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.xtext.ui.guice.AbstractGuiceAwareExecutableExtensionFactory;
 import org.osgi.framework.Bundle;
-
-import com.google.inject.Injector;
-
-import net.eldm.ui.internal.EldmActivator;
 
 /**
  * This class was generated. Customizations should only happen in a newly
  * introduced subclass.
  */
-public class EldmDslExecutableExtensionFactory extends AbstractGuiceAwareExecutableExtensionFactory {
+public class SchDslExecutableExtensionFactory extends AbstractGuiceAwareExecutableExtensionFactory {
     
     @Override
     protected Bundle getBundle() {
@@ -25,6 +24,7 @@ public class EldmDslExecutableExtensionFactory extends AbstractGuiceAwareExecuta
     @Override
     protected Injector getInjector() {
         EldmActivator activator = EldmActivator.getInstance();
-        return activator != null ? activator.getInjector(EldmActivator.NET_ELDM_ELDMDSL) : null;
+        return activator != null ? activator.getInjector(EldmActivator.NET_ELDM_SCHDSL) : null;
     }
+
 }
