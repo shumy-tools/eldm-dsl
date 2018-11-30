@@ -3,7 +3,7 @@
  */
 package net.eldm.core
 
-import net.eldm.EldmDslStandaloneSetupGenerated
+import net.eldm.core.EldmDslStandaloneSetupGenerated
 
 /**
  * Initialization support for running Xtext languages without Equinox extension registry.

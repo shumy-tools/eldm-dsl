@@ -23,7 +23,12 @@ public class CleanGen extends AbstractWorkflowComponent2 {
                 deleteDir(src, "./scoping");
                 deleteDir(src, "./validation");
                 deleteDir(src, "./parser");
-            
+                
+            final Path xtendgen = Paths.get("./xtend-gen/net/eldm/");
+                deleteDir(xtendgen, "./generator");
+                deleteDir(xtendgen, "./scoping");
+                deleteDir(xtendgen, "./validation");
+                
             final Path srcgen = Paths.get("./src-gen/net/eldm/");
                 deleteFile(srcgen,"AbstractEldmDslRuntimeModule.java");
                 deleteFile(srcgen,"EldmDslStandaloneSetupGenerated.java");

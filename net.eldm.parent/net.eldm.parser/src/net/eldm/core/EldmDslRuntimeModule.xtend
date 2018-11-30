@@ -3,7 +3,7 @@
  */
 package net.eldm.core
 
-import net.eldm.AbstractEldmDslRuntimeModule
+import net.eldm.core.AbstractEldmDslRuntimeModule
 
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
