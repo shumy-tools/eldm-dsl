@@ -48,18 +48,20 @@ class TypeValidator {
   
   def Object parse(PatternLiteral value) {
     try {
+      val tValue = value.text.substring(1, value.text.length - 1)
       switch value.native {
-        case 'str':  return value.text
-        case 'bool': return Boolean.parseBoolean(value.text)
-        case 'int':  return Long.parseLong(value.text)
-        case 'flt':  return Double.parseDouble(value.text)
-        case 'lda':  return LocalDate.parse(value.text)
-        case 'ltm':  return LocalTime.parse(value.text)
-        case 'ldt':  return LocalDateTime.parse(value.text)
-        case 'path': if (value.text.matches("/([a-z]|[0-9]|-)*)*")) return value.text //TODO: return a Path class!
+        case 'str':  return tValue
+        case 'bool': return Boolean.parseBoolean(tValue)
+        case 'int':  return Long.parseLong(tValue)
+        case 'flt':  return Double.parseDouble(tValue)
+        case 'lda':  return LocalDate.parse(tValue)
+        case 'ltm':  return LocalTime.parse(tValue)
+        case 'ldt':  return LocalDateTime.parse(tValue)
+        case 'path': if (tValue.matches("/([a-z]|[0-9]|-)*)*")) return tValue //TODO: return a Path class!
         default: return null
       }
     } catch (Throwable ex) {
+      ex.printStackTrace
       return null
     }
   }

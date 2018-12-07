@@ -98,6 +98,8 @@ class TestDefinition {
           }
         }
         
+        typedef Other { id: int, or = 10 }
+        
         typedef List ..{ id?: int, or = 10 }
         
         typedef ListRef {
@@ -106,9 +108,9 @@ class TestDefinition {
           list: List
         }
         
-        enum SEX { desc: str }:
-          M { desc: 'Male' }
-          F { desc: str@'Female' }
+        enum SEX { desc: str, other?: Other, list?: List }:
+          M { desc: str@'Male', list: [ { id: int@'10' }, { id: 5, or: 3 } ] }
+          F { desc: 'Female', other: { id: int@'10' } }
       
     ''')
   }
