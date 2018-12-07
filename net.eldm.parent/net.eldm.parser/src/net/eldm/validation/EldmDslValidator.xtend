@@ -3,14 +3,15 @@
  */
 package net.eldm.validation
 
+import com.google.inject.Inject
 import net.eldm.eldmDsl.EldmDslPackage
 import net.eldm.eldmDsl.EnumDef
 import net.eldm.eldmDsl.MapDef
 import net.eldm.eldmDsl.MapEntryDef
 import net.eldm.eldmDsl.TypeDef
+import net.eldm.parser.antlr.EldmDslParser
+import net.eldm.services.EldmDslGrammarAccess
 import org.eclipse.xtext.validation.Check
-
-import static extension net.eldm.TypeValidator.*
 
 /**
  * This class contains custom validation rules. 
@@ -18,6 +19,8 @@ import static extension net.eldm.TypeValidator.*
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
 class EldmDslValidator extends AbstractEldmDslValidator {
+  @Inject EldmDslParser eldmParser
+  @Inject EldmDslGrammarAccess eldmRules
   
   @Check
   def checkTypeDefCase(TypeDef it) {
@@ -44,8 +47,9 @@ class EldmDslValidator extends AbstractEldmDslValidator {
   
   @Check
   def void checkEnumDef(EnumDef ed) {
+    val tVal = new TypeValidator(eldmParser, eldmRules)
     ed.defs.forEach[
-      val msg = ed.type.isValidAssignment(value)
+      val msg = tVal.isValidAssignment(ed.type, value)
       if (msg !== null)
         error(msg, it, EldmDslPackage.Literals.ENUM_ITEM_DEF__VALUE)
     ]

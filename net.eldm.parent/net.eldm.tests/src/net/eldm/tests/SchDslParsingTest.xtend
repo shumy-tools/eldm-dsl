@@ -8,23 +8,39 @@ import net.eldm.schDsl.Model
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
 import org.eclipse.xtext.testing.util.ParseHelper
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
+
+import static extension net.eldm.tests.TestHelper.*
 
 @ExtendWith(InjectionExtension)
 @InjectWith(SchDslInjectorProvider)
 class SchDslParsingTest {
-  @Inject
-  ParseHelper<Model> parseHelper
+  @Inject ParseHelper<Model> ph
 
   @Test
-  def void loadModel() {
-    val result = parseHelper.parse('''
-      Hello Xtext!
+  def void testModel() {
+    ph.test('''
+      datatype String
+       
+      entity Blog {
+          title: String
+          many posts: Post
+      }
+       
+      entity HasAuthor {
+          author: String
+      }
+       
+      entity Post extends HasAuthor {
+          title: String
+          content: String
+          many comments: Comment
+      }
+       
+      entity Comment extends HasAuthor {
+          content: String
+      }
     ''')
-    Assertions.assertNotNull(result)
-    val errors = result.eResource.errors
-    Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
   }
 }

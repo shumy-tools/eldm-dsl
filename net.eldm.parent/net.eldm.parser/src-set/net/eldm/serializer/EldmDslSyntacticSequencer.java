@@ -23,11 +23,13 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 
 	protected EldmDslGrammarAccess grammarAccess;
 	protected AbstractElementAlias match_MapDef___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__;
+	protected AbstractElementAlias match_MapLiteral___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__;
 	
 	@Inject
 	protected void init(IGrammarAccess access) {
 		grammarAccess = (EldmDslGrammarAccess) access;
 		match_MapDef___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__ = new AlternativeAlias(false, false, new GroupAlias(false, false, new TokenAlias(false, false, grammarAccess.getMapDefAccess().getLeftCurlyBracketKeyword_0_0_1()), new TokenAlias(false, false, grammarAccess.getMapDefAccess().getRightCurlyBracketKeyword_0_0_3())), new GroupAlias(false, false, new TokenAlias(false, false, grammarAccess.getMapDefAccess().getLeftCurlyBracketKeyword_1_1()), new TokenAlias(false, false, grammarAccess.getMapDefAccess().getBEGINTerminalRuleCall_1_2()), new TokenAlias(false, false, grammarAccess.getMapDefAccess().getENDTerminalRuleCall_1_4()), new TokenAlias(false, false, grammarAccess.getMapDefAccess().getRightCurlyBracketKeyword_1_5())));
+		match_MapLiteral___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__ = new AlternativeAlias(false, false, new GroupAlias(false, false, new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getLeftCurlyBracketKeyword_0_0_1()), new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getRightCurlyBracketKeyword_0_0_3())), new GroupAlias(false, false, new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getLeftCurlyBracketKeyword_1_1()), new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getBEGINTerminalRuleCall_1_2()), new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getENDTerminalRuleCall_1_4()), new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getRightCurlyBracketKeyword_1_5())));
 	}
 	
 	@Override
@@ -38,8 +40,6 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 			return getBREAKToken(semanticObject, ruleCall, node);
 		else if (ruleCall.getRule() == grammarAccess.getENDRule())
 			return getENDToken(semanticObject, ruleCall, node);
-		else if (ruleCall.getRule() == grammarAccess.getTEXTRule())
-			return getTEXTToken(semanticObject, ruleCall, node);
 		return "";
 	}
 	
@@ -64,15 +64,6 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 	 */
 	protected String getENDToken(EObject semanticObject, RuleCall ruleCall, INode node) { return ""; }
 	
-	/**
-	 * terminal TEXT: "'" -> "'" | '"""' -> '"""';
-	 */
-	protected String getTEXTToken(EObject semanticObject, RuleCall ruleCall, INode node) {
-		if (node != null)
-			return getTokenText(node);
-		return "\'";
-	}
-	
 	@Override
 	protected void emitUnassignedTokens(EObject semanticObject, ISynTransition transition, INode fromNode, INode toNode) {
 		if (transition.getAmbiguousSyntaxes().isEmpty()) return;
@@ -81,6 +72,8 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 			List<INode> syntaxNodes = getNodesFor(transitionNodes, syntax);
 			if (match_MapDef___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__.equals(syntax))
 				emit_MapDef___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__(semanticObject, getLastNavigableState(), syntaxNodes);
+			else if (match_MapLiteral___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__.equals(syntax))
+				emit_MapLiteral___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__(semanticObject, getLastNavigableState(), syntaxNodes);
 			else acceptNodes(getLastNavigableState(), syntaxNodes);
 		}
 	}
@@ -93,6 +86,17 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     (rule start) (ambiguity) (rule start)
 	 */
 	protected void emit_MapDef___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
+		acceptNodes(transition, nodes);
+	}
+	
+	/**
+	 * Ambiguous syntax:
+	 *     ('{' '}') | ('{' BEGIN END '}')
+	 *
+	 * This ambiguous syntax occurs at:
+	 *     (rule start) (ambiguity) (rule start)
+	 */
+	protected void emit_MapLiteral___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
 		acceptNodes(transition, nodes);
 	}
 	

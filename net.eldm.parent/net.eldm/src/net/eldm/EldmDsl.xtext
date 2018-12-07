@@ -2,7 +2,6 @@ grammar net.eldm.EldmDsl hidden(WS, ML_COMMENT, SL_COMMENT)
 
 generate eldmDsl "http://www.eldm.net/EldmDsl"
 
-import "http://www.eclipse.org/xtext/common/JavaVMTypes"
 import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
 // ------------------------------------------------------------------------------------------------------------------------------
@@ -13,7 +12,7 @@ Module:
   (imports+=Import)*
   (plugs+=PlugDsl)*
   
-  ('defs'
+  ('definitions:'
   BEGIN
     (defs+=Definition)+
   END)?
@@ -30,22 +29,18 @@ Import:
   ImportOperation | ImportDefinition
 ;
 
-  ImportOperation:
-    name=Path 'from' module=ExternalModule
+  ImportOperation returns Import:
+    name=Path 'from' ref=Path
   ;
   
-  ImportDefinition:
-    (defs+=ExternalDef (',' defs+=ExternalDef)*) 'from' module=ExternalModule
+  ImportDefinition returns Import:
+    (defs+=ExternalDef (',' defs+=ExternalDef)*) 'from' ref=Path
   ;
   
     ExternalDef:
       (ref=ID ('as' name=ID)?) | =>name=ID //TODO: check-if is a valid reference to a Definition ID
     ;
     
-    ExternalModule:
-      ref=Path | (javaRef=[JvmDeclaredType|QualifiedNameInStaticImport] '*')
-    ;
-
 // ------------------------------------------------------------------------------------------------------------------------------
 // Operations
 // ------------------------------------------------------------------------------------------------------------------------------
@@ -97,7 +92,7 @@ MapExpression:
 // ------------------------------------------------------------------------------------------------------------------------------
 // Type Definitions
 // ------------------------------------------------------------------------------------------------------------------------------
-Definition: //TODO: create Java annotations to define these
+Definition:
   TypeDef | EnumDef | ExternalDef
 ;
 
@@ -111,7 +106,7 @@ Definition: //TODO: create Java annotations to define these
   EnumDef:
     'enum' name=ID type=MapDef ':'
     BEGIN
-      (defs+=EnumItemDef)+ //TODO: check-if MapLiteral is-assignable-to MapDef of EnumDef
+      (defs+=EnumItemDef)+
     END
   ;
   
@@ -160,14 +155,10 @@ ElementTypeDef:
 // Literals
 // ------------------------------------------------------------------------------------------------------------------------------
 Literal:
-  NullLiteral
-  | BoolLiteral
+  BoolLiteral
   | StrLiteral
   | IntLiteral
   | FltLiteral
-  | DateLiteral
-  | TimeLiteral
-  | DateTimeLiteral
   
   | ListLiteral
   | MapLiteral
@@ -175,23 +166,23 @@ Literal:
   | PatternLiteral
   | path=Path
 ;
-
-  NullLiteral: {NullLiteral} 'null';
+  
   BoolLiteral: {BoolLiteral} ('false' | isTrue?='true');
   StrLiteral: value=TEXT;
   IntLiteral: value=NATURAL;
   FltLiteral: value=FLOAT;
-  DateLiteral: 'lda@' value=TEXT;
-  TimeLiteral: 'ltm@' value=TEXT;
-  DateTimeLiteral: 'ldt@' value=TEXT;
-
   
   ListLiteral: {ListLiteral}
     '[' (vals+=Literal (',' vals+=Literal)*)? ']'
   ;
   
-  MapLiteral: {MapLiteral}
-    '{' (entries+=MapEntryLiteral (',' entries+=MapEntryLiteral)*)? '}'
+  MapLiteral:
+    => ({MapLiteral} '{' (entries+=MapEntryLiteral (',' entries+=MapEntryLiteral)*)? '}')
+    | ({MapLiteral} '{'
+    BEGIN
+      (entries+=MapEntryLiteral ( BREAK entries+=MapEntryLiteral)*)?
+    END
+    '}')
   ;
   
     MapEntryLiteral:
@@ -203,12 +194,10 @@ Literal:
   ;
   
   PatternLiteral: {PatternLiteral}
-    (ref=[ValueDef])? '@'TEXT //TODO: check-if STRING is-assignable-to TypeDef
+    (native=NativeDef | ref=[Definition]) '@' text=TEXT
   ;
 
 Path: PID =>PID*;
-QualifiedNameInStaticImport: (ID '.')+;
-
 BREAK: ('\n'|'\r')*;
 
 // ------------------------------------------------------------------------------------------------------------------------------
@@ -223,11 +212,6 @@ terminal ID : '^'? ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'-'|'_'|'0'..'9')*
 terminal INT    : ('0'..'9')+;
 terminal NATURAL: '-'? INT;
 terminal FLOAT  : NATURAL ('.' INT)?;
-
-/*terminal STRING:
-  '"' ( '\\' . | !('\\'|'"') )* '"'
-  | '"""' -> '"""';
-*/
 
 terminal TEXT: "'" -> "'" | '"""' -> '"""';
 

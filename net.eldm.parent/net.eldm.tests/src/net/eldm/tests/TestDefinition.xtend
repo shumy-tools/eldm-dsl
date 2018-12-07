@@ -14,13 +14,13 @@ import static extension net.eldm.tests.TestHelper.*
 @InjectWith(EldmDslInjectorProvider)
 class TestDefinition {
   @Inject ParseHelper<Module> ph
-
+  
   @Test
   def void testNonExistentType() {
     ph.testExpectedError('''
       module /test
       
-      defs
+      definitions:
         typedef Subject { id: int, name: no-type }
       
     ''', "Couldn't resolve reference to Definition 'no-type'.")
@@ -31,7 +31,7 @@ class TestDefinition {
     ph.testExpectedError('''
       module /test
       
-      defs
+      definitions:
         typedef Subject { id?: int, id: str, name: str }
       
     ''', "Multiple keys with the same name.")
@@ -42,12 +42,12 @@ class TestDefinition {
     ph.testExpectedError('''
       module /test
       
-      defs
+      definitions:
         enum SEX { desc: str }:
           M { desc: 10 }
           F { desc: 'Female' }
       
-    ''', "Value not assignable to type.")
+    ''', "Native value not assignable to type 'str'.")
   }
   
   @Test
@@ -55,7 +55,7 @@ class TestDefinition {
     ph.testExpectedError('''
       module /test
       
-      defs
+      definitions:
         enum SEX { desc: str }:
           M { des: 'Male' }
           F { desc: 'Female' }
@@ -68,7 +68,7 @@ class TestDefinition {
     ph.testExpectedError('''
       module /test
       
-      defs
+      definitions:
         enum SEX { id: int, desc: str }:
           M { id: 10, desc: 'Male' }
           F { desc: 'Female' }
@@ -81,7 +81,7 @@ class TestDefinition {
     ph.test('''
       module /test
       
-      defs
+      definitions:
         typedef date-ptr mask '####-##-##'
         typedef email regex '[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}'
         
@@ -108,7 +108,7 @@ class TestDefinition {
         
         enum SEX { desc: str }:
           M { desc: 'Male' }
-          F { desc: 'Female' }
+          F { desc: str@'Female' }
       
     ''')
   }

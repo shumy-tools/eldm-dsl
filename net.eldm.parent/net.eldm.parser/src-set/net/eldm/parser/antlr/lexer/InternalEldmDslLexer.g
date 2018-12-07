@@ -11,6 +11,8 @@ package net.eldm.parser.antlr.lexer;
 import org.eclipse.xtext.parser.antlr.Lexer;
 }
 
+Definitions : 'definitions:';
+
 Test10 : '{test:10}';
 
 PlugDsl : 'plug-dsl';
@@ -33,21 +35,11 @@ Regex : 'regex';
 
 Bool : 'bool';
 
-Defs : 'defs';
-
 Enum : 'enum';
 
 From : 'from';
 
-Lda_1 : 'lda@';
-
-Ldt_1 : 'ldt@';
-
-Ltm_1 : 'ltm@';
-
 Mask : 'mask';
-
-Null : 'null';
 
 Path : 'path';
 
@@ -91,11 +83,7 @@ CarriageReturn : '\r';
 
 RightParenthesis : ')';
 
-Asterisk : '*';
-
 Comma : ',';
-
-FullStop : '.';
 
 Colon : ':';
 

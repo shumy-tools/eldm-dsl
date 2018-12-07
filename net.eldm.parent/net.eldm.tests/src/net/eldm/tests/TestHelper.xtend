@@ -1,6 +1,5 @@
 package net.eldm.tests
 
-import net.eldm.eldmDsl.Module
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.resource.XtextResource
 import org.eclipse.xtext.testing.util.ParseHelper
@@ -15,31 +14,31 @@ class TestHelper {
     return validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl)
   }
   
-  static def void test(ParseHelper<Module> ph, CharSequence code) {
+  static def void test(ParseHelper<?> ph, CharSequence code) {
     val it = ph.parse(code)
     assertNotNull(it)
-    assertNotNull(name)
-    assertTrue(!name.empty)
     
     val errors = validate(eResource)
     assertTrue(errors.empty, '''Unexpected errors: «errors.map[message].join(", ")»''')
   }
   
-  static def void testError(ParseHelper<Module> ph, CharSequence code) {
+  static def void testError(ParseHelper<?> ph, CharSequence code) {
     val it = ph.parse(code)
     assertNotNull(it)
     
     val issues = validate(eResource)
-    assertTrue(!issues.empty, '''Expected errors, but no errors found!''')
+    assertTrue(!issues.empty, '''Expecting errors, but no errors returned!''')
   }
   
-  static def void testExpectedError(ParseHelper<Module> ph, CharSequence code, String msg) {
+  static def void testExpectedError(ParseHelper<?> ph, CharSequence code, String msg) {
     val it = ph.parse(code)
     assertNotNull(it)
     
     val issues = validate(eResource)
     val expected = issues.filter[message == msg]
+    val unexpected = issues.filter[message != msg]
     
-    assertTrue(!expected.empty, '''No expected errors of type: «msg»''')
+    assertTrue(unexpected.empty, '''Unexpected errors of type: «unexpected.map[message].join(", ")»''')
+    assertTrue(!expected.empty, '''Expecting errors of type: «msg»''')
   }
 }
