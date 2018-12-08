@@ -894,20 +894,11 @@ ruleDefinition returns [EObject current=null]
 		}
 		    |
 		{
-			newCompositeNode(grammarAccess.getDefinitionAccess().getEnumDefParserRuleCall_1());
+			newCompositeNode(grammarAccess.getDefinitionAccess().getExternalDefParserRuleCall_1());
 		}
-		this_EnumDef_1=ruleEnumDef
+		this_ExternalDef_1=ruleExternalDef
 		{
-			$current = $this_EnumDef_1.current;
-			afterParserOrEnumRuleCall();
-		}
-		    |
-		{
-			newCompositeNode(grammarAccess.getDefinitionAccess().getExternalDefParserRuleCall_2());
-		}
-		this_ExternalDef_2=ruleExternalDef
-		{
-			$current = $this_ExternalDef_2.current;
+			$current = $this_ExternalDef_1.current;
 			afterParserOrEnumRuleCall();
 		}
 	)
@@ -1034,153 +1025,6 @@ ruleTypeDef returns [EObject current=null]
 	)
 ;
 
-// Entry rule entryRuleEnumDef
-entryRuleEnumDef returns [EObject current=null]:
-	{ newCompositeNode(grammarAccess.getEnumDefRule()); }
-	iv_ruleEnumDef=ruleEnumDef
-	{ $current=$iv_ruleEnumDef.current; }
-	EOF;
-
-// Rule EnumDef
-ruleEnumDef returns [EObject current=null]
-@init {
-	enterRule();
-}
-@after {
-	leaveRule();
-}:
-	(
-		otherlv_0=Enum
-		{
-			newLeafNode(otherlv_0, grammarAccess.getEnumDefAccess().getEnumKeyword_0());
-		}
-		(
-			(
-				lv_name_1_0=RULE_ID
-				{
-					newLeafNode(lv_name_1_0, grammarAccess.getEnumDefAccess().getNameIDTerminalRuleCall_1_0());
-				}
-				{
-					if ($current==null) {
-						$current = createModelElement(grammarAccess.getEnumDefRule());
-					}
-					setWithLastConsumed(
-						$current,
-						"name",
-						lv_name_1_0,
-						"net.eldm.EldmDsl.ID");
-				}
-			)
-		)
-		(
-			(
-				{
-					newCompositeNode(grammarAccess.getEnumDefAccess().getTypeMapDefParserRuleCall_2_0());
-				}
-				lv_type_2_0=ruleMapDef
-				{
-					if ($current==null) {
-						$current = createModelElementForParent(grammarAccess.getEnumDefRule());
-					}
-					set(
-						$current,
-						"type",
-						lv_type_2_0,
-						"net.eldm.EldmDsl.MapDef");
-					afterParserOrEnumRuleCall();
-				}
-			)
-		)
-		otherlv_3=Colon
-		{
-			newLeafNode(otherlv_3, grammarAccess.getEnumDefAccess().getColonKeyword_3());
-		}
-		this_BEGIN_4=RULE_BEGIN
-		{
-			newLeafNode(this_BEGIN_4, grammarAccess.getEnumDefAccess().getBEGINTerminalRuleCall_4());
-		}
-		(
-			(
-				{
-					newCompositeNode(grammarAccess.getEnumDefAccess().getDefsEnumItemDefParserRuleCall_5_0());
-				}
-				lv_defs_5_0=ruleEnumItemDef
-				{
-					if ($current==null) {
-						$current = createModelElementForParent(grammarAccess.getEnumDefRule());
-					}
-					add(
-						$current,
-						"defs",
-						lv_defs_5_0,
-						"net.eldm.EldmDsl.EnumItemDef");
-					afterParserOrEnumRuleCall();
-				}
-			)
-		)+
-		this_END_6=RULE_END
-		{
-			newLeafNode(this_END_6, grammarAccess.getEnumDefAccess().getENDTerminalRuleCall_6());
-		}
-	)
-;
-
-// Entry rule entryRuleEnumItemDef
-entryRuleEnumItemDef returns [EObject current=null]:
-	{ newCompositeNode(grammarAccess.getEnumItemDefRule()); }
-	iv_ruleEnumItemDef=ruleEnumItemDef
-	{ $current=$iv_ruleEnumItemDef.current; }
-	EOF;
-
-// Rule EnumItemDef
-ruleEnumItemDef returns [EObject current=null]
-@init {
-	enterRule();
-}
-@after {
-	leaveRule();
-}:
-	(
-		(
-			(
-				lv_name_0_0=RULE_ID
-				{
-					newLeafNode(lv_name_0_0, grammarAccess.getEnumItemDefAccess().getNameIDTerminalRuleCall_0_0());
-				}
-				{
-					if ($current==null) {
-						$current = createModelElement(grammarAccess.getEnumItemDefRule());
-					}
-					setWithLastConsumed(
-						$current,
-						"name",
-						lv_name_0_0,
-						"net.eldm.EldmDsl.ID");
-				}
-			)
-		)
-		(
-			(
-				{
-					newCompositeNode(grammarAccess.getEnumItemDefAccess().getValueMapLiteralParserRuleCall_1_0());
-				}
-				lv_value_1_0=ruleMapLiteral
-				{
-					if ($current==null) {
-						$current = createModelElementForParent(grammarAccess.getEnumItemDefRule());
-					}
-					set(
-						$current,
-						"value",
-						lv_value_1_0,
-						"net.eldm.EldmDsl.MapLiteral");
-					afterParserOrEnumRuleCall();
-				}
-			)
-		)
-	)
-;
-
 // Entry rule entryRuleElementTypeDef
 entryRuleElementTypeDef returns [EObject current=null]:
 	{ newCompositeNode(grammarAccess.getElementTypeDefRule()); }
@@ -1273,6 +1117,15 @@ ruleValueDef returns [EObject current=null]
 		this_MapDef_2=ruleMapDef
 		{
 			$current = $this_MapDef_2.current;
+			afterParserOrEnumRuleCall();
+		}
+		    |
+		{
+			newCompositeNode(grammarAccess.getValueDefAccess().getEnumDefParserRuleCall_3());
+		}
+		this_EnumDef_3=ruleEnumDef
+		{
+			$current = $this_EnumDef_3.current;
 			afterParserOrEnumRuleCall();
 		}
 	)
@@ -1615,6 +1468,135 @@ ruleListDef returns [EObject current=null]
 						"type",
 						lv_type_2_0,
 						"net.eldm.EldmDsl.ElementTypeDef");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)
+	)
+;
+
+// Entry rule entryRuleEnumDef
+entryRuleEnumDef returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getEnumDefRule()); }
+	iv_ruleEnumDef=ruleEnumDef
+	{ $current=$iv_ruleEnumDef.current; }
+	EOF;
+
+// Rule EnumDef
+ruleEnumDef returns [EObject current=null]
+@init {
+	enterRule();
+}
+@after {
+	leaveRule();
+}:
+	(
+		otherlv_0=Enum
+		{
+			newLeafNode(otherlv_0, grammarAccess.getEnumDefAccess().getEnumKeyword_0());
+		}
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getEnumDefAccess().getTypeMapDefParserRuleCall_1_0());
+				}
+				lv_type_1_0=ruleMapDef
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getEnumDefRule());
+					}
+					set(
+						$current,
+						"type",
+						lv_type_1_0,
+						"net.eldm.EldmDsl.MapDef");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)
+		otherlv_2=Colon
+		{
+			newLeafNode(otherlv_2, grammarAccess.getEnumDefAccess().getColonKeyword_2());
+		}
+		this_BEGIN_3=RULE_BEGIN
+		{
+			newLeafNode(this_BEGIN_3, grammarAccess.getEnumDefAccess().getBEGINTerminalRuleCall_3());
+		}
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getEnumDefAccess().getDefsEnumItemDefParserRuleCall_4_0());
+				}
+				lv_defs_4_0=ruleEnumItemDef
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getEnumDefRule());
+					}
+					add(
+						$current,
+						"defs",
+						lv_defs_4_0,
+						"net.eldm.EldmDsl.EnumItemDef");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)+
+		this_END_5=RULE_END
+		{
+			newLeafNode(this_END_5, grammarAccess.getEnumDefAccess().getENDTerminalRuleCall_5());
+		}
+	)
+;
+
+// Entry rule entryRuleEnumItemDef
+entryRuleEnumItemDef returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getEnumItemDefRule()); }
+	iv_ruleEnumItemDef=ruleEnumItemDef
+	{ $current=$iv_ruleEnumItemDef.current; }
+	EOF;
+
+// Rule EnumItemDef
+ruleEnumItemDef returns [EObject current=null]
+@init {
+	enterRule();
+}
+@after {
+	leaveRule();
+}:
+	(
+		(
+			(
+				lv_name_0_0=RULE_ID
+				{
+					newLeafNode(lv_name_0_0, grammarAccess.getEnumItemDefAccess().getNameIDTerminalRuleCall_0_0());
+				}
+				{
+					if ($current==null) {
+						$current = createModelElement(grammarAccess.getEnumItemDefRule());
+					}
+					setWithLastConsumed(
+						$current,
+						"name",
+						lv_name_0_0,
+						"net.eldm.EldmDsl.ID");
+				}
+			)
+		)
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getEnumItemDefAccess().getValueMapLiteralParserRuleCall_1_0());
+				}
+				lv_value_1_0=ruleMapLiteral
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getEnumItemDefRule());
+					}
+					set(
+						$current,
+						"value",
+						lv_value_1_0,
+						"net.eldm.EldmDsl.MapLiteral");
 					afterParserOrEnumRuleCall();
 				}
 			)

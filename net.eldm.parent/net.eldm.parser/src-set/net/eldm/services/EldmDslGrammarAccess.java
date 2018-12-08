@@ -667,28 +667,24 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.Definition");
 		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
 		private final RuleCall cTypeDefParserRuleCall_0 = (RuleCall)cAlternatives.eContents().get(0);
-		private final RuleCall cEnumDefParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
-		private final RuleCall cExternalDefParserRuleCall_2 = (RuleCall)cAlternatives.eContents().get(2);
+		private final RuleCall cExternalDefParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
 		
 		//// LiteralExpression //TODO: use for default params
 		//// ------------------------------------------------------------------------------------------------------------------------------
 		//// Type Definitions
 		//// ------------------------------------------------------------------------------------------------------------------------------
 		//Definition:
-		//	TypeDef | EnumDef | ExternalDef;
+		//	TypeDef | ExternalDef;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//TypeDef | EnumDef | ExternalDef
+		//TypeDef | ExternalDef
 		public Alternatives getAlternatives() { return cAlternatives; }
 		
 		//TypeDef
 		public RuleCall getTypeDefParserRuleCall_0() { return cTypeDefParserRuleCall_0; }
 		
-		//EnumDef
-		public RuleCall getEnumDefParserRuleCall_1() { return cEnumDefParserRuleCall_1; }
-		
 		//ExternalDef
-		public RuleCall getExternalDefParserRuleCall_2() { return cExternalDefParserRuleCall_2; }
+		public RuleCall getExternalDefParserRuleCall_1() { return cExternalDefParserRuleCall_1; }
 	}
 	public class TypeDefElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.TypeDef");
@@ -756,87 +752,6 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		
 		//ValueDef
 		public RuleCall getTypeValueDefParserRuleCall_2_1_0() { return cTypeValueDefParserRuleCall_2_1_0; }
-	}
-	public class EnumDefElements extends AbstractParserRuleElementFinder {
-		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.EnumDef");
-		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final Keyword cEnumKeyword_0 = (Keyword)cGroup.eContents().get(0);
-		private final Assignment cNameAssignment_1 = (Assignment)cGroup.eContents().get(1);
-		private final RuleCall cNameIDTerminalRuleCall_1_0 = (RuleCall)cNameAssignment_1.eContents().get(0);
-		private final Assignment cTypeAssignment_2 = (Assignment)cGroup.eContents().get(2);
-		private final RuleCall cTypeMapDefParserRuleCall_2_0 = (RuleCall)cTypeAssignment_2.eContents().get(0);
-		private final Keyword cColonKeyword_3 = (Keyword)cGroup.eContents().get(3);
-		private final RuleCall cBEGINTerminalRuleCall_4 = (RuleCall)cGroup.eContents().get(4);
-		private final Assignment cDefsAssignment_5 = (Assignment)cGroup.eContents().get(5);
-		private final RuleCall cDefsEnumItemDefParserRuleCall_5_0 = (RuleCall)cDefsAssignment_5.eContents().get(0);
-		private final RuleCall cENDTerminalRuleCall_6 = (RuleCall)cGroup.eContents().get(6);
-		
-		//EnumDef:
-		//	'enum' name=ID type=MapDef ':'
-		//	BEGIN
-		//	defs+=EnumItemDef+
-		//	END;
-		@Override public ParserRule getRule() { return rule; }
-		
-		//'enum' name=ID type=MapDef ':' BEGIN defs+=EnumItemDef+ END
-		public Group getGroup() { return cGroup; }
-		
-		//'enum'
-		public Keyword getEnumKeyword_0() { return cEnumKeyword_0; }
-		
-		//name=ID
-		public Assignment getNameAssignment_1() { return cNameAssignment_1; }
-		
-		//ID
-		public RuleCall getNameIDTerminalRuleCall_1_0() { return cNameIDTerminalRuleCall_1_0; }
-		
-		//type=MapDef
-		public Assignment getTypeAssignment_2() { return cTypeAssignment_2; }
-		
-		//MapDef
-		public RuleCall getTypeMapDefParserRuleCall_2_0() { return cTypeMapDefParserRuleCall_2_0; }
-		
-		//':'
-		public Keyword getColonKeyword_3() { return cColonKeyword_3; }
-		
-		//BEGIN
-		public RuleCall getBEGINTerminalRuleCall_4() { return cBEGINTerminalRuleCall_4; }
-		
-		//defs+=EnumItemDef+
-		public Assignment getDefsAssignment_5() { return cDefsAssignment_5; }
-		
-		//EnumItemDef
-		public RuleCall getDefsEnumItemDefParserRuleCall_5_0() { return cDefsEnumItemDefParserRuleCall_5_0; }
-		
-		//END
-		public RuleCall getENDTerminalRuleCall_6() { return cENDTerminalRuleCall_6; }
-	}
-	public class EnumItemDefElements extends AbstractParserRuleElementFinder {
-		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.EnumItemDef");
-		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final Assignment cNameAssignment_0 = (Assignment)cGroup.eContents().get(0);
-		private final RuleCall cNameIDTerminalRuleCall_0_0 = (RuleCall)cNameAssignment_0.eContents().get(0);
-		private final Assignment cValueAssignment_1 = (Assignment)cGroup.eContents().get(1);
-		private final RuleCall cValueMapLiteralParserRuleCall_1_0 = (RuleCall)cValueAssignment_1.eContents().get(0);
-		
-		//EnumItemDef:
-		//	name=ID value=MapLiteral;
-		@Override public ParserRule getRule() { return rule; }
-		
-		//name=ID value=MapLiteral
-		public Group getGroup() { return cGroup; }
-		
-		//name=ID
-		public Assignment getNameAssignment_0() { return cNameAssignment_0; }
-		
-		//ID
-		public RuleCall getNameIDTerminalRuleCall_0_0() { return cNameIDTerminalRuleCall_0_0; }
-		
-		//value=MapLiteral
-		public Assignment getValueAssignment_1() { return cValueAssignment_1; }
-		
-		//MapLiteral
-		public RuleCall getValueMapLiteralParserRuleCall_1_0() { return cValueMapLiteralParserRuleCall_1_0; }
 	}
 	public class LambdaDefElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.LambdaDef");
@@ -916,14 +831,16 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cNativeNativeDefParserRuleCall_0_0 = (RuleCall)cNativeAssignment_0.eContents().get(0);
 		private final RuleCall cListDefParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
 		private final RuleCall cMapDefParserRuleCall_2 = (RuleCall)cAlternatives.eContents().get(2);
+		private final RuleCall cEnumDefParserRuleCall_3 = (RuleCall)cAlternatives.eContents().get(3);
 		
 		//ValueDef:
 		//	native=NativeDef
 		//	| ListDef
-		//	| MapDef;
+		//	| MapDef
+		//	| EnumDef;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//native=NativeDef | ListDef | MapDef
+		//native=NativeDef | ListDef | MapDef | EnumDef
 		public Alternatives getAlternatives() { return cAlternatives; }
 		
 		//native=NativeDef
@@ -937,6 +854,9 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		
 		//MapDef
 		public RuleCall getMapDefParserRuleCall_2() { return cMapDefParserRuleCall_2; }
+		
+		//EnumDef
+		public RuleCall getEnumDefParserRuleCall_3() { return cEnumDefParserRuleCall_3; }
 	}
 	public class MapDefElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.MapDef");
@@ -1147,6 +1067,79 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		
 		//ElementTypeDef
 		public RuleCall getTypeElementTypeDefParserRuleCall_2_0() { return cTypeElementTypeDefParserRuleCall_2_0; }
+	}
+	public class EnumDefElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.EnumDef");
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Keyword cEnumKeyword_0 = (Keyword)cGroup.eContents().get(0);
+		private final Assignment cTypeAssignment_1 = (Assignment)cGroup.eContents().get(1);
+		private final RuleCall cTypeMapDefParserRuleCall_1_0 = (RuleCall)cTypeAssignment_1.eContents().get(0);
+		private final Keyword cColonKeyword_2 = (Keyword)cGroup.eContents().get(2);
+		private final RuleCall cBEGINTerminalRuleCall_3 = (RuleCall)cGroup.eContents().get(3);
+		private final Assignment cDefsAssignment_4 = (Assignment)cGroup.eContents().get(4);
+		private final RuleCall cDefsEnumItemDefParserRuleCall_4_0 = (RuleCall)cDefsAssignment_4.eContents().get(0);
+		private final RuleCall cENDTerminalRuleCall_5 = (RuleCall)cGroup.eContents().get(5);
+		
+		//EnumDef:
+		//	'enum' type=MapDef ':'
+		//	BEGIN
+		//	defs+=EnumItemDef+
+		//	END;
+		@Override public ParserRule getRule() { return rule; }
+		
+		//'enum' type=MapDef ':' BEGIN defs+=EnumItemDef+ END
+		public Group getGroup() { return cGroup; }
+		
+		//'enum'
+		public Keyword getEnumKeyword_0() { return cEnumKeyword_0; }
+		
+		//type=MapDef
+		public Assignment getTypeAssignment_1() { return cTypeAssignment_1; }
+		
+		//MapDef
+		public RuleCall getTypeMapDefParserRuleCall_1_0() { return cTypeMapDefParserRuleCall_1_0; }
+		
+		//':'
+		public Keyword getColonKeyword_2() { return cColonKeyword_2; }
+		
+		//BEGIN
+		public RuleCall getBEGINTerminalRuleCall_3() { return cBEGINTerminalRuleCall_3; }
+		
+		//defs+=EnumItemDef+
+		public Assignment getDefsAssignment_4() { return cDefsAssignment_4; }
+		
+		//EnumItemDef
+		public RuleCall getDefsEnumItemDefParserRuleCall_4_0() { return cDefsEnumItemDefParserRuleCall_4_0; }
+		
+		//END
+		public RuleCall getENDTerminalRuleCall_5() { return cENDTerminalRuleCall_5; }
+	}
+	public class EnumItemDefElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.EnumItemDef");
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Assignment cNameAssignment_0 = (Assignment)cGroup.eContents().get(0);
+		private final RuleCall cNameIDTerminalRuleCall_0_0 = (RuleCall)cNameAssignment_0.eContents().get(0);
+		private final Assignment cValueAssignment_1 = (Assignment)cGroup.eContents().get(1);
+		private final RuleCall cValueMapLiteralParserRuleCall_1_0 = (RuleCall)cValueAssignment_1.eContents().get(0);
+		
+		//EnumItemDef:
+		//	name=ID value=MapLiteral;
+		@Override public ParserRule getRule() { return rule; }
+		
+		//name=ID value=MapLiteral
+		public Group getGroup() { return cGroup; }
+		
+		//name=ID
+		public Assignment getNameAssignment_0() { return cNameAssignment_0; }
+		
+		//ID
+		public RuleCall getNameIDTerminalRuleCall_0_0() { return cNameIDTerminalRuleCall_0_0; }
+		
+		//value=MapLiteral
+		public Assignment getValueAssignment_1() { return cValueAssignment_1; }
+		
+		//MapLiteral
+		public RuleCall getValueMapLiteralParserRuleCall_1_0() { return cValueMapLiteralParserRuleCall_1_0; }
 	}
 	public class NativeDefElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.NativeDef");
@@ -1693,14 +1686,14 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	private final MapExpressionElements pMapExpression;
 	private final DefinitionElements pDefinition;
 	private final TypeDefElements pTypeDef;
-	private final EnumDefElements pEnumDef;
-	private final EnumItemDefElements pEnumItemDef;
 	private final LambdaDefElements pLambdaDef;
 	private final ElementTypeDefElements pElementTypeDef;
 	private final ValueDefElements pValueDef;
 	private final MapDefElements pMapDef;
 	private final MapEntryDefElements pMapEntryDef;
 	private final ListDefElements pListDef;
+	private final EnumDefElements pEnumDef;
+	private final EnumItemDefElements pEnumItemDef;
 	private final NativeDefElements pNativeDef;
 	private final LiteralElements pLiteral;
 	private final BoolLiteralElements pBoolLiteral;
@@ -1749,14 +1742,14 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		this.pMapExpression = new MapExpressionElements();
 		this.pDefinition = new DefinitionElements();
 		this.pTypeDef = new TypeDefElements();
-		this.pEnumDef = new EnumDefElements();
-		this.pEnumItemDef = new EnumItemDefElements();
 		this.pLambdaDef = new LambdaDefElements();
 		this.pElementTypeDef = new ElementTypeDefElements();
 		this.pValueDef = new ValueDefElements();
 		this.pMapDef = new MapDefElements();
 		this.pMapEntryDef = new MapEntryDefElements();
 		this.pListDef = new ListDefElements();
+		this.pEnumDef = new EnumDefElements();
+		this.pEnumItemDef = new EnumItemDefElements();
 		this.pNativeDef = new NativeDefElements();
 		this.pLiteral = new LiteralElements();
 		this.pBoolLiteral = new BoolLiteralElements();
@@ -1977,7 +1970,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	//// Type Definitions
 	//// ------------------------------------------------------------------------------------------------------------------------------
 	//Definition:
-	//	TypeDef | EnumDef | ExternalDef;
+	//	TypeDef | ExternalDef;
 	public DefinitionElements getDefinitionAccess() {
 		return pDefinition;
 	}
@@ -1994,29 +1987,6 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	
 	public ParserRule getTypeDefRule() {
 		return getTypeDefAccess().getRule();
-	}
-	
-	//EnumDef:
-	//	'enum' name=ID type=MapDef ':'
-	//	BEGIN
-	//	defs+=EnumItemDef+
-	//	END;
-	public EnumDefElements getEnumDefAccess() {
-		return pEnumDef;
-	}
-	
-	public ParserRule getEnumDefRule() {
-		return getEnumDefAccess().getRule();
-	}
-	
-	//EnumItemDef:
-	//	name=ID value=MapLiteral;
-	public EnumItemDefElements getEnumItemDefAccess() {
-		return pEnumItemDef;
-	}
-	
-	public ParserRule getEnumItemDefRule() {
-		return getEnumItemDefAccess().getRule();
 	}
 	
 	//LambdaDef:
@@ -2043,7 +2013,8 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	//ValueDef:
 	//	native=NativeDef
 	//	| ListDef
-	//	| MapDef;
+	//	| MapDef
+	//	| EnumDef;
 	public ValueDefElements getValueDefAccess() {
 		return pValueDef;
 	}
@@ -2084,6 +2055,29 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	
 	public ParserRule getListDefRule() {
 		return getListDefAccess().getRule();
+	}
+	
+	//EnumDef:
+	//	'enum' type=MapDef ':'
+	//	BEGIN
+	//	defs+=EnumItemDef+
+	//	END;
+	public EnumDefElements getEnumDefAccess() {
+		return pEnumDef;
+	}
+	
+	public ParserRule getEnumDefRule() {
+		return getEnumDefAccess().getRule();
+	}
+	
+	//EnumItemDef:
+	//	name=ID value=MapLiteral;
+	public EnumItemDefElements getEnumItemDefAccess() {
+		return pEnumItemDef;
+	}
+	
+	public ParserRule getEnumItemDefRule() {
+		return getEnumItemDefAccess().getRule();
 	}
 	
 	//NativeDef:

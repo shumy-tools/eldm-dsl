@@ -4,6 +4,7 @@
 package net.eldm.validation
 
 import com.google.inject.Inject
+import net.eldm.core.EldmInlineParser
 import net.eldm.eldmDsl.EldmDslPackage
 import net.eldm.eldmDsl.EnumDef
 import net.eldm.eldmDsl.MapDef
@@ -47,7 +48,8 @@ class EldmDslValidator extends AbstractEldmDslValidator {
   
   @Check
   def void checkEnumDef(EnumDef ed) {
-    val tVal = new TypeValidator(eldmParser, eldmRules)
+    val iParser = new EldmInlineParser(eldmParser, eldmRules)
+    val tVal = new TypeValidator(iParser)
     ed.defs.forEach[
       val msg = tVal.isValidAssignment(ed.type, value)
       if (msg !== null)

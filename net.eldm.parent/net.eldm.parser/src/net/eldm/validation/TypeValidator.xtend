@@ -1,9 +1,6 @@
 package net.eldm.validation
 
-import java.io.StringReader
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
+import net.eldm.core.EldmInlineParser
 import net.eldm.eldmDsl.BoolLiteral
 import net.eldm.eldmDsl.Definition
 import net.eldm.eldmDsl.EldmDslFactory
@@ -20,18 +17,14 @@ import net.eldm.eldmDsl.MapDef
 import net.eldm.eldmDsl.MapEntryDef
 import net.eldm.eldmDsl.MapEntryLiteral
 import net.eldm.eldmDsl.MapLiteral
-import net.eldm.eldmDsl.PatternLiteral
 import net.eldm.eldmDsl.StrLiteral
 import net.eldm.eldmDsl.TypeDef
 import net.eldm.eldmDsl.ValueDef
-import net.eldm.parser.antlr.EldmDslParser
-import net.eldm.services.EldmDslGrammarAccess
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 
 @FinalFieldsConstructor
 class TypeValidator {
-  val EldmDslParser eldmParser
-  val EldmDslGrammarAccess eldmRules
+  val extension EldmInlineParser iParser
   
   def contains(MapLiteral obj, MapEntryDef type) {
     for (entry : obj.entries)
@@ -44,66 +37,6 @@ class TypeValidator {
     for (it : type.defs)
       if (name == entry.name)
         return it
-    return null
-  }
-  
-  // inline parsers ----------------------------------------------------------
-  def Object parseNative(PatternLiteral value) {
-    try {
-      val text = value.extractText
-      switch value.native {
-        case 'str':  return text
-        case 'bool': return Boolean.parseBoolean(text)
-        case 'int':  return Long.parseLong(text)
-        case 'flt':  return Double.parseDouble(text)
-        case 'lda':  return LocalDate.parse(text)
-        case 'ltm':  return LocalTime.parse(text)
-        case 'ldt':  return LocalDateTime.parse(text)
-        
-        case 'path': if (text.matches("/([a-z]|[0-9]|-)*)*")) return text //TODO: return a Path class!
-        case 'map': return eldmParser.parse(eldmRules.mapLiteralRule, new StringReader(text)).rootASTElement as MapLiteral
-        case 'lst': return eldmParser.parse(eldmRules.listLiteralRule, new StringReader(text)).rootASTElement as ListLiteral
-        case 'enum': return eldmParser.parse(eldmRules.enumLiteralRule, new StringReader(text)).rootASTElement as EnumLiteral
-      }
-      
-      return null
-    } catch (Throwable ex) {
-      ex.printStackTrace
-      return null
-    }
-  }
-  
-  def Literal parseTypeDef(PatternLiteral value) {
-    try {
-      if (value.ref !== null) {
-        if (value.ref instanceof TypeDef && (value.ref as TypeDef).parser !== null)
-          return value.parseTypeDefPattern
-          
-        val text = value.extractText
-        return eldmParser.parse(eldmRules.literalRule, new StringReader(text)).rootASTElement as Literal
-      } else
-        throw new RuntimeException("parseTypeDef: unsupported path") // the same parseNative!
-    } catch (Throwable ex) {
-      ex.printStackTrace
-      return null
-    }
-  }
-  
-  def Literal parseTypeDefPattern(PatternLiteral value) {
-    val eFact = EldmDslFactory.eINSTANCE
-    
-    val tDef = value.ref as TypeDef
-    val code = tDef.extractCode
-    val text = value.extractText
-    
-    switch tDef.parser {
-      case 'regex': if (text.matches(code)) return eFact.createStrLiteral => [ value = text ]
-      
-      //TODO: cases
-      //case 'mask':
-      //case 'code': 
-    }
-    
     return null
   }
   
@@ -191,7 +124,7 @@ class TypeValidator {
   
   def dispatch String isValidAssignment(ValueDef type, Literal value) {
     if (type.native !== null)
-      return isValidNativeAssignment(type.native, value)
+      return isValidNativeAssignment(type, value)
     
     if (type instanceof MapDef)
       return (type as MapDef).isValidAssignment(value)
@@ -202,14 +135,14 @@ class TypeValidator {
     return "Literal value not assignable to ValueDef."
   }
   
-  def dispatch String isValidAssignment(MapDef type, Literal lValue) {
-    val pattern = lValue.parsePattern("map")
+  def dispatch String isValidAssignment(MapDef mapDef, Literal lValue) {
+    val pattern = lValue.parsePattern(mapDef)
     val use = pattern ?: lValue
     
     if (use instanceof MapLiteral) {
       // Invalid KeyDef sets!
       for(entry : use.entries) {
-        val kd = type.getKeyDef(entry)
+        val kd = mapDef.getKeyDef(entry)
         if (kd === null)
           return '''KeyDef '«entry.name»' does not exist.'''
         
@@ -219,7 +152,7 @@ class TypeValidator {
       }
       
       // mandatory KeyDef not set!
-      val mandatory = type.defs.filter[!opt]
+      val mandatory = mapDef.defs.filter[!opt]
       //println('''«type.defs.map['''(«name», «opt»)''']» -> «mandatory.map[name]»''')
       for(keyDef : mandatory)
         if (!use.contains(keyDef))
@@ -231,13 +164,13 @@ class TypeValidator {
     return "Literal value not assignable to MapDef."
   }
   
-  def dispatch String isValidAssignment(ListDef lst, Literal lValue) {
-    val pattern = lValue.parsePattern("lst")
+  def dispatch String isValidAssignment(ListDef lstDef, Literal lValue) {
+    val pattern = lValue.parsePattern(lstDef)
     val use = pattern ?: lValue
     
     if (use instanceof ListLiteral) {
       for (item : use.vals) {
-        val msg = lst.type.isValidAssignment(item)
+        val msg = lstDef.type.isValidAssignment(item)
         if (msg !== null)
           return msg
       }
@@ -249,7 +182,7 @@ class TypeValidator {
   }
   
   def dispatch String isValidAssignment(EnumDef enumRef, Literal lValue) {
-    val pattern = lValue.parsePattern("enum")
+    val pattern = lValue.parsePattern(enumRef)
     val use = pattern ?: lValue
     
     if (use instanceof EnumLiteral) {
@@ -265,46 +198,16 @@ class TypeValidator {
     return "External definitions not yet supported!" //TODO: support external defs
   }
   
-  def String isValidNativeAssignment(String nativeType, Literal value) {
-    switch nativeType {
+  def String isValidNativeAssignment(ValueDef type, Literal value) {
+    switch type.native {
       case "any": return null
-      case "bool": if (value instanceof BoolLiteral || value.parsePattern(nativeType) !== null) return null
-      case "str": if (value instanceof StrLiteral || value.parsePattern(nativeType) !== null) return null
-      case "int": if (value instanceof IntLiteral || value.parsePattern(nativeType) !== null) return null
-      case "flt": if (value instanceof FltLiteral || value.parsePattern(nativeType) !== null) return null
-      case "path": if (value.path !== null || value.parsePattern(nativeType) !== null) return null
+      case "bool": if (value instanceof BoolLiteral || value.parsePattern(type) !== null) return null
+      case "str": if (value instanceof StrLiteral || value.parsePattern(type) !== null) return null
+      case "int": if (value instanceof IntLiteral || value.parsePattern(type) !== null) return null
+      case "flt": if (value instanceof FltLiteral || value.parsePattern(type) !== null) return null
+      case "path": if (value.path !== null || value.parsePattern(type) !== null) return null
     }
     
-    return '''Native value not assignable to type '«nativeType»'.'''
-  }
-  
-  private def parsePattern(Literal value, String nativeType) {
-    if (value instanceof PatternLiteral)
-      if (value.native == nativeType)
-        return value.parseNative
-    
-    return null
-  }
-  
-  private def parsePattern(Literal value, TypeDef type) {
-    if (value instanceof PatternLiteral)
-      if (value.ref === type)
-        return value.parseTypeDef
-    
-    return null
-  }
-  
-  private def extractText(PatternLiteral value) {
-    if (value.text.startsWith("'"))
-      return value.text.substring(1, value.text.length - 1) // ' -> '
-    else
-      return value.text.substring(3, value.text.length - 3) // """ -> """
-  }
-  
-  private def extractCode(TypeDef value) {
-    if (value.code.startsWith("'"))
-      return value.code.substring(1, value.code.length - 1) // ' -> '
-    else
-      return value.code.substring(3, value.code.length - 3) // """ -> """
+    return '''Native value not assignable to type '«type.native»'.'''
   }
 }

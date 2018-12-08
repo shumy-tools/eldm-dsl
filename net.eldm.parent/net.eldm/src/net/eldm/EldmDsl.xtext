@@ -93,7 +93,7 @@ MapExpression:
 // Type Definitions
 // ------------------------------------------------------------------------------------------------------------------------------
 Definition:
-  TypeDef | EnumDef | ExternalDef
+  TypeDef | ExternalDef
 ;
 
   TypeDef:
@@ -102,17 +102,6 @@ Definition:
       | type=ValueDef
     )
   ;
-  
-  EnumDef:
-    'enum' name=ID type=MapDef ':'
-    BEGIN
-      (defs+=EnumItemDef)+
-    END
-  ;
-  
-    EnumItemDef:
-      name=ID value=MapLiteral
-    ;
 
 LambdaDef:
   '#(' param=ElementTypeDef ('->' result=ElementTypeDef)? ')'
@@ -127,6 +116,7 @@ ElementTypeDef:
     native=NativeDef
     | ListDef
     | MapDef
+    | EnumDef
   ;
 
   MapDef:
@@ -145,6 +135,17 @@ ElementTypeDef:
   ListDef: {ListDef}
     '..' type=ElementTypeDef
   ;
+  
+  EnumDef:
+    'enum' type=MapDef ':'
+    BEGIN
+      (defs+=EnumItemDef)+
+    END
+  ;
+  
+    EnumItemDef:
+      name=ID value=MapLiteral
+    ;
   
   NativeDef:
     'any' | 'bool' | 'str' | 'int' | 'flt'

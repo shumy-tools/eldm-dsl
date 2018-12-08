@@ -43,7 +43,7 @@ class TestDefinition {
       module /test
       
       definitions:
-        enum SEX { desc: str }:
+        typedef Sex enum { desc: str }:
           M { desc: 10 }
           F { desc: 'Female' }
       
@@ -56,7 +56,7 @@ class TestDefinition {
       module /test
       
       definitions:
-        enum SEX { desc: str }:
+        typedef Sex enum { desc: str }:
           M { des: 'Male' }
           F { desc: 'Female' }
       
@@ -69,7 +69,7 @@ class TestDefinition {
       module /test
       
       definitions:
-        enum SEX { id: int, desc: str }:
+        typedef Sex enum { id: int, desc: str }:
           M { id: 10, desc: 'Male' }
           F { desc: 'Female' }
       
@@ -108,7 +108,7 @@ class TestDefinition {
           list: List
         }
         
-        enum SEX { desc: str, other?: Other, list?: List, mail?: email }:
+        typedef Sex enum { desc: str, other?: Other, list?: List, mail?: email }:
           M { desc: str@'Male', list: [ { id: int@'12' }, map@'{ id: 5, or: 3 }' ] }
           F { desc: 'Female', other: { id: int@"""10""" }, mail: email@'alex@gmail.com' }
       

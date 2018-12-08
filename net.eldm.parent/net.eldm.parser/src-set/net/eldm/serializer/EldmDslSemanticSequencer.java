@@ -191,11 +191,12 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	
 	/**
 	 * Contexts:
-	 *     Definition returns EnumDef
+	 *     ElementTypeDef returns EnumDef
+	 *     ValueDef returns EnumDef
 	 *     EnumDef returns EnumDef
 	 *
 	 * Constraint:
-	 *     (name=ID type=MapDef defs+=EnumItemDef+)
+	 *     (type=MapDef defs+=EnumItemDef+)
 	 */
 	protected void sequence_EnumDef(ISerializationContext context, EnumDef semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
