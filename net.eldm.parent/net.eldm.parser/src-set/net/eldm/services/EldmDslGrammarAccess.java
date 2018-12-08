@@ -353,17 +353,17 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Group cGroup_4 = (Group)cGroup.eContents().get(4);
 		private final Keyword cHyphenMinusGreaterThanSignKeyword_4_0 = (Keyword)cGroup_4.eContents().get(0);
 		private final Assignment cResultAssignment_4_1 = (Assignment)cGroup_4.eContents().get(1);
-		private final RuleCall cResultElementTypeDefParserRuleCall_4_1_0 = (RuleCall)cResultAssignment_4_1.eContents().get(0);
+		private final RuleCall cResultElementDefParserRuleCall_4_1_0 = (RuleCall)cResultAssignment_4_1.eContents().get(0);
 		private final Keyword cColonKeyword_5 = (Keyword)cGroup.eContents().get(5);
 		private final Assignment cBodyAssignment_6 = (Assignment)cGroup.eContents().get(6);
 		private final RuleCall cBodyBlockExpressionParserRuleCall_6_0 = (RuleCall)cBodyAssignment_6.eContents().get(0);
 		
 		//Operation:
-		//	'def' (isGet?='get' | 'set') name=Path? param=ParamDef? ('->' result=ElementTypeDef)? ':'
+		//	'def' (isGet?='get' | 'set') name=Path? param=ParamDef? ('->' result=ElementDef)? ':'
 		//	body=BlockExpression;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//'def' (isGet?='get' | 'set') name=Path? param=ParamDef? ('->' result=ElementTypeDef)? ':' body=BlockExpression
+		//'def' (isGet?='get' | 'set') name=Path? param=ParamDef? ('->' result=ElementDef)? ':' body=BlockExpression
 		public Group getGroup() { return cGroup; }
 		
 		//'def'
@@ -393,17 +393,17 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//ParamDef
 		public RuleCall getParamParamDefParserRuleCall_3_0() { return cParamParamDefParserRuleCall_3_0; }
 		
-		//('->' result=ElementTypeDef)?
+		//('->' result=ElementDef)?
 		public Group getGroup_4() { return cGroup_4; }
 		
 		//'->'
 		public Keyword getHyphenMinusGreaterThanSignKeyword_4_0() { return cHyphenMinusGreaterThanSignKeyword_4_0; }
 		
-		//result=ElementTypeDef
+		//result=ElementDef
 		public Assignment getResultAssignment_4_1() { return cResultAssignment_4_1; }
 		
-		//ElementTypeDef
-		public RuleCall getResultElementTypeDefParserRuleCall_4_1_0() { return cResultElementTypeDefParserRuleCall_4_1_0; }
+		//ElementDef
+		public RuleCall getResultElementDefParserRuleCall_4_1_0() { return cResultElementDefParserRuleCall_4_1_0; }
 		
 		//':'
 		public Keyword getColonKeyword_5() { return cColonKeyword_5; }
@@ -484,7 +484,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Group cGroup_0_1_1 = (Group)cGroup_0_1.eContents().get(1);
 		private final Keyword cColonKeyword_0_1_1_0 = (Keyword)cGroup_0_1_1.eContents().get(0);
 		private final Assignment cTypeAssignment_0_1_1_1 = (Assignment)cGroup_0_1_1.eContents().get(1);
-		private final RuleCall cTypeElementTypeDefParserRuleCall_0_1_1_1_0 = (RuleCall)cTypeAssignment_0_1_1_1.eContents().get(0);
+		private final RuleCall cTypeElementDefParserRuleCall_0_1_1_1_0 = (RuleCall)cTypeAssignment_0_1_1_1.eContents().get(0);
 		private final Keyword cEqualsSignKeyword_0_1_2 = (Keyword)cGroup_0_1.eContents().get(2);
 		private final Assignment cRightAssignment_0_1_3 = (Assignment)cGroup_0_1.eContents().get(3);
 		private final RuleCall cRightExpressionParserRuleCall_0_1_3_0 = (RuleCall)cRightAssignment_0_1_3.eContents().get(0);
@@ -496,28 +496,28 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Group cGroup_1_2 = (Group)cGroup_1.eContents().get(2);
 		private final Keyword cColonKeyword_1_2_0 = (Keyword)cGroup_1_2.eContents().get(0);
 		private final Assignment cTypeAssignment_1_2_1 = (Assignment)cGroup_1_2.eContents().get(1);
-		private final RuleCall cTypeElementTypeDefParserRuleCall_1_2_1_0 = (RuleCall)cTypeAssignment_1_2_1.eContents().get(0);
+		private final RuleCall cTypeElementDefParserRuleCall_1_2_1_0 = (RuleCall)cTypeAssignment_1_2_1.eContents().get(0);
 		private final Group cGroup_1_3 = (Group)cGroup_1.eContents().get(3);
 		private final Keyword cEqualsSignKeyword_1_3_0 = (Keyword)cGroup_1_3.eContents().get(0);
 		private final Assignment cRightAssignment_1_3_1 = (Assignment)cGroup_1_3.eContents().get(1);
 		private final RuleCall cRightExpressionParserRuleCall_1_3_1_0 = (RuleCall)cRightAssignment_1_3_1.eContents().get(0);
 		
 		//VariableDef:
-		//	'let' (name=ID (':' type=ElementTypeDef)? '=' right=Expression) | mut?='mut' name=ID (':' type=ElementTypeDef)? ('='
+		//	'let' (name=ID (':' type=ElementDef)? '=' right=Expression) | mut?='mut' name=ID (':' type=ElementDef)? ('='
 		//	right=Expression)?;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//'let' (name=ID (':' type=ElementTypeDef)? '=' right=Expression) | mut?='mut' name=ID (':' type=ElementTypeDef)? ('='
+		//'let' (name=ID (':' type=ElementDef)? '=' right=Expression) | mut?='mut' name=ID (':' type=ElementDef)? ('='
 		//right=Expression)?
 		public Alternatives getAlternatives() { return cAlternatives; }
 		
-		//'let' (name=ID (':' type=ElementTypeDef)? '=' right=Expression)
+		//'let' (name=ID (':' type=ElementDef)? '=' right=Expression)
 		public Group getGroup_0() { return cGroup_0; }
 		
 		//'let'
 		public Keyword getLetKeyword_0_0() { return cLetKeyword_0_0; }
 		
-		//name=ID (':' type=ElementTypeDef)? '=' right=Expression
+		//name=ID (':' type=ElementDef)? '=' right=Expression
 		public Group getGroup_0_1() { return cGroup_0_1; }
 		
 		//name=ID
@@ -526,17 +526,17 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//ID
 		public RuleCall getNameIDTerminalRuleCall_0_1_0_0() { return cNameIDTerminalRuleCall_0_1_0_0; }
 		
-		//(':' type=ElementTypeDef)?
+		//(':' type=ElementDef)?
 		public Group getGroup_0_1_1() { return cGroup_0_1_1; }
 		
 		//':'
 		public Keyword getColonKeyword_0_1_1_0() { return cColonKeyword_0_1_1_0; }
 		
-		//type=ElementTypeDef
+		//type=ElementDef
 		public Assignment getTypeAssignment_0_1_1_1() { return cTypeAssignment_0_1_1_1; }
 		
-		//ElementTypeDef
-		public RuleCall getTypeElementTypeDefParserRuleCall_0_1_1_1_0() { return cTypeElementTypeDefParserRuleCall_0_1_1_1_0; }
+		//ElementDef
+		public RuleCall getTypeElementDefParserRuleCall_0_1_1_1_0() { return cTypeElementDefParserRuleCall_0_1_1_1_0; }
 		
 		//'='
 		public Keyword getEqualsSignKeyword_0_1_2() { return cEqualsSignKeyword_0_1_2; }
@@ -547,7 +547,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//Expression
 		public RuleCall getRightExpressionParserRuleCall_0_1_3_0() { return cRightExpressionParserRuleCall_0_1_3_0; }
 		
-		//mut?='mut' name=ID (':' type=ElementTypeDef)? ('=' right=Expression)?
+		//mut?='mut' name=ID (':' type=ElementDef)? ('=' right=Expression)?
 		public Group getGroup_1() { return cGroup_1; }
 		
 		//mut?='mut'
@@ -562,17 +562,17 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//ID
 		public RuleCall getNameIDTerminalRuleCall_1_1_0() { return cNameIDTerminalRuleCall_1_1_0; }
 		
-		//(':' type=ElementTypeDef)?
+		//(':' type=ElementDef)?
 		public Group getGroup_1_2() { return cGroup_1_2; }
 		
 		//':'
 		public Keyword getColonKeyword_1_2_0() { return cColonKeyword_1_2_0; }
 		
-		//type=ElementTypeDef
+		//type=ElementDef
 		public Assignment getTypeAssignment_1_2_1() { return cTypeAssignment_1_2_1; }
 		
-		//ElementTypeDef
-		public RuleCall getTypeElementTypeDefParserRuleCall_1_2_1_0() { return cTypeElementTypeDefParserRuleCall_1_2_1_0; }
+		//ElementDef
+		public RuleCall getTypeElementDefParserRuleCall_1_2_1_0() { return cTypeElementDefParserRuleCall_1_2_1_0; }
 		
 		//('=' right=Expression)?
 		public Group getGroup_1_3() { return cGroup_1_3; }
@@ -663,16 +663,59 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//'{test:10}'
 		public Keyword getTest10Keyword() { return cTest10Keyword; }
 	}
+	public class LambdaDefElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.LambdaDef");
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Keyword cNumberSignLeftParenthesisKeyword_0 = (Keyword)cGroup.eContents().get(0);
+		private final Assignment cParamAssignment_1 = (Assignment)cGroup.eContents().get(1);
+		private final RuleCall cParamElementDefParserRuleCall_1_0 = (RuleCall)cParamAssignment_1.eContents().get(0);
+		private final Group cGroup_2 = (Group)cGroup.eContents().get(2);
+		private final Keyword cHyphenMinusGreaterThanSignKeyword_2_0 = (Keyword)cGroup_2.eContents().get(0);
+		private final Assignment cResultAssignment_2_1 = (Assignment)cGroup_2.eContents().get(1);
+		private final RuleCall cResultElementDefParserRuleCall_2_1_0 = (RuleCall)cResultAssignment_2_1.eContents().get(0);
+		private final Keyword cRightParenthesisKeyword_3 = (Keyword)cGroup.eContents().get(3);
+		
+		//// LiteralExpression //TODO: use for default params
+		//// ------------------------------------------------------------------------------------------------------------------------------
+		//// Type Definitions
+		//// ------------------------------------------------------------------------------------------------------------------------------
+		//LambdaDef:
+		//	'#(' param=ElementDef ('->' result=ElementDef)? ')';
+		@Override public ParserRule getRule() { return rule; }
+		
+		//'#(' param=ElementDef ('->' result=ElementDef)? ')'
+		public Group getGroup() { return cGroup; }
+		
+		//'#('
+		public Keyword getNumberSignLeftParenthesisKeyword_0() { return cNumberSignLeftParenthesisKeyword_0; }
+		
+		//param=ElementDef
+		public Assignment getParamAssignment_1() { return cParamAssignment_1; }
+		
+		//ElementDef
+		public RuleCall getParamElementDefParserRuleCall_1_0() { return cParamElementDefParserRuleCall_1_0; }
+		
+		//('->' result=ElementDef)?
+		public Group getGroup_2() { return cGroup_2; }
+		
+		//'->'
+		public Keyword getHyphenMinusGreaterThanSignKeyword_2_0() { return cHyphenMinusGreaterThanSignKeyword_2_0; }
+		
+		//result=ElementDef
+		public Assignment getResultAssignment_2_1() { return cResultAssignment_2_1; }
+		
+		//ElementDef
+		public RuleCall getResultElementDefParserRuleCall_2_1_0() { return cResultElementDefParserRuleCall_2_1_0; }
+		
+		//')'
+		public Keyword getRightParenthesisKeyword_3() { return cRightParenthesisKeyword_3; }
+	}
 	public class DefinitionElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.Definition");
 		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
 		private final RuleCall cTypeDefParserRuleCall_0 = (RuleCall)cAlternatives.eContents().get(0);
 		private final RuleCall cExternalDefParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
 		
-		//// LiteralExpression //TODO: use for default params
-		//// ------------------------------------------------------------------------------------------------------------------------------
-		//// Type Definitions
-		//// ------------------------------------------------------------------------------------------------------------------------------
 		//Definition:
 		//	TypeDef | ExternalDef;
 		@Override public ParserRule getRule() { return rule; }
@@ -702,13 +745,13 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Assignment cCodeAssignment_2_0_1 = (Assignment)cGroup_2_0.eContents().get(1);
 		private final RuleCall cCodeTEXTTerminalRuleCall_2_0_1_0 = (RuleCall)cCodeAssignment_2_0_1.eContents().get(0);
 		private final Assignment cTypeAssignment_2_1 = (Assignment)cAlternatives_2.eContents().get(1);
-		private final RuleCall cTypeValueDefParserRuleCall_2_1_0 = (RuleCall)cTypeAssignment_2_1.eContents().get(0);
+		private final RuleCall cTypeElementDefParserRuleCall_2_1_0 = (RuleCall)cTypeAssignment_2_1.eContents().get(0);
 		
 		//TypeDef:
-		//	'typedef' name=ID (parser=('regex' | 'mask' | 'return') code=TEXT | type=ValueDef);
+		//	'typedef' name=ID (parser=('regex' | 'mask' | 'return') code=TEXT | type=ElementDef);
 		@Override public ParserRule getRule() { return rule; }
 		
-		//'typedef' name=ID (parser=('regex' | 'mask' | 'return') code=TEXT | type=ValueDef)
+		//'typedef' name=ID (parser=('regex' | 'mask' | 'return') code=TEXT | type=ElementDef)
 		public Group getGroup() { return cGroup; }
 		
 		//'typedef'
@@ -720,7 +763,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//ID
 		public RuleCall getNameIDTerminalRuleCall_1_0() { return cNameIDTerminalRuleCall_1_0; }
 		
-		//parser=('regex' | 'mask' | 'return') code=TEXT | type=ValueDef
+		//parser=('regex' | 'mask' | 'return') code=TEXT | type=ElementDef
 		public Alternatives getAlternatives_2() { return cAlternatives_2; }
 		
 		//parser=('regex' | 'mask' | 'return') code=TEXT
@@ -747,73 +790,39 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//TEXT
 		public RuleCall getCodeTEXTTerminalRuleCall_2_0_1_0() { return cCodeTEXTTerminalRuleCall_2_0_1_0; }
 		
-		//type=ValueDef
+		//type=ElementDef
 		public Assignment getTypeAssignment_2_1() { return cTypeAssignment_2_1; }
 		
-		//ValueDef
-		public RuleCall getTypeValueDefParserRuleCall_2_1_0() { return cTypeValueDefParserRuleCall_2_1_0; }
+		//ElementDef
+		public RuleCall getTypeElementDefParserRuleCall_2_1_0() { return cTypeElementDefParserRuleCall_2_1_0; }
 	}
-	public class LambdaDefElements extends AbstractParserRuleElementFinder {
-		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.LambdaDef");
-		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final Keyword cNumberSignLeftParenthesisKeyword_0 = (Keyword)cGroup.eContents().get(0);
-		private final Assignment cParamAssignment_1 = (Assignment)cGroup.eContents().get(1);
-		private final RuleCall cParamElementTypeDefParserRuleCall_1_0 = (RuleCall)cParamAssignment_1.eContents().get(0);
-		private final Group cGroup_2 = (Group)cGroup.eContents().get(2);
-		private final Keyword cHyphenMinusGreaterThanSignKeyword_2_0 = (Keyword)cGroup_2.eContents().get(0);
-		private final Assignment cResultAssignment_2_1 = (Assignment)cGroup_2.eContents().get(1);
-		private final RuleCall cResultElementTypeDefParserRuleCall_2_1_0 = (RuleCall)cResultAssignment_2_1.eContents().get(0);
-		private final Keyword cRightParenthesisKeyword_3 = (Keyword)cGroup.eContents().get(3);
-		
-		//LambdaDef:
-		//	'#(' param=ElementTypeDef ('->' result=ElementTypeDef)? ')';
-		@Override public ParserRule getRule() { return rule; }
-		
-		//'#(' param=ElementTypeDef ('->' result=ElementTypeDef)? ')'
-		public Group getGroup() { return cGroup; }
-		
-		//'#('
-		public Keyword getNumberSignLeftParenthesisKeyword_0() { return cNumberSignLeftParenthesisKeyword_0; }
-		
-		//param=ElementTypeDef
-		public Assignment getParamAssignment_1() { return cParamAssignment_1; }
-		
-		//ElementTypeDef
-		public RuleCall getParamElementTypeDefParserRuleCall_1_0() { return cParamElementTypeDefParserRuleCall_1_0; }
-		
-		//('->' result=ElementTypeDef)?
-		public Group getGroup_2() { return cGroup_2; }
-		
-		//'->'
-		public Keyword getHyphenMinusGreaterThanSignKeyword_2_0() { return cHyphenMinusGreaterThanSignKeyword_2_0; }
-		
-		//result=ElementTypeDef
-		public Assignment getResultAssignment_2_1() { return cResultAssignment_2_1; }
-		
-		//ElementTypeDef
-		public RuleCall getResultElementTypeDefParserRuleCall_2_1_0() { return cResultElementTypeDefParserRuleCall_2_1_0; }
-		
-		//')'
-		public Keyword getRightParenthesisKeyword_3() { return cRightParenthesisKeyword_3; }
-	}
-	public class ElementTypeDefElements extends AbstractParserRuleElementFinder {
-		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.ElementTypeDef");
+	public class ElementDefElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.ElementDef");
 		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
-		private final RuleCall cValueDefParserRuleCall_0 = (RuleCall)cAlternatives.eContents().get(0);
+		private final Assignment cNativeAssignment_0 = (Assignment)cAlternatives.eContents().get(0);
+		private final RuleCall cNativeNativeDefParserRuleCall_0_0 = (RuleCall)cNativeAssignment_0.eContents().get(0);
 		private final Assignment cRefAssignment_1 = (Assignment)cAlternatives.eContents().get(1);
 		private final CrossReference cRefDefinitionCrossReference_1_0 = (CrossReference)cRefAssignment_1.eContents().get(0);
 		private final RuleCall cRefDefinitionIDTerminalRuleCall_1_0_1 = (RuleCall)cRefDefinitionCrossReference_1_0.eContents().get(1);
+		private final RuleCall cListDefParserRuleCall_2 = (RuleCall)cAlternatives.eContents().get(2);
+		private final RuleCall cMapDefParserRuleCall_3 = (RuleCall)cAlternatives.eContents().get(3);
+		private final RuleCall cEnumDefParserRuleCall_4 = (RuleCall)cAlternatives.eContents().get(4);
 		
-		//ElementTypeDef:
-		//	ValueDef
-		//	| ref=[Definition];
+		//ElementDef:
+		//	native=NativeDef
+		//	| ref=[Definition] | ListDef
+		//	| MapDef
+		//	| EnumDef;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//ValueDef | ref=[Definition]
+		//native=NativeDef | ref=[Definition] | ListDef | MapDef | EnumDef
 		public Alternatives getAlternatives() { return cAlternatives; }
 		
-		//ValueDef
-		public RuleCall getValueDefParserRuleCall_0() { return cValueDefParserRuleCall_0; }
+		//native=NativeDef
+		public Assignment getNativeAssignment_0() { return cNativeAssignment_0; }
+		
+		//NativeDef
+		public RuleCall getNativeNativeDefParserRuleCall_0_0() { return cNativeNativeDefParserRuleCall_0_0; }
 		
 		//ref=[Definition]
 		public Assignment getRefAssignment_1() { return cRefAssignment_1; }
@@ -823,40 +832,15 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		
 		//ID
 		public RuleCall getRefDefinitionIDTerminalRuleCall_1_0_1() { return cRefDefinitionIDTerminalRuleCall_1_0_1; }
-	}
-	public class ValueDefElements extends AbstractParserRuleElementFinder {
-		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.ValueDef");
-		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
-		private final Assignment cNativeAssignment_0 = (Assignment)cAlternatives.eContents().get(0);
-		private final RuleCall cNativeNativeDefParserRuleCall_0_0 = (RuleCall)cNativeAssignment_0.eContents().get(0);
-		private final RuleCall cListDefParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
-		private final RuleCall cMapDefParserRuleCall_2 = (RuleCall)cAlternatives.eContents().get(2);
-		private final RuleCall cEnumDefParserRuleCall_3 = (RuleCall)cAlternatives.eContents().get(3);
-		
-		//ValueDef:
-		//	native=NativeDef
-		//	| ListDef
-		//	| MapDef
-		//	| EnumDef;
-		@Override public ParserRule getRule() { return rule; }
-		
-		//native=NativeDef | ListDef | MapDef | EnumDef
-		public Alternatives getAlternatives() { return cAlternatives; }
-		
-		//native=NativeDef
-		public Assignment getNativeAssignment_0() { return cNativeAssignment_0; }
-		
-		//NativeDef
-		public RuleCall getNativeNativeDefParserRuleCall_0_0() { return cNativeNativeDefParserRuleCall_0_0; }
 		
 		//ListDef
-		public RuleCall getListDefParserRuleCall_1() { return cListDefParserRuleCall_1; }
+		public RuleCall getListDefParserRuleCall_2() { return cListDefParserRuleCall_2; }
 		
 		//MapDef
-		public RuleCall getMapDefParserRuleCall_2() { return cMapDefParserRuleCall_2; }
+		public RuleCall getMapDefParserRuleCall_3() { return cMapDefParserRuleCall_3; }
 		
 		//EnumDef
-		public RuleCall getEnumDefParserRuleCall_3() { return cEnumDefParserRuleCall_3; }
+		public RuleCall getEnumDefParserRuleCall_4() { return cEnumDefParserRuleCall_4; }
 	}
 	public class MapDefElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.MapDef");
@@ -984,18 +968,17 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Keyword cOptQuestionMarkKeyword_1_0_0_0 = (Keyword)cOptAssignment_1_0_0.eContents().get(0);
 		private final Keyword cColonKeyword_1_0_1 = (Keyword)cGroup_1_0.eContents().get(1);
 		private final Assignment cTypeAssignment_1_0_2 = (Assignment)cGroup_1_0.eContents().get(2);
-		private final RuleCall cTypeElementTypeDefParserRuleCall_1_0_2_0 = (RuleCall)cTypeAssignment_1_0_2.eContents().get(0);
+		private final RuleCall cTypeElementDefParserRuleCall_1_0_2_0 = (RuleCall)cTypeAssignment_1_0_2.eContents().get(0);
 		private final Group cGroup_1_1 = (Group)cAlternatives_1.eContents().get(1);
-		private final Assignment cOptAssignment_1_1_0 = (Assignment)cGroup_1_1.eContents().get(0);
-		private final Keyword cOptEqualsSignKeyword_1_1_0_0 = (Keyword)cOptAssignment_1_1_0.eContents().get(0);
+		private final Keyword cEqualsSignKeyword_1_1_0 = (Keyword)cGroup_1_1.eContents().get(0);
 		private final Assignment cValueAssignment_1_1_1 = (Assignment)cGroup_1_1.eContents().get(1);
 		private final RuleCall cValueLiteralParserRuleCall_1_1_1_0 = (RuleCall)cValueAssignment_1_1_1.eContents().get(0);
 		
 		//MapEntryDef:
-		//	name=ID (opt?='?'? ':' type=ElementTypeDef | opt?='=' value=Literal);
+		//	name=ID (opt?='?'? ':' type=ElementDef | '=' value=Literal);
 		@Override public ParserRule getRule() { return rule; }
 		
-		//name=ID (opt?='?'? ':' type=ElementTypeDef | opt?='=' value=Literal)
+		//name=ID (opt?='?'? ':' type=ElementDef | '=' value=Literal)
 		public Group getGroup() { return cGroup; }
 		
 		//name=ID
@@ -1004,10 +987,10 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//ID
 		public RuleCall getNameIDTerminalRuleCall_0_0() { return cNameIDTerminalRuleCall_0_0; }
 		
-		//opt?='?'? ':' type=ElementTypeDef | opt?='=' value=Literal
+		//opt?='?'? ':' type=ElementDef | '=' value=Literal
 		public Alternatives getAlternatives_1() { return cAlternatives_1; }
 		
-		//opt?='?'? ':' type=ElementTypeDef
+		//opt?='?'? ':' type=ElementDef
 		public Group getGroup_1_0() { return cGroup_1_0; }
 		
 		//opt?='?'?
@@ -1019,20 +1002,17 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//':'
 		public Keyword getColonKeyword_1_0_1() { return cColonKeyword_1_0_1; }
 		
-		//type=ElementTypeDef
+		//type=ElementDef
 		public Assignment getTypeAssignment_1_0_2() { return cTypeAssignment_1_0_2; }
 		
-		//ElementTypeDef
-		public RuleCall getTypeElementTypeDefParserRuleCall_1_0_2_0() { return cTypeElementTypeDefParserRuleCall_1_0_2_0; }
+		//ElementDef
+		public RuleCall getTypeElementDefParserRuleCall_1_0_2_0() { return cTypeElementDefParserRuleCall_1_0_2_0; }
 		
-		//opt?='=' value=Literal
+		//'=' value=Literal
 		public Group getGroup_1_1() { return cGroup_1_1; }
 		
-		//opt?='='
-		public Assignment getOptAssignment_1_1_0() { return cOptAssignment_1_1_0; }
-		
 		//'='
-		public Keyword getOptEqualsSignKeyword_1_1_0_0() { return cOptEqualsSignKeyword_1_1_0_0; }
+		public Keyword getEqualsSignKeyword_1_1_0() { return cEqualsSignKeyword_1_1_0; }
 		
 		//value=Literal
 		public Assignment getValueAssignment_1_1_1() { return cValueAssignment_1_1_1; }
@@ -1046,14 +1026,14 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Action cListDefAction_0 = (Action)cGroup.eContents().get(0);
 		private final Keyword cFullStopFullStopKeyword_1 = (Keyword)cGroup.eContents().get(1);
 		private final Assignment cTypeAssignment_2 = (Assignment)cGroup.eContents().get(2);
-		private final RuleCall cTypeElementTypeDefParserRuleCall_2_0 = (RuleCall)cTypeAssignment_2.eContents().get(0);
+		private final RuleCall cTypeElementDefParserRuleCall_2_0 = (RuleCall)cTypeAssignment_2.eContents().get(0);
 		
 		//ListDef:
 		//	{ListDef}
-		//	'..' type=ElementTypeDef;
+		//	'..' type=ElementDef;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//{ListDef} '..' type=ElementTypeDef
+		//{ListDef} '..' type=ElementDef
 		public Group getGroup() { return cGroup; }
 		
 		//{ListDef}
@@ -1062,11 +1042,11 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//'..'
 		public Keyword getFullStopFullStopKeyword_1() { return cFullStopFullStopKeyword_1; }
 		
-		//type=ElementTypeDef
+		//type=ElementDef
 		public Assignment getTypeAssignment_2() { return cTypeAssignment_2; }
 		
-		//ElementTypeDef
-		public RuleCall getTypeElementTypeDefParserRuleCall_2_0() { return cTypeElementTypeDefParserRuleCall_2_0; }
+		//ElementDef
+		public RuleCall getTypeElementDefParserRuleCall_2_0() { return cTypeElementDefParserRuleCall_2_0; }
 	}
 	public class EnumDefElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.EnumDef");
@@ -1149,17 +1129,17 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Keyword cStrKeyword_2 = (Keyword)cAlternatives.eContents().get(2);
 		private final Keyword cIntKeyword_3 = (Keyword)cAlternatives.eContents().get(3);
 		private final Keyword cFltKeyword_4 = (Keyword)cAlternatives.eContents().get(4);
-		private final Keyword cLdaKeyword_5 = (Keyword)cAlternatives.eContents().get(5);
-		private final Keyword cLtmKeyword_6 = (Keyword)cAlternatives.eContents().get(6);
-		private final Keyword cLdtKeyword_7 = (Keyword)cAlternatives.eContents().get(7);
-		private final Keyword cPathKeyword_8 = (Keyword)cAlternatives.eContents().get(8);
+		private final Keyword cPathKeyword_5 = (Keyword)cAlternatives.eContents().get(5);
+		private final Keyword cLdaKeyword_6 = (Keyword)cAlternatives.eContents().get(6);
+		private final Keyword cLtmKeyword_7 = (Keyword)cAlternatives.eContents().get(7);
+		private final Keyword cLdtKeyword_8 = (Keyword)cAlternatives.eContents().get(8);
 		
 		//NativeDef:
-		//	'any' | 'bool' | 'str' | 'int' | 'flt'
-		//	| 'lda' | 'ltm' | 'ldt' | 'path';
+		//	'any' | 'bool' | 'str' | 'int' | 'flt' | 'path'
+		//	| 'lda' | 'ltm' | 'ldt';
 		@Override public ParserRule getRule() { return rule; }
 		
-		//'any' | 'bool' | 'str' | 'int' | 'flt' | 'lda' | 'ltm' | 'ldt' | 'path'
+		//'any' | 'bool' | 'str' | 'int' | 'flt' | 'path' | 'lda' | 'ltm' | 'ldt'
 		public Alternatives getAlternatives() { return cAlternatives; }
 		
 		//'any'
@@ -1177,17 +1157,44 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//'flt'
 		public Keyword getFltKeyword_4() { return cFltKeyword_4; }
 		
+		//'path'
+		public Keyword getPathKeyword_5() { return cPathKeyword_5; }
+		
 		//'lda'
-		public Keyword getLdaKeyword_5() { return cLdaKeyword_5; }
+		public Keyword getLdaKeyword_6() { return cLdaKeyword_6; }
 		
 		//'ltm'
-		public Keyword getLtmKeyword_6() { return cLtmKeyword_6; }
+		public Keyword getLtmKeyword_7() { return cLtmKeyword_7; }
 		
 		//'ldt'
-		public Keyword getLdtKeyword_7() { return cLdtKeyword_7; }
+		public Keyword getLdtKeyword_8() { return cLdtKeyword_8; }
+	}
+	public class NativePatternDefElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.NativePatternDef");
+		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
+		private final RuleCall cNativeDefParserRuleCall_0 = (RuleCall)cAlternatives.eContents().get(0);
+		private final Keyword cMapKeyword_1 = (Keyword)cAlternatives.eContents().get(1);
+		private final Keyword cLstKeyword_2 = (Keyword)cAlternatives.eContents().get(2);
+		private final Keyword cEnumKeyword_3 = (Keyword)cAlternatives.eContents().get(3);
 		
-		//'path'
-		public Keyword getPathKeyword_8() { return cPathKeyword_8; }
+		//NativePatternDef:
+		//	NativeDef | 'map' | 'lst' | 'enum';
+		@Override public ParserRule getRule() { return rule; }
+		
+		//NativeDef | 'map' | 'lst' | 'enum'
+		public Alternatives getAlternatives() { return cAlternatives; }
+		
+		//NativeDef
+		public RuleCall getNativeDefParserRuleCall_0() { return cNativeDefParserRuleCall_0; }
+		
+		//'map'
+		public Keyword getMapKeyword_1() { return cMapKeyword_1; }
+		
+		//'lst'
+		public Keyword getLstKeyword_2() { return cLstKeyword_2; }
+		
+		//'enum'
+		public Keyword getEnumKeyword_3() { return cEnumKeyword_3; }
 	}
 	public class LiteralElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.Literal");
@@ -1603,33 +1610,6 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//TEXT
 		public RuleCall getTextTEXTTerminalRuleCall_3_0() { return cTextTEXTTerminalRuleCall_3_0; }
 	}
-	public class NativePatternDefElements extends AbstractParserRuleElementFinder {
-		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.NativePatternDef");
-		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
-		private final RuleCall cNativeDefParserRuleCall_0 = (RuleCall)cAlternatives.eContents().get(0);
-		private final Keyword cMapKeyword_1 = (Keyword)cAlternatives.eContents().get(1);
-		private final Keyword cLstKeyword_2 = (Keyword)cAlternatives.eContents().get(2);
-		private final Keyword cEnumKeyword_3 = (Keyword)cAlternatives.eContents().get(3);
-		
-		//NativePatternDef:
-		//	NativeDef | 'map' | 'lst' | 'enum';
-		@Override public ParserRule getRule() { return rule; }
-		
-		//NativeDef | 'map' | 'lst' | 'enum'
-		public Alternatives getAlternatives() { return cAlternatives; }
-		
-		//NativeDef
-		public RuleCall getNativeDefParserRuleCall_0() { return cNativeDefParserRuleCall_0; }
-		
-		//'map'
-		public Keyword getMapKeyword_1() { return cMapKeyword_1; }
-		
-		//'lst'
-		public Keyword getLstKeyword_2() { return cLstKeyword_2; }
-		
-		//'enum'
-		public Keyword getEnumKeyword_3() { return cEnumKeyword_3; }
-	}
 	public class PathElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.Path");
 		private final Group cGroup = (Group)rule.eContents().get(1);
@@ -1684,17 +1664,17 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	private final OperationCallElements pOperationCall;
 	private final ExpressionElements pExpression;
 	private final MapExpressionElements pMapExpression;
+	private final LambdaDefElements pLambdaDef;
 	private final DefinitionElements pDefinition;
 	private final TypeDefElements pTypeDef;
-	private final LambdaDefElements pLambdaDef;
-	private final ElementTypeDefElements pElementTypeDef;
-	private final ValueDefElements pValueDef;
+	private final ElementDefElements pElementDef;
 	private final MapDefElements pMapDef;
 	private final MapEntryDefElements pMapEntryDef;
 	private final ListDefElements pListDef;
 	private final EnumDefElements pEnumDef;
 	private final EnumItemDefElements pEnumItemDef;
 	private final NativeDefElements pNativeDef;
+	private final NativePatternDefElements pNativePatternDef;
 	private final LiteralElements pLiteral;
 	private final BoolLiteralElements pBoolLiteral;
 	private final StrLiteralElements pStrLiteral;
@@ -1705,7 +1685,6 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	private final MapEntryLiteralElements pMapEntryLiteral;
 	private final EnumLiteralElements pEnumLiteral;
 	private final PatternLiteralElements pPatternLiteral;
-	private final NativePatternDefElements pNativePatternDef;
 	private final PathElements pPath;
 	private final BREAKElements pBREAK;
 	private final TerminalRule tBEGIN;
@@ -1740,17 +1719,17 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		this.pOperationCall = new OperationCallElements();
 		this.pExpression = new ExpressionElements();
 		this.pMapExpression = new MapExpressionElements();
+		this.pLambdaDef = new LambdaDefElements();
 		this.pDefinition = new DefinitionElements();
 		this.pTypeDef = new TypeDefElements();
-		this.pLambdaDef = new LambdaDefElements();
-		this.pElementTypeDef = new ElementTypeDefElements();
-		this.pValueDef = new ValueDefElements();
+		this.pElementDef = new ElementDefElements();
 		this.pMapDef = new MapDefElements();
 		this.pMapEntryDef = new MapEntryDefElements();
 		this.pListDef = new ListDefElements();
 		this.pEnumDef = new EnumDefElements();
 		this.pEnumItemDef = new EnumItemDefElements();
 		this.pNativeDef = new NativeDefElements();
+		this.pNativePatternDef = new NativePatternDefElements();
 		this.pLiteral = new LiteralElements();
 		this.pBoolLiteral = new BoolLiteralElements();
 		this.pStrLiteral = new StrLiteralElements();
@@ -1761,7 +1740,6 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		this.pMapEntryLiteral = new MapEntryLiteralElements();
 		this.pEnumLiteral = new EnumLiteralElements();
 		this.pPatternLiteral = new PatternLiteralElements();
-		this.pNativePatternDef = new NativePatternDefElements();
 		this.pPath = new PathElements();
 		this.pBREAK = new BREAKElements();
 		this.tBEGIN = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.BEGIN");
@@ -1889,7 +1867,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//Operation:
-	//	'def' (isGet?='get' | 'set') name=Path? param=ParamDef? ('->' result=ElementTypeDef)? ':'
+	//	'def' (isGet?='get' | 'set') name=Path? param=ParamDef? ('->' result=ElementDef)? ':'
 	//	body=BlockExpression;
 	public OperationElements getOperationAccess() {
 		return pOperation;
@@ -1925,7 +1903,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//VariableDef:
-	//	'let' (name=ID (':' type=ElementTypeDef)? '=' right=Expression) | mut?='mut' name=ID (':' type=ElementTypeDef)? ('='
+	//	'let' (name=ID (':' type=ElementDef)? '=' right=Expression) | mut?='mut' name=ID (':' type=ElementDef)? ('='
 	//	right=Expression)?;
 	public VariableDefElements getVariableDefAccess() {
 		return pVariableDef;
@@ -1969,6 +1947,16 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	//// ------------------------------------------------------------------------------------------------------------------------------
 	//// Type Definitions
 	//// ------------------------------------------------------------------------------------------------------------------------------
+	//LambdaDef:
+	//	'#(' param=ElementDef ('->' result=ElementDef)? ')';
+	public LambdaDefElements getLambdaDefAccess() {
+		return pLambdaDef;
+	}
+	
+	public ParserRule getLambdaDefRule() {
+		return getLambdaDefAccess().getRule();
+	}
+	
 	//Definition:
 	//	TypeDef | ExternalDef;
 	public DefinitionElements getDefinitionAccess() {
@@ -1980,7 +1968,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//TypeDef:
-	//	'typedef' name=ID (parser=('regex' | 'mask' | 'return') code=TEXT | type=ValueDef);
+	//	'typedef' name=ID (parser=('regex' | 'mask' | 'return') code=TEXT | type=ElementDef);
 	public TypeDefElements getTypeDefAccess() {
 		return pTypeDef;
 	}
@@ -1989,38 +1977,17 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		return getTypeDefAccess().getRule();
 	}
 	
-	//LambdaDef:
-	//	'#(' param=ElementTypeDef ('->' result=ElementTypeDef)? ')';
-	public LambdaDefElements getLambdaDefAccess() {
-		return pLambdaDef;
-	}
-	
-	public ParserRule getLambdaDefRule() {
-		return getLambdaDefAccess().getRule();
-	}
-	
-	//ElementTypeDef:
-	//	ValueDef
-	//	| ref=[Definition];
-	public ElementTypeDefElements getElementTypeDefAccess() {
-		return pElementTypeDef;
-	}
-	
-	public ParserRule getElementTypeDefRule() {
-		return getElementTypeDefAccess().getRule();
-	}
-	
-	//ValueDef:
+	//ElementDef:
 	//	native=NativeDef
-	//	| ListDef
+	//	| ref=[Definition] | ListDef
 	//	| MapDef
 	//	| EnumDef;
-	public ValueDefElements getValueDefAccess() {
-		return pValueDef;
+	public ElementDefElements getElementDefAccess() {
+		return pElementDef;
 	}
 	
-	public ParserRule getValueDefRule() {
-		return getValueDefAccess().getRule();
+	public ParserRule getElementDefRule() {
+		return getElementDefAccess().getRule();
 	}
 	
 	//MapDef:
@@ -2037,7 +2004,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//MapEntryDef:
-	//	name=ID (opt?='?'? ':' type=ElementTypeDef | opt?='=' value=Literal);
+	//	name=ID (opt?='?'? ':' type=ElementDef | '=' value=Literal);
 	public MapEntryDefElements getMapEntryDefAccess() {
 		return pMapEntryDef;
 	}
@@ -2048,7 +2015,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	
 	//ListDef:
 	//	{ListDef}
-	//	'..' type=ElementTypeDef;
+	//	'..' type=ElementDef;
 	public ListDefElements getListDefAccess() {
 		return pListDef;
 	}
@@ -2081,14 +2048,24 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//NativeDef:
-	//	'any' | 'bool' | 'str' | 'int' | 'flt'
-	//	| 'lda' | 'ltm' | 'ldt' | 'path';
+	//	'any' | 'bool' | 'str' | 'int' | 'flt' | 'path'
+	//	| 'lda' | 'ltm' | 'ldt';
 	public NativeDefElements getNativeDefAccess() {
 		return pNativeDef;
 	}
 	
 	public ParserRule getNativeDefRule() {
 		return getNativeDefAccess().getRule();
+	}
+	
+	//NativePatternDef:
+	//	NativeDef | 'map' | 'lst' | 'enum';
+	public NativePatternDefElements getNativePatternDefAccess() {
+		return pNativePatternDef;
+	}
+	
+	public ParserRule getNativePatternDefRule() {
+		return getNativePatternDefAccess().getRule();
 	}
 	
 	//// ------------------------------------------------------------------------------------------------------------------------------
@@ -2204,16 +2181,6 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	
 	public ParserRule getPatternLiteralRule() {
 		return getPatternLiteralAccess().getRule();
-	}
-	
-	//NativePatternDef:
-	//	NativeDef | 'map' | 'lst' | 'enum';
-	public NativePatternDefElements getNativePatternDefAccess() {
-		return pNativePatternDef;
-	}
-	
-	public ParserRule getNativePatternDefRule() {
-		return getNativePatternDefAccess().getRule();
 	}
 	
 	//Path:

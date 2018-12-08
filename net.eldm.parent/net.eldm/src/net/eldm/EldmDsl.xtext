@@ -52,7 +52,7 @@ SubPath:
 ;
 
 Operation:
-  'def' (isGet?='get' | 'set') name=Path? param=ParamDef? ('->' result=ElementTypeDef)? ':'
+  'def' (isGet?='get' | 'set') name=Path? param=ParamDef? ('->' result=ElementDef)? ':'
     body=BlockExpression
 ;
 
@@ -70,8 +70,8 @@ BlockExpression:
 ;
 
 VariableDef:
-  'let' (name=ID (':' type=ElementTypeDef)? '=' right=Expression)
-    | (mut?='mut' name=ID (':' type=ElementTypeDef)? ('=' right=Expression)?) //TODO: check-error-if (mut == true && type === null && right === null)
+  'let' (name=ID (':' type=ElementDef)? '=' right=Expression)
+    | (mut?='mut' name=ID (':' type=ElementDef)? ('=' right=Expression)?) //TODO: check-error-if (mut == true && type === null && right === null)
 ;
 
 OperationCall:
@@ -92,6 +92,10 @@ MapExpression:
 // ------------------------------------------------------------------------------------------------------------------------------
 // Type Definitions
 // ------------------------------------------------------------------------------------------------------------------------------
+LambdaDef:
+  '#(' param=ElementDef ('->' result=ElementDef)? ')'
+;
+
 Definition:
   TypeDef | ExternalDef
 ;
@@ -99,25 +103,17 @@ Definition:
   TypeDef:
     'typedef' name=ID (
       (parser=('regex' | 'mask' | 'return') code=TEXT)
-      | type=ValueDef
+      | type=ElementDef
     )
   ;
 
-LambdaDef:
-  '#(' param=ElementTypeDef ('->' result=ElementTypeDef)? ')'
-;
-
-ElementTypeDef:
-  ValueDef
+ElementDef:
+  native=NativeDef
   | ref=[Definition]
+  | ListDef
+  | MapDef
+  | EnumDef
 ;
-
-  ValueDef:
-    native=NativeDef
-    | ListDef
-    | MapDef
-    | EnumDef
-  ;
 
   MapDef:
     => ({MapDef} '{' (defs+=MapEntryDef (',' defs+=MapEntryDef)*)? '}')
@@ -129,11 +125,11 @@ ElementTypeDef:
   ;
   
     MapEntryDef:
-      name=ID ((opt?='?'? ':' type=ElementTypeDef) | (opt?='=' value=Literal))
+      name=ID ((opt?='?'? ':' type=ElementDef) | ('=' value=Literal))
     ;
   
   ListDef: {ListDef}
-    '..' type=ElementTypeDef
+    '..' type=ElementDef
   ;
   
   EnumDef:
@@ -147,10 +143,14 @@ ElementTypeDef:
       name=ID value=MapLiteral
     ;
   
-  NativeDef:
-    'any' | 'bool' | 'str' | 'int' | 'flt'
-    | 'lda' | 'ltm' | 'ldt' | 'path'
-  ;
+NativeDef:
+  'any' | 'bool' | 'str' | 'int' | 'flt' | 'path'
+  | 'lda' | 'ltm' | 'ldt'
+;
+
+NativePatternDef:
+  NativeDef | 'map' | 'lst' | 'enum'
+;
 
 // ------------------------------------------------------------------------------------------------------------------------------
 // Literals
@@ -197,10 +197,6 @@ Literal:
   PatternLiteral: {PatternLiteral}
     (native=NativePatternDef | ref=[Definition]) '@' text=TEXT
   ;
-  
-    NativePatternDef:
-      NativeDef | 'map' | 'lst' | 'enum'
-    ;
 
 Path: PID =>PID*;
 BREAK: ('\n'|'\r')*;

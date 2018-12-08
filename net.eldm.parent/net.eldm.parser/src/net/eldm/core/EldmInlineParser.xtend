@@ -5,19 +5,21 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import net.eldm.eldmDsl.EldmDslFactory
+import net.eldm.eldmDsl.ElementDef
+import net.eldm.eldmDsl.EnumDef
 import net.eldm.eldmDsl.EnumLiteral
+import net.eldm.eldmDsl.ListDef
 import net.eldm.eldmDsl.ListLiteral
 import net.eldm.eldmDsl.Literal
+import net.eldm.eldmDsl.MapDef
 import net.eldm.eldmDsl.MapLiteral
 import net.eldm.eldmDsl.PatternLiteral
 import net.eldm.eldmDsl.TypeDef
 import net.eldm.parser.antlr.EldmDslParser
 import net.eldm.services.EldmDslGrammarAccess
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
-import net.eldm.eldmDsl.ValueDef
-import net.eldm.eldmDsl.MapDef
-import net.eldm.eldmDsl.EnumDef
-import net.eldm.eldmDsl.ListDef
+
+import static net.eldm.Natives.*
 
 @FinalFieldsConstructor
 class EldmInlineParser {
@@ -41,7 +43,7 @@ class EldmInlineParser {
     return null
   }
   
-  def parsePattern(Literal value, ValueDef type) {
+  def parsePattern(ElementDef type, Literal value) {
     if (value instanceof PatternLiteral) {
       if (value.native == type.native)
         return value.parseNative
@@ -65,18 +67,20 @@ class EldmInlineParser {
     try {
       val text = value.extractText
       switch value.native {
-        case 'str':  return text
-        case 'bool': return Boolean.parseBoolean(text)
-        case 'int':  return Long.parseLong(text)
-        case 'flt':  return Double.parseDouble(text)
-        case 'lda':  return LocalDate.parse(text)
-        case 'ltm':  return LocalTime.parse(text)
-        case 'ldt':  return LocalDateTime.parse(text)
+        case ANY:  return text
+        case BOOL: return Boolean.parseBoolean(text)
+        case STR:  return text
+        case INT:  return Long.parseLong(text)
+        case FLT:  return Double.parseDouble(text)
+        case PATH: if (text.matches("/([a-z]|[0-9]|-)*)*")) return text //TODO: return a Path class!
         
-        case 'path': if (text.matches("/([a-z]|[0-9]|-)*)*")) return text //TODO: return a Path class!
-        case 'map': return eldmParser.parse(eldmRules.mapLiteralRule, new StringReader(text)).rootASTElement as MapLiteral
-        case 'lst': return eldmParser.parse(eldmRules.listLiteralRule, new StringReader(text)).rootASTElement as ListLiteral
-        case 'enum': return eldmParser.parse(eldmRules.enumLiteralRule, new StringReader(text)).rootASTElement as EnumLiteral
+        case LDA:  return LocalDate.parse(text)
+        case LTM:  return LocalTime.parse(text)
+        case LDT:  return LocalDateTime.parse(text)
+        
+        case MAP: return eldmParser.parse(eldmRules.mapLiteralRule, new StringReader(text)).rootASTElement as MapLiteral
+        case LST: return eldmParser.parse(eldmRules.listLiteralRule, new StringReader(text)).rootASTElement as ListLiteral
+        case ENUM: return eldmParser.parse(eldmRules.enumLiteralRule, new StringReader(text)).rootASTElement as EnumLiteral
       }
       
       return null
