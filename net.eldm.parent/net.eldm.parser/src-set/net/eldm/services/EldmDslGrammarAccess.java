@@ -1066,15 +1066,16 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Assignment cTypeAssignment_1_0_2 = (Assignment)cGroup_1_0.eContents().get(2);
 		private final RuleCall cTypeElementTypeDefParserRuleCall_1_0_2_0 = (RuleCall)cTypeAssignment_1_0_2.eContents().get(0);
 		private final Group cGroup_1_1 = (Group)cAlternatives_1.eContents().get(1);
-		private final Keyword cEqualsSignKeyword_1_1_0 = (Keyword)cGroup_1_1.eContents().get(0);
+		private final Assignment cOptAssignment_1_1_0 = (Assignment)cGroup_1_1.eContents().get(0);
+		private final Keyword cOptEqualsSignKeyword_1_1_0_0 = (Keyword)cOptAssignment_1_1_0.eContents().get(0);
 		private final Assignment cValueAssignment_1_1_1 = (Assignment)cGroup_1_1.eContents().get(1);
 		private final RuleCall cValueLiteralParserRuleCall_1_1_1_0 = (RuleCall)cValueAssignment_1_1_1.eContents().get(0);
 		
 		//MapEntryDef:
-		//	name=ID (opt?='?'? ':' type=ElementTypeDef | '=' value=Literal);
+		//	name=ID (opt?='?'? ':' type=ElementTypeDef | opt?='=' value=Literal);
 		@Override public ParserRule getRule() { return rule; }
 		
-		//name=ID (opt?='?'? ':' type=ElementTypeDef | '=' value=Literal)
+		//name=ID (opt?='?'? ':' type=ElementTypeDef | opt?='=' value=Literal)
 		public Group getGroup() { return cGroup; }
 		
 		//name=ID
@@ -1083,7 +1084,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//ID
 		public RuleCall getNameIDTerminalRuleCall_0_0() { return cNameIDTerminalRuleCall_0_0; }
 		
-		//opt?='?'? ':' type=ElementTypeDef | '=' value=Literal
+		//opt?='?'? ':' type=ElementTypeDef | opt?='=' value=Literal
 		public Alternatives getAlternatives_1() { return cAlternatives_1; }
 		
 		//opt?='?'? ':' type=ElementTypeDef
@@ -1104,11 +1105,14 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//ElementTypeDef
 		public RuleCall getTypeElementTypeDefParserRuleCall_1_0_2_0() { return cTypeElementTypeDefParserRuleCall_1_0_2_0; }
 		
-		//'=' value=Literal
+		//opt?='=' value=Literal
 		public Group getGroup_1_1() { return cGroup_1_1; }
 		
+		//opt?='='
+		public Assignment getOptAssignment_1_1_0() { return cOptAssignment_1_1_0; }
+		
 		//'='
-		public Keyword getEqualsSignKeyword_1_1_0() { return cEqualsSignKeyword_1_1_0; }
+		public Keyword getOptEqualsSignKeyword_1_1_0_0() { return cOptEqualsSignKeyword_1_1_0_0; }
 		
 		//value=Literal
 		public Assignment getValueAssignment_1_1_1() { return cValueAssignment_1_1_1; }
@@ -1561,7 +1565,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Action cPatternLiteralAction_0 = (Action)cGroup.eContents().get(0);
 		private final Alternatives cAlternatives_1 = (Alternatives)cGroup.eContents().get(1);
 		private final Assignment cNativeAssignment_1_0 = (Assignment)cAlternatives_1.eContents().get(0);
-		private final RuleCall cNativeNativeDefParserRuleCall_1_0_0 = (RuleCall)cNativeAssignment_1_0.eContents().get(0);
+		private final RuleCall cNativeNativePatternDefParserRuleCall_1_0_0 = (RuleCall)cNativeAssignment_1_0.eContents().get(0);
 		private final Assignment cRefAssignment_1_1 = (Assignment)cAlternatives_1.eContents().get(1);
 		private final CrossReference cRefDefinitionCrossReference_1_1_0 = (CrossReference)cRefAssignment_1_1.eContents().get(0);
 		private final RuleCall cRefDefinitionIDTerminalRuleCall_1_1_0_1 = (RuleCall)cRefDefinitionCrossReference_1_1_0.eContents().get(1);
@@ -1570,23 +1574,23 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cTextTEXTTerminalRuleCall_3_0 = (RuleCall)cTextAssignment_3.eContents().get(0);
 		
 		//PatternLiteral:
-		//	{PatternLiteral} (native=NativeDef | ref=[Definition]) '@' text=TEXT;
+		//	{PatternLiteral} (native=NativePatternDef | ref=[Definition]) '@' text=TEXT;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//{PatternLiteral} (native=NativeDef | ref=[Definition]) '@' text=TEXT
+		//{PatternLiteral} (native=NativePatternDef | ref=[Definition]) '@' text=TEXT
 		public Group getGroup() { return cGroup; }
 		
 		//{PatternLiteral}
 		public Action getPatternLiteralAction_0() { return cPatternLiteralAction_0; }
 		
-		//native=NativeDef | ref=[Definition]
+		//native=NativePatternDef | ref=[Definition]
 		public Alternatives getAlternatives_1() { return cAlternatives_1; }
 		
-		//native=NativeDef
+		//native=NativePatternDef
 		public Assignment getNativeAssignment_1_0() { return cNativeAssignment_1_0; }
 		
-		//NativeDef
-		public RuleCall getNativeNativeDefParserRuleCall_1_0_0() { return cNativeNativeDefParserRuleCall_1_0_0; }
+		//NativePatternDef
+		public RuleCall getNativeNativePatternDefParserRuleCall_1_0_0() { return cNativeNativePatternDefParserRuleCall_1_0_0; }
 		
 		//ref=[Definition]
 		public Assignment getRefAssignment_1_1() { return cRefAssignment_1_1; }
@@ -1605,6 +1609,33 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		
 		//TEXT
 		public RuleCall getTextTEXTTerminalRuleCall_3_0() { return cTextTEXTTerminalRuleCall_3_0; }
+	}
+	public class NativePatternDefElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.NativePatternDef");
+		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
+		private final RuleCall cNativeDefParserRuleCall_0 = (RuleCall)cAlternatives.eContents().get(0);
+		private final Keyword cMapKeyword_1 = (Keyword)cAlternatives.eContents().get(1);
+		private final Keyword cLstKeyword_2 = (Keyword)cAlternatives.eContents().get(2);
+		private final Keyword cEnumKeyword_3 = (Keyword)cAlternatives.eContents().get(3);
+		
+		//NativePatternDef:
+		//	NativeDef | 'map' | 'lst' | 'enum';
+		@Override public ParserRule getRule() { return rule; }
+		
+		//NativeDef | 'map' | 'lst' | 'enum'
+		public Alternatives getAlternatives() { return cAlternatives; }
+		
+		//NativeDef
+		public RuleCall getNativeDefParserRuleCall_0() { return cNativeDefParserRuleCall_0; }
+		
+		//'map'
+		public Keyword getMapKeyword_1() { return cMapKeyword_1; }
+		
+		//'lst'
+		public Keyword getLstKeyword_2() { return cLstKeyword_2; }
+		
+		//'enum'
+		public Keyword getEnumKeyword_3() { return cEnumKeyword_3; }
 	}
 	public class PathElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.Path");
@@ -1681,6 +1712,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	private final MapEntryLiteralElements pMapEntryLiteral;
 	private final EnumLiteralElements pEnumLiteral;
 	private final PatternLiteralElements pPatternLiteral;
+	private final NativePatternDefElements pNativePatternDef;
 	private final PathElements pPath;
 	private final BREAKElements pBREAK;
 	private final TerminalRule tBEGIN;
@@ -1736,6 +1768,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		this.pMapEntryLiteral = new MapEntryLiteralElements();
 		this.pEnumLiteral = new EnumLiteralElements();
 		this.pPatternLiteral = new PatternLiteralElements();
+		this.pNativePatternDef = new NativePatternDefElements();
 		this.pPath = new PathElements();
 		this.pBREAK = new BREAKElements();
 		this.tBEGIN = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.BEGIN");
@@ -2033,7 +2066,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//MapEntryDef:
-	//	name=ID (opt?='?'? ':' type=ElementTypeDef | '=' value=Literal);
+	//	name=ID (opt?='?'? ':' type=ElementTypeDef | opt?='=' value=Literal);
 	public MapEntryDefElements getMapEntryDefAccess() {
 		return pMapEntryDef;
 	}
@@ -2170,13 +2203,23 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//PatternLiteral:
-	//	{PatternLiteral} (native=NativeDef | ref=[Definition]) '@' text=TEXT;
+	//	{PatternLiteral} (native=NativePatternDef | ref=[Definition]) '@' text=TEXT;
 	public PatternLiteralElements getPatternLiteralAccess() {
 		return pPatternLiteral;
 	}
 	
 	public ParserRule getPatternLiteralRule() {
 		return getPatternLiteralAccess().getRule();
+	}
+	
+	//NativePatternDef:
+	//	NativeDef | 'map' | 'lst' | 'enum';
+	public NativePatternDefElements getNativePatternDefAccess() {
+		return pNativePatternDef;
+	}
+	
+	public ParserRule getNativePatternDefRule() {
+		return getNativePatternDefAccess().getRule();
 	}
 	
 	//Path:

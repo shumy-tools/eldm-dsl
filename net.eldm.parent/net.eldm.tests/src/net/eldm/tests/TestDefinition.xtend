@@ -83,7 +83,7 @@ class TestDefinition {
       
       definitions:
         typedef date-ptr mask '####-##-##'
-        typedef email regex '[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}'
+        typedef email regex '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
         
         typedef date-type return """
           new java.time.LocalDate.parse(it)
@@ -108,9 +108,9 @@ class TestDefinition {
           list: List
         }
         
-        enum SEX { desc: str, other?: Other, list?: List }:
-          M { desc: str@'Male', list: [ { id: int@'10' }, { id: 5, or: 3 } ] }
-          F { desc: 'Female', other: { id: int@'10' } }
+        enum SEX { desc: str, other?: Other, list?: List, mail?: email }:
+          M { desc: str@'Male', list: [ { id: int@'12' }, map@'{ id: 5, or: 3 }' ] }
+          F { desc: 'Female', other: { id: int@"""10""" }, mail: email@'alex@gmail.com' }
       
     ''')
   }

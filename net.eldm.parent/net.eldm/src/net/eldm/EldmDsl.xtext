@@ -139,7 +139,7 @@ ElementTypeDef:
   ;
   
     MapEntryDef:
-      name=ID ((opt?='?'? ':' type=ElementTypeDef) | ('=' value=Literal))
+      name=ID ((opt?='?'? ':' type=ElementTypeDef) | (opt?='=' value=Literal))
     ;
   
   ListDef: {ListDef}
@@ -194,8 +194,12 @@ Literal:
   ;
   
   PatternLiteral: {PatternLiteral}
-    (native=NativeDef | ref=[Definition]) '@' text=TEXT
+    (native=NativePatternDef | ref=[Definition]) '@' text=TEXT
   ;
+  
+    NativePatternDef:
+      NativeDef | 'map' | 'lst' | 'enum'
+    ;
 
 Path: PID =>PID*;
 BREAK: ('\n'|'\r')*;

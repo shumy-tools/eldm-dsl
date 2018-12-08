@@ -420,7 +420,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     MapEntryDef returns MapEntryDef
 	 *
 	 * Constraint:
-	 *     (name=ID ((opt?='?'? type=ElementTypeDef) | value=Literal))
+	 *     (name=ID ((opt?='?'? type=ElementTypeDef) | (opt?='=' value=Literal)))
 	 */
 	protected void sequence_MapEntryDef(ISerializationContext context, MapEntryDef semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -522,7 +522,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     PatternLiteral returns PatternLiteral
 	 *
 	 * Constraint:
-	 *     ((native=NativeDef | ref=[Definition|ID]) text=TEXT)
+	 *     ((native=NativePatternDef | ref=[Definition|ID]) text=TEXT)
 	 */
 	protected void sequence_PatternLiteral(ISerializationContext context, PatternLiteral semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);

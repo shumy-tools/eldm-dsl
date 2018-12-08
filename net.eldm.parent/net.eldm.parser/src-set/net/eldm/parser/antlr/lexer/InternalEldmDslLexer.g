@@ -61,7 +61,11 @@ Ldt : 'ldt';
 
 Let : 'let';
 
+Lst : 'lst';
+
 Ltm : 'ltm';
+
+Map : 'map';
 
 Mut : 'mut';
 
