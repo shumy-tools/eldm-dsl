@@ -82,23 +82,20 @@ class TestDefinition {
       module /test
       
       definitions:
-        typedef date-ptr mask '####-##-##'
-        typedef email regex '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
+        typedef ptr mask '####-##-##'
         
-        typedef date-type return """
-          new java.time.LocalDate.parse(it)
-        """
+        typedef email match """[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}"""
         
         typedef Subject {
           id: int
-          name: date-type
+          name: ptr
           comp: {
             email: email
             arr: ..{ id?: int, or = 10 }
           }
         }
         
-        typedef Other { id: int, or = 10 }
+        typedef Other { id: int, date: lda }
         
         typedef List ..{ id?: int, or = 10 }
         
@@ -110,7 +107,7 @@ class TestDefinition {
         
         typedef Sex enum { desc: str, other?: Other, list?: List, mail?: email }:
           M { desc: str@'Male', list: [ { id: int@'12' }, map@'{ id: 5, or: 3 }' ] }
-          F { desc: 'Female', other: { id: int@"""10""" }, mail: email@'alex@gmail.com' }
+          F { desc: 'Female', other: { id: int@"""10""", date: lda@'2018-01-20' }, mail: email@'alex@gmail.com' }
       
     ''')
   }

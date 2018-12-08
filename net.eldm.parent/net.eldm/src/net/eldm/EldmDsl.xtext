@@ -102,7 +102,7 @@ Definition:
 
   TypeDef:
     'typedef' name=ID (
-      (parser=('regex' | 'mask' | 'return') code=TEXT)
+      (parser=('match' | 'mask') code=TEXT)
       | type=ElementDef
     )
   ;
@@ -144,12 +144,10 @@ ElementDef:
     ;
   
 NativeDef:
-  'any' | 'bool' | 'str' | 'int' | 'flt' | 'path'
+  'any' | 'path'
+  | 'bool' | 'str' | 'int' | 'flt'
   | 'lda' | 'ltm' | 'ldt'
-;
-
-NativePatternDef:
-  NativeDef | 'map' | 'lst' | 'enum'
+  | 'map' | 'lst' | 'enum'
 ;
 
 // ------------------------------------------------------------------------------------------------------------------------------
@@ -195,7 +193,7 @@ Literal:
   ;
   
   PatternLiteral: {PatternLiteral}
-    (native=NativePatternDef | ref=[Definition]) '@' text=TEXT
+    (native=NativeDef | ref=[Definition]) '@' text=TEXT
   ;
 
 Path: PID =>PID*;
@@ -214,7 +212,7 @@ terminal INT    : ('0'..'9')+;
 terminal NATURAL: '-'? INT;
 terminal FLOAT  : NATURAL ('.' INT)?;
 
-terminal TEXT: "'" -> "'" | '"""' -> '"""';
+terminal TEXT: "'" (!("'"|'\r'|'\n'))* "'" | '"""' -> '"""';
 
 terminal ML_COMMENT: '/*' -> '*/';
 terminal SL_COMMENT: '//' !('\n'|'\r')* ('\r'? '\n')?;

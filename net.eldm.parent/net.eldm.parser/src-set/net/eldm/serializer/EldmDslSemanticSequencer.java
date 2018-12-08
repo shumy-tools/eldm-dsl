@@ -510,7 +510,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     PatternLiteral returns PatternLiteral
 	 *
 	 * Constraint:
-	 *     ((native=NativePatternDef | ref=[Definition|ID]) text=TEXT)
+	 *     ((native=NativeDef | ref=[Definition|ID]) text=TEXT)
 	 */
 	protected void sequence_PatternLiteral(ISerializationContext context, PatternLiteral semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -575,7 +575,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     TypeDef returns TypeDef
 	 *
 	 * Constraint:
-	 *     (name=ID (((parser='regex' | parser='mask' | parser='return') code=TEXT) | type=ElementDef))
+	 *     (name=ID (((parser='match' | parser='mask') code=TEXT) | type=ElementDef))
 	 */
 	protected void sequence_TypeDef(ISerializationContext context, TypeDef semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);

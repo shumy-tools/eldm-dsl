@@ -23,15 +23,13 @@ Typedef : 'typedef';
 
 Module : 'module';
 
-Return : 'return';
-
 Exp : '<exp>';
 
 Async : 'async';
 
 False : 'false';
 
-Regex : 'regex';
+Match : 'match';
 
 Bool : 'bool';
 
@@ -119,7 +117,7 @@ RULE_NATURAL : '-'? RULE_INT;
 
 RULE_FLOAT : RULE_NATURAL ('.' RULE_INT)?;
 
-RULE_TEXT : ('\'' ( options {greedy=false;} : . )*'\''|'"""' ( options {greedy=false;} : . )*'"""');
+RULE_TEXT : ('\'' ~(('\''|'\r'|'\n'))* '\''|'"""' ( options {greedy=false;} : . )*'"""');
 
 RULE_ML_COMMENT : '/*' ( options {greedy=false;} : . )*'*/';
 

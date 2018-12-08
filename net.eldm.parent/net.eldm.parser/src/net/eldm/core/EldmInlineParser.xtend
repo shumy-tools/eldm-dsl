@@ -26,68 +26,31 @@ class EldmInlineParser {
   val EldmDslParser eldmParser
   val EldmDslGrammarAccess eldmRules
   
-  /*def parsePattern(Literal value, String nativeType) {
-    if (value instanceof PatternLiteral)
-      if (value.native == nativeType)
-        return value.parseNative
-    
-    return null
-  }
-  */
-  
-  def parsePattern(Literal value, TypeDef type) {
-    if (value instanceof PatternLiteral)
-      if (value.ref === type)
-        return value.parseTypeDef
+  // parse only match | mask
+  def parse(TypeDef typeDef, Literal it) {
+    if (it instanceof PatternLiteral)
+      if (typeDef === ref)
+        return parseTypeDef
     
     return null
   }
   
-  def parsePattern(ElementDef type, Literal value) {
-    if (value instanceof PatternLiteral) {
-      if (value.native == type.native)
-        return value.parseNative
+  def parse(ElementDef elmDef, Literal it) {
+    if (it instanceof PatternLiteral) {
+      if (elmDef.native == native)
+        return parseElementDef
       
-      //TODO: remove this hack!!
-      if (
-        value.native == 'map' && type instanceof MapDef
-        || value.native == 'lst' && type instanceof ListDef
-        || value.native == 'enum' && type instanceof EnumDef
-      )
-        return value.parseNative
-        
-      if (value.ref === type)
-        return value.parseTypeDef
-    }
-    
-    return null
-  }
-  
-  private def Object parseNative(PatternLiteral value) {
-    try {
-      val text = value.extractText
-      switch value.native {
-        case ANY:  return text
-        case BOOL: return Boolean.parseBoolean(text)
-        case STR:  return text
-        case INT:  return Long.parseLong(text)
-        case FLT:  return Double.parseDouble(text)
-        case PATH: if (text.matches("/([a-z]|[0-9]|-)*)*")) return text //TODO: return a Path class!
-        
-        case LDA:  return LocalDate.parse(text)
-        case LTM:  return LocalTime.parse(text)
-        case LDT:  return LocalDateTime.parse(text)
-        
-        case MAP: return eldmParser.parse(eldmRules.mapLiteralRule, new StringReader(text)).rootASTElement as MapLiteral
-        case LST: return eldmParser.parse(eldmRules.listLiteralRule, new StringReader(text)).rootASTElement as ListLiteral
-        case ENUM: return eldmParser.parse(eldmRules.enumLiteralRule, new StringReader(text)).rootASTElement as EnumLiteral
+      switch elmDef {
+        MapDef case native == 'map', 
+        ListDef case native == 'lst',
+        EnumDef case native == 'enum': return parseElementDef
       }
       
-      return null
-    } catch (Throwable ex) {
-      ex.printStackTrace
-      return null
+      if (elmDef === ref)
+        return parseTypeDef
     }
+    
+    return null
   }
   
   private def Literal parseTypeDef(PatternLiteral value) {
@@ -97,9 +60,37 @@ class EldmInlineParser {
           return value.parseTypeDefPattern
           
         val text = value.extractText
-        return eldmParser.parse(eldmRules.literalRule, new StringReader(text)).rootASTElement as Literal
+        return Literal.parse(text)
       } else
-        throw new RuntimeException("parseTypeDef: unsupported path") // the same parseNative!
+        throw new RuntimeException("parseTypeDef: unsupported path") // same path as parseElementDef!
+    } catch (Throwable ex) {
+      ex.printStackTrace
+      return null
+    }
+  }
+  
+  private def Object parseElementDef(PatternLiteral value) {
+    try {
+      val text = value.extractText
+      switch value.native {
+        case ANY:  return text
+        case PATH: if (text.matches("(/[a-z0-9-])*")) return text //TODO: return a Path class!
+        
+        case BOOL: return Boolean.parseBoolean(text)
+        case STR:  return text
+        case INT:  return Long.parseLong(text)
+        case FLT:  return Double.parseDouble(text)
+        
+        case LDA:  return LocalDate.parse(text)
+        case LTM:  return LocalTime.parse(text)
+        case LDT:  return LocalDateTime.parse(text)
+        
+        case MAP: return MapLiteral.parse(text)
+        case LST: return ListLiteral.parse(text)
+        case ENUM: return EnumLiteral.parse(text)
+      }
+      
+      return null
     } catch (Throwable ex) {
       ex.printStackTrace
       return null
@@ -114,27 +105,42 @@ class EldmInlineParser {
     val text = value.extractText
     
     switch tDef.parser {
-      case 'regex': if (text.matches(code)) return eFact.createStrLiteral => [ value = text ]
-      
-      //TODO: cases
-      //case 'mask':
-      //case 'code': 
+      case 'match': if (text.matches(code)) return eFact.createStrLiteral => [ value = text ]
+      case 'mask': throw new RuntimeException("mask type not supported yet")
     }
     
     return null
   }
   
+  private def <T extends Literal> T parse(Class<T> type, String code) {
+    val rule = switch type {
+      case MapLiteral: eldmRules.mapLiteralRule
+      case ListLiteral: eldmRules.listLiteralRule
+      case EnumLiteral: eldmRules.enumLiteralRule
+      default: eldmRules.literalRule
+    }
+    
+    val result = eldmParser.parse(rule, new StringReader(code))
+    if (result.hasSyntaxErrors) {
+      result.syntaxErrors.forEach[ println(it) ]
+      return null
+    }
+    
+    return result.rootASTElement as T
+  }
+  
   private def extractText(PatternLiteral value) {
-    if (value.text.startsWith("'"))
-      return value.text.substring(1, value.text.length - 1) // ' -> '
-    else
-      return value.text.substring(3, value.text.length - 3) // """ -> """
+    value.text.extract
   }
   
   private def extractCode(TypeDef value) {
-    if (value.code.startsWith("'"))
-      return value.code.substring(1, value.code.length - 1) // ' -> '
+    value.code.extract
+  }
+  
+  private def extract(String value) {
+    if (value.startsWith("'"))
+      return value.substring(1, value.length - 1) // ' -> '
     else
-      return value.code.substring(3, value.code.length - 3) // """ -> """
+      return value.substring(3, value.length - 3) // """ -> """
   }
 }

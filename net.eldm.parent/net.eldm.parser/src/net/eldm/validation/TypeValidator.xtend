@@ -86,56 +86,62 @@ class TypeValidator {
   
   
   
-  
-  def String isValidAssignment(Definition defType, Literal value) {
-    // TypeDef ------------------------------------------------------
-    if (defType instanceof TypeDef) {
-      if (defType.type instanceof ElementDef)
-        return (defType.type as ElementDef).isValidAssignment(value)
-      else { // parser reference
-        val pattern = value.parsePattern(defType)
-        if (pattern !== null)
-          return null
-        //return defType.isValidAssignment(pattern as Literal)
-      }
+  // isValidAssignment ------------------------------------------------
+  def String isValidAssignment(Definition defDef, Literal lValue) {
+    switch defDef {
+      TypeDef: return defDef.isValidAssignment(lValue)
+      ExternalDef: return defDef.isValidAssignment(lValue)
+      default: return '''Unsupported Definition: «defDef.class». Please report this bug.'''
     }
-    
-    // ExternalDef --------------------------------------------------
-    if (defType instanceof ExternalDef)
-      return (defType as ExternalDef).isValidAssignment(value)
-    
-    return "Literal value not assignable to Definition."
   }
   
-  // isValidAssignment ------------------------------------------------
-  def String isValidAssignment(ElementDef type, Literal value) {
-    if (type.native !== null) {
-      switch type.native {
+  def String isValidAssignment(TypeDef typeDef, Literal lValue) {
+    if (typeDef.type !== null)
+      return typeDef.type.isValidAssignment(lValue)
+     
+    if (typeDef.parser !== null) {
+      val pattern = typeDef.parse(lValue)
+      if (pattern !== null)
+        return null
+    }
+    
+    return "Literal value not assignable to TypeDef."
+  }
+  
+  def String isValidAssignment(ElementDef elmDef, Literal lValue) {
+    if (elmDef.native !== null) {
+      switch elmDef.native {
         case ANY: return null
-        case BOOL: if (value instanceof BoolLiteral || type.parsePattern(value) !== null) return null
-        case STR: if (value instanceof StrLiteral || type.parsePattern(value) !== null) return null
-        case INT: if (value instanceof IntLiteral || type.parsePattern(value) !== null) return null
-        case FLT: if (value instanceof FltLiteral || type.parsePattern(value) !== null) return null
-        case PATH: if (value.path !== null || type.parsePattern(value) !== null) return null
+        case PATH: if (lValue.path !== null || elmDef.parse(lValue) !== null) return null
+        
+        case BOOL: if (lValue instanceof BoolLiteral || elmDef.parse(lValue) !== null) return null
+        case STR: if (lValue instanceof StrLiteral || elmDef.parse(lValue) !== null) return null
+        case INT: if (lValue instanceof IntLiteral || elmDef.parse(lValue) !== null) return null
+        case FLT: if (lValue instanceof FltLiteral || elmDef.parse(lValue) !== null) return null
+        
+        case LDA,
+        case LTM,
+        case LDT: if (elmDef.parse(lValue) !== null) return null
+        
+        default: return '''Unsupported native type: «elmDef.native». Please report this bug.'''
       }
-      return '''Native value not assignable to type '«type.native»'.'''
+      
+      return '''Native value not assignable to type '«elmDef.native»'.'''
     }
     
-    if (type.ref !== null)
-      return type.ref.isValidAssignment(value)
+    if (elmDef.ref !== null)
+      return elmDef.ref.isValidAssignment(lValue)
     
-    switch type {
-      MapDef: return type.isValidAssignment(value)
-      ListDef: return type.isValidAssignment(value)
-      EnumDef: return type.isValidAssignment(value)
+    switch elmDef {
+      MapDef: return elmDef.isValidAssignment(lValue)
+      ListDef: return elmDef.isValidAssignment(lValue)
+      EnumDef: return elmDef.isValidAssignment(lValue)
+      default: return '''Unsupported ElementDef: «elmDef.class». Please report this bug.'''
     }
-    
-    return "Literal value not assignable to ElementDef."
   }
   
   def String isValidAssignment(MapDef mapDef, Literal lValue) {
-    val pattern = mapDef.parsePattern(lValue)
-    val use = pattern ?: lValue
+    val use = mapDef.parse(lValue) ?: lValue
     
     if (use instanceof MapLiteral) {
       // Invalid KeyDef sets!
@@ -163,8 +169,7 @@ class TypeValidator {
   }
   
   def String isValidAssignment(ListDef lstDef, Literal lValue) {
-    val pattern = lstDef.parsePattern(lValue)
-    val use = pattern ?: lValue
+    val use = lstDef.parse(lValue) ?: lValue
     
     if (use instanceof ListLiteral) {
       for (item : use.vals) {
@@ -180,8 +185,7 @@ class TypeValidator {
   }
   
   def String isValidAssignment(EnumDef enumRef, Literal lValue) {
-    val pattern = enumRef.parsePattern(lValue)
-    val use = pattern ?: lValue
+    val use = enumRef.parse(lValue) ?: lValue
     
     if (use instanceof EnumLiteral) {
       for (ed : enumRef.defs)
@@ -192,7 +196,9 @@ class TypeValidator {
     return "Literal value not assignable to EnumDef."
   }
   
-  def String isValidAssignment(ExternalDef externalRef, Literal value) {
+  def String isValidAssignment(ExternalDef extDef, Literal lValue) {
     return "External definitions not yet supported!" //TODO: support external defs
+    
+    //return "Literal value not assignable to ExternalDef."
   }
 }
