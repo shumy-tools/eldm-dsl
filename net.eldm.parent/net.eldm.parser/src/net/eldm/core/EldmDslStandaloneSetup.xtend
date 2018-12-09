@@ -4,13 +4,31 @@
 package net.eldm.core
 
 import net.eldm.core.EldmDslStandaloneSetupGenerated
+import com.google.inject.Injector
+import com.google.inject.Guice
+import com.google.inject.AbstractModule
+import net.eldm.util.TypeValidator
+import net.eldm.util.InlineParser
+import net.eldm.util.TypeResolver
 
 /**
  * Initialization support for running Xtext languages without Equinox extension registry.
  */
 class EldmDslStandaloneSetup extends EldmDslStandaloneSetupGenerated {
-
-	def static void doSetup() {
-		new EldmDslStandaloneSetup().createInjectorAndDoEMFRegistration()
-	}
+  val module = new AbstractModule() {
+    override protected configure() {
+      bind(InlineParser).to(InlineParser)
+      bind(TypeResolver).to(TypeResolver)
+      bind(TypeValidator).to(TypeValidator)
+    }
+  }
+  
+  override Injector createInjector() {
+    val injector = Guice.createInjector(new EldmDslRuntimeModule());
+    return injector.createChildInjector(module)
+  }
+  
+  def static void doSetup() {
+    new EldmDslStandaloneSetup().createInjectorAndDoEMFRegistration()
+  }
 }

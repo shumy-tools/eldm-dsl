@@ -77,6 +77,20 @@ class TestDefinition {
   }
   
   @Test
+  def void testInvalidMap() {
+    ph.testExpectedError('''
+      module /test
+      
+      definitions:
+        typedef List ..{ id: int }
+        
+        typedef Sex enum { id: int, list: List }:
+          M { id: 10, list: map@'[ { id: 10 } ]' }
+      
+    ''', "Literal value not assignable to ListDef.")
+  }
+  
+  @Test
   def void testCorrect() {
     ph.test('''
       module /test
@@ -108,6 +122,7 @@ class TestDefinition {
         typedef Sex enum { desc: str, other?: Other, list?: List, mail?: email }:
           M { desc: str@'Male', list: [ { id: int@'12' }, map@'{ id: 5, or: 3 }' ] }
           F { desc: 'Female', other: { id: int@"""10""", date: lda@'2018-01-20' }, mail: email@'alex@gmail.com' }
+          O { desc: """Other""", list: List@'[ { id: 3 }, { id: 10, or: 11 } ]' }
       
     ''')
   }

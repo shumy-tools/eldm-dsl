@@ -1,4 +1,4 @@
-package net.eldm
+package net.eldm.spi
 
 class Natives {
   public static String ANY = 'any'
