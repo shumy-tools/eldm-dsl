@@ -37,7 +37,7 @@ class InlineParser {
       
       switch tDef.parser {
         case 'match': if (text.matches(code)) return eFact.createStrLiteral => [ value = text ]
-        case 'mask': return null //TODO: support for typedef mask 
+        case 'mask': if (text.masked(code)) return eFact.createStrLiteral => [ value = text ] 
       }
     }
     
@@ -96,6 +96,43 @@ class InlineParser {
       
       return res as T
     }
+  }
+  
+  private def masked(String value, String mask) {
+    var vIndex = 0
+    try {
+      for (c : mask.toCharArray) {
+        val v = value.charAt(vIndex).toString
+        switch c.toString {
+          // any digit
+          case '#': if (v.matches("[0-9]")) vIndex++ else return false
+          
+          // any capital letter
+          case 'A': if (v.matches("[A-Z]")) vIndex++ else return false
+          
+          // any small letter
+          case 'a': if (v.matches("[a-z]")) vIndex++ else return false
+          
+          // any capital alphanumeric character
+          case 'N': if (v.matches("[0-9A-Z]")) vIndex++ else return false
+          
+          // any small alphanumeric character
+          case 'n': if (v.matches("[0-9a-z]")) vIndex++ else return false
+          
+          // any special symbol -!$%^&*()_+|~=`{}[]:";'<>?,./\ or space
+          case 'X': if ("-!$%^&*()_+|~=`{}[]:\";'<>?,./\\".contains(v)) vIndex++ else return false
+          
+          // matching the char
+          default: if (value.charAt(vIndex) == c) vIndex++ else return false
+        }
+      }
+      
+      if (vIndex !== value.length) return false
+    } catch (IndexOutOfBoundsException e) {
+      return false
+    }
+    
+    return true
   }
   
   private def extractText(PatternLiteral value) {
