@@ -128,7 +128,10 @@ class TestDefinition {
           ALEX { id: 1.3, seq: ptr@'R3g7-60.e5U\ ', mp: { x: -10, y: 12.5 } }
           MICA { id: 1.5, mp: map@'{ x: 10 }' }
           PAUL { id: -1.0, mp: Other@'{ id: 0, date: 2016-01-12 }' }
-      
+        
+        typedef Ox enum:
+          X Y
+        
     ''')
   }
 }

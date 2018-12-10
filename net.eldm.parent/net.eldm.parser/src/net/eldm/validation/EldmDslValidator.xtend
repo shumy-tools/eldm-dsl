@@ -11,6 +11,7 @@ import net.eldm.eldmDsl.MapEntryDef
 import net.eldm.eldmDsl.TypeDef
 import net.eldm.util.TypeValidator
 import org.eclipse.xtext.validation.Check
+import net.eldm.eldmDsl.Let
 
 /**
  * This class contains custom validation rules. 
@@ -19,6 +20,12 @@ import org.eclipse.xtext.validation.Check
  */
 class EldmDslValidator extends AbstractEldmDslValidator {
   @Inject TypeValidator tValidator
+  
+  @Check
+  def void checkLetCase(Let it) {
+    if (name != name.toLowerCase)
+      warning("Incorrect name for let-value! Set all chars to lower-case.", it, EldmDslPackage.Literals.LET__NAME)
+  }
   
   @Check
   def checkTypeDefCase(TypeDef it) {
@@ -45,6 +52,14 @@ class EldmDslValidator extends AbstractEldmDslValidator {
   
   @Check
   def void checkEnumDef(EnumDef ed) {
+    if (ed.type === null) {
+      ed.defs.forEach[
+        if (value !== null)
+          error("Enum has no value definition.", it, EldmDslPackage.Literals.ENUM_ITEM_DEF__VALUE)
+      ]
+      return
+    }
+      
     ed.defs.forEach[
       val msg = tValidator.is(value, ed.type)
       if (msg !== null)

@@ -13,19 +13,13 @@ import org.eclipse.xtext.parser.antlr.Lexer;
 
 Definitions : 'definitions:';
 
-Test10 : '{test:10}';
-
 PlugDsl : 'plug-dsl';
 
-Block : '<block>';
+Private : 'private';
 
 Typedef : 'typedef';
 
 Module : 'module';
-
-Exp : '<exp>';
-
-Async : 'async';
 
 False : 'false';
 
@@ -65,31 +59,67 @@ Ltm : 'ltm';
 
 Map : 'map';
 
-Mut : 'mut';
-
 Set : 'set';
 
 Str : 'str';
 
-NumberSignLeftParenthesis : '#(';
+ExclamationMarkEqualsSign : '!=';
+
+AsteriskAsterisk : '**';
+
+PlusSignPlusSign : '++';
+
+HyphenMinusHyphenMinus : '--';
 
 HyphenMinusGreaterThanSign : '->';
 
 FullStopFullStop : '..';
 
+LessThanSignEqualsSign : '<=';
+
+EqualsSignEqualsSign : '==';
+
+GreaterThanSignEqualsSign : '>=';
+
+QuestionMarkFullStop : '?.';
+
 As : 'as';
+
+Is : 'is';
 
 LineFeed : '\n';
 
 CarriageReturn : '\r';
 
+ExclamationMark : '!';
+
+PercentSign : '%';
+
+Ampersand : '&';
+
+LeftParenthesis : '(';
+
 RightParenthesis : ')';
+
+Asterisk : '*';
+
+PlusSign : '+';
 
 Comma : ',';
 
+HyphenMinus : '-';
+
+FullStop : '.';
+
+Solidus : '/';
+
 Colon : ':';
 
+LessThanSign : '<';
+
 EqualsSign : '=';
+
+GreaterThanSign : '>';
 
 QuestionMark : '?';
 
@@ -100,6 +130,8 @@ LeftSquareBracket : '[';
 RightSquareBracket : ']';
 
 LeftCurlyBracket : '{';
+
+VerticalLine : '|';
 
 RightCurlyBracket : '}';
 

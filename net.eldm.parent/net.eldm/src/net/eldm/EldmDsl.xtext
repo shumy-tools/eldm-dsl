@@ -14,7 +14,8 @@ Module:
   
   ('definitions:'
   BEGIN
-    (defs+=Definition)+
+    (defs+=Definition)*
+    (valDefs+=Let)*
   END)?
   
   (opers+=Operation)*
@@ -44,15 +45,8 @@ Import:
 // ------------------------------------------------------------------------------------------------------------------------------
 // Operations
 // ------------------------------------------------------------------------------------------------------------------------------
-SubPath:
-  'def' name=PathLiteral
-  BEGIN
-    (opers+=Operation)+
-  END
-;
-
 Operation:
-  'def' (isGet?='get' | 'set') name=PathLiteral? param=ParamDef? ('->' result=ElementDef)? ':'
+  isPrivate?='private'? 'def' (isGet?='get' | 'set') name=PathLiteral? param=ParamDef? ('->' result=ElementDef)? ':'
     body=BlockExpression
 ;
 
@@ -60,41 +54,92 @@ Operation:
     def=MapDef | ref=[MapDef]
   ;
 
-// ------------------------------------------------------------------------------------------------------------------------------
-// Expressions
-// ------------------------------------------------------------------------------------------------------------------------------
-BlockExpression:
+SubPath:
+  'def' name=PathLiteral
   BEGIN
-    '<block>'
+    (opers+=Operation)+
   END
 ;
 
-VariableDef:
-  'let' (name=ID (':' type=ElementDef)? '=' right=Expression)
-    | (mut?='mut' name=ID (':' type=ElementDef)? ('=' right=Expression)?) //TODO: check-error-if (mut == true && type === null && right === null)
+// ------------------------------------------------------------------------------------------------------------------------------
+// Expressions
+// ------------------------------------------------------------------------------------------------------------------------------
+BlockExpression: {BlockExpression}
+  BEGIN
+    (expressions+=Expression)*
+  END
 ;
+  Expression:
+    Let //TODO: add more expressions?
+  ;
+    
+  Let returns Expression: {Let}
+    'let' name=ID '=' result=ResultExpression
+  ;
 
+// the result expression must be equivalent to a Literal
+ResultExpression:
+  OrExpression
+;
+  OrExpression returns ResultExpression:
+    AndExpression (=>({ResultExpression.left=current} feature='or') right=OrExpression)?
+  ;
+  
+  AndExpression returns ResultExpression:
+    EqualityExpression (=>({ResultExpression.left=current} feature='and') right=EqualityExpression)*
+  ;
+  
+  EqualityExpression returns ResultExpression:
+    RelationalExpression (=>({ResultExpression.left=current} feature=('=='|'!=')) right=RelationalExpression)*
+  ;
+  
+  RelationalExpression returns ResultExpression:
+    AdditiveExpression
+    (   =>({InstanceOfExpression.expression=current} 'is') type=ElementDef
+      | =>({ResultExpression.left=current} feature=('>='|'<='|'>'|'<')) right=AdditiveExpression
+    )*
+  ;
+  
+  AdditiveExpression returns ResultExpression:
+    MultiplicativeExpression (=>({ResultExpression.left=current} feature=('+'|'-')) right=MultiplicativeExpression)*
+  ;
+  
+  MultiplicativeExpression returns ResultExpression:
+    UnaryOperation (=>({ResultExpression.left=current} feature=('*'|'**'|'/'|'%')) right=UnaryOperation)*
+  ;
+  
+  UnaryOperation returns ResultExpression:
+    feature=('!') operand=UnaryOperation
+    | PostfixOperation
+  ;
+  
+  PostfixOperation returns ResultExpression:
+    BaseExpression =>({PostfixOperation.operand=current} feature=('++'|'--'))?
+  ;
+  
+  BaseExpression returns ResultExpression:
+    Primary | '(' ResultExpression ')'
+  ;
+  
+  Primary returns ResultExpression:
+    value=Literal
+    | => target=[Let] (members+=MemberGet)*
+  ;
+   
+    MemberGet: ('.'|isNullSafe?='?.') member=ID;
+
+/*
 OperationCall:
   async?='async'? (isGet?='get' | 'set') ref=[Operation] param=MapExpression
-;
-
-
-Expression:
-  '<exp>'
-;
-
-MapExpression:
-  '{test:10}'
-;
-
-// LiteralExpression //TODO: use for default params
+;*/
 
 // ------------------------------------------------------------------------------------------------------------------------------
 // Type Definitions
 // ------------------------------------------------------------------------------------------------------------------------------
-LambdaDef:
+
+/*LambdaDef:
   '#(' param=ElementDef ('->' result=ElementDef)? ')'
-;
+;*/
 
 Definition:
   TypeDef | ExternalDef
@@ -133,14 +178,14 @@ ElementDef:
   ;
   
   EnumDef:
-    'enum' type=MapDef ':'
+    'enum' type=MapDef? ':'
     BEGIN
       (defs+=EnumItemDef)+
     END
   ;
   
     EnumItemDef:
-      name=ID value=MapLiteral
+      name=ID value=MapLiteral?
     ;
   
 NativeDef:
@@ -198,7 +243,7 @@ Literal:
     ;
     
   EnumLiteral: {EnumLiteral}
-    ref=[EnumItemDef]
+    '@' ref=[EnumItemDef]
   ;
   
   PatternLiteral: {PatternLiteral}
