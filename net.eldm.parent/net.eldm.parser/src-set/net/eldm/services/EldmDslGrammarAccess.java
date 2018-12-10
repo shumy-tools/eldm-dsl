@@ -28,7 +28,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Group cGroup = (Group)rule.eContents().get(1);
 		private final Keyword cModuleKeyword_0 = (Keyword)cGroup.eContents().get(0);
 		private final Assignment cNameAssignment_1 = (Assignment)cGroup.eContents().get(1);
-		private final RuleCall cNamePathParserRuleCall_1_0 = (RuleCall)cNameAssignment_1.eContents().get(0);
+		private final RuleCall cNamePathLiteralParserRuleCall_1_0 = (RuleCall)cNameAssignment_1.eContents().get(0);
 		private final Assignment cImportsAssignment_2 = (Assignment)cGroup.eContents().get(2);
 		private final RuleCall cImportsImportParserRuleCall_2_0 = (RuleCall)cImportsAssignment_2.eContents().get(0);
 		private final Assignment cPlugsAssignment_3 = (Assignment)cGroup.eContents().get(3);
@@ -48,7 +48,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//// Module Header
 		//// ------------------------------------------------------------------------------------------------------------------------------
 		//Module:
-		//	'module' name=Path
+		//	'module' name=PathLiteral
 		//	imports+=Import*
 		//	plugs+=PlugDsl* ('definitions:'
 		//	BEGIN
@@ -58,18 +58,18 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//	paths+=SubPath*;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//'module' name=Path imports+=Import* plugs+=PlugDsl* ('definitions:' BEGIN defs+=Definition+ END)? opers+=Operation*
-		//paths+=SubPath*
+		//'module' name=PathLiteral imports+=Import* plugs+=PlugDsl* ('definitions:' BEGIN defs+=Definition+ END)?
+		//opers+=Operation* paths+=SubPath*
 		public Group getGroup() { return cGroup; }
 		
 		//'module'
 		public Keyword getModuleKeyword_0() { return cModuleKeyword_0; }
 		
-		//name=Path
+		//name=PathLiteral
 		public Assignment getNameAssignment_1() { return cNameAssignment_1; }
 		
-		//Path
-		public RuleCall getNamePathParserRuleCall_1_0() { return cNamePathParserRuleCall_1_0; }
+		//PathLiteral
+		public RuleCall getNamePathLiteralParserRuleCall_1_0() { return cNamePathLiteralParserRuleCall_1_0; }
 		
 		//imports+=Import*
 		public Assignment getImportsAssignment_2() { return cImportsAssignment_2; }
@@ -167,32 +167,32 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.ImportOperation");
 		private final Group cGroup = (Group)rule.eContents().get(1);
 		private final Assignment cNameAssignment_0 = (Assignment)cGroup.eContents().get(0);
-		private final RuleCall cNamePathParserRuleCall_0_0 = (RuleCall)cNameAssignment_0.eContents().get(0);
+		private final RuleCall cNamePathLiteralParserRuleCall_0_0 = (RuleCall)cNameAssignment_0.eContents().get(0);
 		private final Keyword cFromKeyword_1 = (Keyword)cGroup.eContents().get(1);
 		private final Assignment cRefAssignment_2 = (Assignment)cGroup.eContents().get(2);
-		private final RuleCall cRefPathParserRuleCall_2_0 = (RuleCall)cRefAssignment_2.eContents().get(0);
+		private final RuleCall cRefPathLiteralParserRuleCall_2_0 = (RuleCall)cRefAssignment_2.eContents().get(0);
 		
 		//ImportOperation Import:
-		//	name=Path 'from' ref=Path;
+		//	name=PathLiteral 'from' ref=PathLiteral;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//name=Path 'from' ref=Path
+		//name=PathLiteral 'from' ref=PathLiteral
 		public Group getGroup() { return cGroup; }
 		
-		//name=Path
+		//name=PathLiteral
 		public Assignment getNameAssignment_0() { return cNameAssignment_0; }
 		
-		//Path
-		public RuleCall getNamePathParserRuleCall_0_0() { return cNamePathParserRuleCall_0_0; }
+		//PathLiteral
+		public RuleCall getNamePathLiteralParserRuleCall_0_0() { return cNamePathLiteralParserRuleCall_0_0; }
 		
 		//'from'
 		public Keyword getFromKeyword_1() { return cFromKeyword_1; }
 		
-		//ref=Path
+		//ref=PathLiteral
 		public Assignment getRefAssignment_2() { return cRefAssignment_2; }
 		
-		//Path
-		public RuleCall getRefPathParserRuleCall_2_0() { return cRefPathParserRuleCall_2_0; }
+		//PathLiteral
+		public RuleCall getRefPathLiteralParserRuleCall_2_0() { return cRefPathLiteralParserRuleCall_2_0; }
 	}
 	public class ImportDefinitionElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.ImportDefinition");
@@ -206,13 +206,13 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cDefsExternalDefParserRuleCall_0_1_1_0 = (RuleCall)cDefsAssignment_0_1_1.eContents().get(0);
 		private final Keyword cFromKeyword_1 = (Keyword)cGroup.eContents().get(1);
 		private final Assignment cRefAssignment_2 = (Assignment)cGroup.eContents().get(2);
-		private final RuleCall cRefPathParserRuleCall_2_0 = (RuleCall)cRefAssignment_2.eContents().get(0);
+		private final RuleCall cRefPathLiteralParserRuleCall_2_0 = (RuleCall)cRefAssignment_2.eContents().get(0);
 		
 		//ImportDefinition Import:
-		//	(defs+=ExternalDef (',' defs+=ExternalDef)*) 'from' ref=Path;
+		//	(defs+=ExternalDef (',' defs+=ExternalDef)*) 'from' ref=PathLiteral;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//(defs+=ExternalDef (',' defs+=ExternalDef)*) 'from' ref=Path
+		//(defs+=ExternalDef (',' defs+=ExternalDef)*) 'from' ref=PathLiteral
 		public Group getGroup() { return cGroup; }
 		
 		//defs+=ExternalDef (',' defs+=ExternalDef)*
@@ -239,11 +239,11 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//'from'
 		public Keyword getFromKeyword_1() { return cFromKeyword_1; }
 		
-		//ref=Path
+		//ref=PathLiteral
 		public Assignment getRefAssignment_2() { return cRefAssignment_2; }
 		
-		//Path
-		public RuleCall getRefPathParserRuleCall_2_0() { return cRefPathParserRuleCall_2_0; }
+		//PathLiteral
+		public RuleCall getRefPathLiteralParserRuleCall_2_0() { return cRefPathLiteralParserRuleCall_2_0; }
 	}
 	public class ExternalDefElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.ExternalDef");
@@ -298,7 +298,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Group cGroup = (Group)rule.eContents().get(1);
 		private final Keyword cDefKeyword_0 = (Keyword)cGroup.eContents().get(0);
 		private final Assignment cNameAssignment_1 = (Assignment)cGroup.eContents().get(1);
-		private final RuleCall cNamePathParserRuleCall_1_0 = (RuleCall)cNameAssignment_1.eContents().get(0);
+		private final RuleCall cNamePathLiteralParserRuleCall_1_0 = (RuleCall)cNameAssignment_1.eContents().get(0);
 		private final RuleCall cBEGINTerminalRuleCall_2 = (RuleCall)cGroup.eContents().get(2);
 		private final Assignment cOpersAssignment_3 = (Assignment)cGroup.eContents().get(3);
 		private final RuleCall cOpersOperationParserRuleCall_3_0 = (RuleCall)cOpersAssignment_3.eContents().get(0);
@@ -308,23 +308,23 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//// Operations
 		//// ------------------------------------------------------------------------------------------------------------------------------
 		//SubPath:
-		//	'def' name=Path
+		//	'def' name=PathLiteral
 		//	BEGIN
 		//	opers+=Operation+
 		//	END;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//'def' name=Path BEGIN opers+=Operation+ END
+		//'def' name=PathLiteral BEGIN opers+=Operation+ END
 		public Group getGroup() { return cGroup; }
 		
 		//'def'
 		public Keyword getDefKeyword_0() { return cDefKeyword_0; }
 		
-		//name=Path
+		//name=PathLiteral
 		public Assignment getNameAssignment_1() { return cNameAssignment_1; }
 		
-		//Path
-		public RuleCall getNamePathParserRuleCall_1_0() { return cNamePathParserRuleCall_1_0; }
+		//PathLiteral
+		public RuleCall getNamePathLiteralParserRuleCall_1_0() { return cNamePathLiteralParserRuleCall_1_0; }
 		
 		//BEGIN
 		public RuleCall getBEGINTerminalRuleCall_2() { return cBEGINTerminalRuleCall_2; }
@@ -347,7 +347,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Keyword cIsGetGetKeyword_1_0_0 = (Keyword)cIsGetAssignment_1_0.eContents().get(0);
 		private final Keyword cSetKeyword_1_1 = (Keyword)cAlternatives_1.eContents().get(1);
 		private final Assignment cNameAssignment_2 = (Assignment)cGroup.eContents().get(2);
-		private final RuleCall cNamePathParserRuleCall_2_0 = (RuleCall)cNameAssignment_2.eContents().get(0);
+		private final RuleCall cNamePathLiteralParserRuleCall_2_0 = (RuleCall)cNameAssignment_2.eContents().get(0);
 		private final Assignment cParamAssignment_3 = (Assignment)cGroup.eContents().get(3);
 		private final RuleCall cParamParamDefParserRuleCall_3_0 = (RuleCall)cParamAssignment_3.eContents().get(0);
 		private final Group cGroup_4 = (Group)cGroup.eContents().get(4);
@@ -359,11 +359,11 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cBodyBlockExpressionParserRuleCall_6_0 = (RuleCall)cBodyAssignment_6.eContents().get(0);
 		
 		//Operation:
-		//	'def' (isGet?='get' | 'set') name=Path? param=ParamDef? ('->' result=ElementDef)? ':'
+		//	'def' (isGet?='get' | 'set') name=PathLiteral? param=ParamDef? ('->' result=ElementDef)? ':'
 		//	body=BlockExpression;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//'def' (isGet?='get' | 'set') name=Path? param=ParamDef? ('->' result=ElementDef)? ':' body=BlockExpression
+		//'def' (isGet?='get' | 'set') name=PathLiteral? param=ParamDef? ('->' result=ElementDef)? ':' body=BlockExpression
 		public Group getGroup() { return cGroup; }
 		
 		//'def'
@@ -381,11 +381,11 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//'set'
 		public Keyword getSetKeyword_1_1() { return cSetKeyword_1_1; }
 		
-		//name=Path?
+		//name=PathLiteral?
 		public Assignment getNameAssignment_2() { return cNameAssignment_2; }
 		
-		//Path
-		public RuleCall getNamePathParserRuleCall_2_0() { return cNamePathParserRuleCall_2_0; }
+		//PathLiteral
+		public RuleCall getNamePathLiteralParserRuleCall_2_0() { return cNamePathLiteralParserRuleCall_2_0; }
 		
 		//param=ParamDef?
 		public Assignment getParamAssignment_3() { return cParamAssignment_3; }
@@ -597,15 +597,15 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Keyword cSetKeyword_1_1 = (Keyword)cAlternatives_1.eContents().get(1);
 		private final Assignment cRefAssignment_2 = (Assignment)cGroup.eContents().get(2);
 		private final CrossReference cRefOperationCrossReference_2_0 = (CrossReference)cRefAssignment_2.eContents().get(0);
-		private final RuleCall cRefOperationPathParserRuleCall_2_0_1 = (RuleCall)cRefOperationCrossReference_2_0.eContents().get(1);
+		private final RuleCall cRefOperationIDTerminalRuleCall_2_0_1 = (RuleCall)cRefOperationCrossReference_2_0.eContents().get(1);
 		private final Assignment cParamAssignment_3 = (Assignment)cGroup.eContents().get(3);
 		private final RuleCall cParamMapExpressionParserRuleCall_3_0 = (RuleCall)cParamAssignment_3.eContents().get(0);
 		
 		//OperationCall:
-		//	async?='async'? (isGet?='get' | 'set') ref=[Operation|Path] param=MapExpression;
+		//	async?='async'? (isGet?='get' | 'set') ref=[Operation] param=MapExpression;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//async?='async'? (isGet?='get' | 'set') ref=[Operation|Path] param=MapExpression
+		//async?='async'? (isGet?='get' | 'set') ref=[Operation] param=MapExpression
 		public Group getGroup() { return cGroup; }
 		
 		//async?='async'?
@@ -626,14 +626,14 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//'set'
 		public Keyword getSetKeyword_1_1() { return cSetKeyword_1_1; }
 		
-		//ref=[Operation|Path]
+		//ref=[Operation]
 		public Assignment getRefAssignment_2() { return cRefAssignment_2; }
 		
-		//[Operation|Path]
+		//[Operation]
 		public CrossReference getRefOperationCrossReference_2_0() { return cRefOperationCrossReference_2_0; }
 		
-		//Path
-		public RuleCall getRefOperationPathParserRuleCall_2_0_1() { return cRefOperationPathParserRuleCall_2_0_1; }
+		//ID
+		public RuleCall getRefOperationIDTerminalRuleCall_2_0_1() { return cRefOperationIDTerminalRuleCall_2_0_1; }
 		
 		//param=MapExpression
 		public Assignment getParamAssignment_3() { return cParamAssignment_3; }
@@ -1121,11 +1121,11 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.NativeDef");
 		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
 		private final Keyword cAnyKeyword_0 = (Keyword)cAlternatives.eContents().get(0);
-		private final Keyword cBoolKeyword_1 = (Keyword)cAlternatives.eContents().get(1);
-		private final Keyword cStrKeyword_2 = (Keyword)cAlternatives.eContents().get(2);
-		private final Keyword cIntKeyword_3 = (Keyword)cAlternatives.eContents().get(3);
-		private final Keyword cFltKeyword_4 = (Keyword)cAlternatives.eContents().get(4);
-		private final Keyword cPathKeyword_5 = (Keyword)cAlternatives.eContents().get(5);
+		private final Keyword cPathKeyword_1 = (Keyword)cAlternatives.eContents().get(1);
+		private final Keyword cBoolKeyword_2 = (Keyword)cAlternatives.eContents().get(2);
+		private final Keyword cStrKeyword_3 = (Keyword)cAlternatives.eContents().get(3);
+		private final Keyword cIntKeyword_4 = (Keyword)cAlternatives.eContents().get(4);
+		private final Keyword cFltKeyword_5 = (Keyword)cAlternatives.eContents().get(5);
 		private final Keyword cLdaKeyword_6 = (Keyword)cAlternatives.eContents().get(6);
 		private final Keyword cLtmKeyword_7 = (Keyword)cAlternatives.eContents().get(7);
 		private final Keyword cLdtKeyword_8 = (Keyword)cAlternatives.eContents().get(8);
@@ -1134,31 +1134,32 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Keyword cEnumKeyword_11 = (Keyword)cAlternatives.eContents().get(11);
 		
 		//NativeDef:
-		//	'any' | 'bool' | 'str' | 'int' | 'flt' | 'path'
+		//	'any' | 'path'
+		//	| 'bool' | 'str' | 'int' | 'flt'
 		//	| 'lda' | 'ltm' | 'ldt'
 		//	| 'map' | 'lst' | 'enum';
 		@Override public ParserRule getRule() { return rule; }
 		
-		//'any' | 'bool' | 'str' | 'int' | 'flt' | 'path' | 'lda' | 'ltm' | 'ldt' | 'map' | 'lst' | 'enum'
+		//'any' | 'path' | 'bool' | 'str' | 'int' | 'flt' | 'lda' | 'ltm' | 'ldt' | 'map' | 'lst' | 'enum'
 		public Alternatives getAlternatives() { return cAlternatives; }
 		
 		//'any'
 		public Keyword getAnyKeyword_0() { return cAnyKeyword_0; }
 		
+		//'path'
+		public Keyword getPathKeyword_1() { return cPathKeyword_1; }
+		
 		//'bool'
-		public Keyword getBoolKeyword_1() { return cBoolKeyword_1; }
+		public Keyword getBoolKeyword_2() { return cBoolKeyword_2; }
 		
 		//'str'
-		public Keyword getStrKeyword_2() { return cStrKeyword_2; }
+		public Keyword getStrKeyword_3() { return cStrKeyword_3; }
 		
 		//'int'
-		public Keyword getIntKeyword_3() { return cIntKeyword_3; }
+		public Keyword getIntKeyword_4() { return cIntKeyword_4; }
 		
 		//'flt'
-		public Keyword getFltKeyword_4() { return cFltKeyword_4; }
-		
-		//'path'
-		public Keyword getPathKeyword_5() { return cPathKeyword_5; }
+		public Keyword getFltKeyword_5() { return cFltKeyword_5; }
 		
 		//'lda'
 		public Keyword getLdaKeyword_6() { return cLdaKeyword_6; }
@@ -1185,16 +1186,16 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cStrLiteralParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
 		private final RuleCall cIntLiteralParserRuleCall_2 = (RuleCall)cAlternatives.eContents().get(2);
 		private final RuleCall cFltLiteralParserRuleCall_3 = (RuleCall)cAlternatives.eContents().get(3);
-		private final RuleCall cListLiteralParserRuleCall_4 = (RuleCall)cAlternatives.eContents().get(4);
-		private final RuleCall cMapLiteralParserRuleCall_5 = (RuleCall)cAlternatives.eContents().get(5);
-		private final RuleCall cEnumLiteralParserRuleCall_6 = (RuleCall)cAlternatives.eContents().get(6);
-		private final RuleCall cPatternLiteralParserRuleCall_7 = (RuleCall)cAlternatives.eContents().get(7);
-		private final Assignment cPathAssignment_8 = (Assignment)cAlternatives.eContents().get(8);
-		private final RuleCall cPathPathParserRuleCall_8_0 = (RuleCall)cPathAssignment_8.eContents().get(0);
+		private final RuleCall cDateLiteralParserRuleCall_4 = (RuleCall)cAlternatives.eContents().get(4);
+		private final RuleCall cTimeLiteralParserRuleCall_5 = (RuleCall)cAlternatives.eContents().get(5);
+		private final RuleCall cDateTimeLiteralParserRuleCall_6 = (RuleCall)cAlternatives.eContents().get(6);
+		private final RuleCall cPathLiteralParserRuleCall_7 = (RuleCall)cAlternatives.eContents().get(7);
+		private final RuleCall cListLiteralParserRuleCall_8 = (RuleCall)cAlternatives.eContents().get(8);
+		private final RuleCall cMapLiteralParserRuleCall_9 = (RuleCall)cAlternatives.eContents().get(9);
+		private final RuleCall cEnumLiteralParserRuleCall_10 = (RuleCall)cAlternatives.eContents().get(10);
+		private final RuleCall cPatternLiteralParserRuleCall_11 = (RuleCall)cAlternatives.eContents().get(11);
 		
-		///*NativePatternDef:
-		//  NativeDef | 'map' | 'lst' | 'enum'
-		//;*/ // ------------------------------------------------------------------------------------------------------------------------------
+		//// ------------------------------------------------------------------------------------------------------------------------------
 		//// Literals
 		//// ------------------------------------------------------------------------------------------------------------------------------
 		//Literal:
@@ -1202,14 +1203,18 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//	| StrLiteral
 		//	| IntLiteral
 		//	| FltLiteral
+		//	| DateLiteral
+		//	| TimeLiteral
+		//	| DateTimeLiteral
+		//	| PathLiteral
 		//	| ListLiteral
 		//	| MapLiteral
 		//	| EnumLiteral
-		//	| PatternLiteral
-		//	| path=Path;
+		//	| PatternLiteral;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//BoolLiteral | StrLiteral | IntLiteral | FltLiteral | ListLiteral | MapLiteral | EnumLiteral | PatternLiteral | path=Path
+		//BoolLiteral | StrLiteral | IntLiteral | FltLiteral | DateLiteral | TimeLiteral | DateTimeLiteral | PathLiteral |
+		//ListLiteral | MapLiteral | EnumLiteral | PatternLiteral
 		public Alternatives getAlternatives() { return cAlternatives; }
 		
 		//BoolLiteral
@@ -1224,23 +1229,29 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//FltLiteral
 		public RuleCall getFltLiteralParserRuleCall_3() { return cFltLiteralParserRuleCall_3; }
 		
+		//DateLiteral
+		public RuleCall getDateLiteralParserRuleCall_4() { return cDateLiteralParserRuleCall_4; }
+		
+		//TimeLiteral
+		public RuleCall getTimeLiteralParserRuleCall_5() { return cTimeLiteralParserRuleCall_5; }
+		
+		//DateTimeLiteral
+		public RuleCall getDateTimeLiteralParserRuleCall_6() { return cDateTimeLiteralParserRuleCall_6; }
+		
+		//PathLiteral
+		public RuleCall getPathLiteralParserRuleCall_7() { return cPathLiteralParserRuleCall_7; }
+		
 		//ListLiteral
-		public RuleCall getListLiteralParserRuleCall_4() { return cListLiteralParserRuleCall_4; }
+		public RuleCall getListLiteralParserRuleCall_8() { return cListLiteralParserRuleCall_8; }
 		
 		//MapLiteral
-		public RuleCall getMapLiteralParserRuleCall_5() { return cMapLiteralParserRuleCall_5; }
+		public RuleCall getMapLiteralParserRuleCall_9() { return cMapLiteralParserRuleCall_9; }
 		
 		//EnumLiteral
-		public RuleCall getEnumLiteralParserRuleCall_6() { return cEnumLiteralParserRuleCall_6; }
+		public RuleCall getEnumLiteralParserRuleCall_10() { return cEnumLiteralParserRuleCall_10; }
 		
 		//PatternLiteral
-		public RuleCall getPatternLiteralParserRuleCall_7() { return cPatternLiteralParserRuleCall_7; }
-		
-		//path=Path
-		public Assignment getPathAssignment_8() { return cPathAssignment_8; }
-		
-		//Path
-		public RuleCall getPathPathParserRuleCall_8_0() { return cPathPathParserRuleCall_8_0; }
+		public RuleCall getPatternLiteralParserRuleCall_11() { return cPatternLiteralParserRuleCall_11; }
 	}
 	public class BoolLiteralElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.BoolLiteral");
@@ -1317,6 +1328,66 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		
 		//FLOAT
 		public RuleCall getValueFLOATTerminalRuleCall_0() { return cValueFLOATTerminalRuleCall_0; }
+	}
+	public class DateLiteralElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.DateLiteral");
+		private final Assignment cValueAssignment = (Assignment)rule.eContents().get(1);
+		private final RuleCall cValueDATETerminalRuleCall_0 = (RuleCall)cValueAssignment.eContents().get(0);
+		
+		//DateLiteral:
+		//	value=DATE;
+		@Override public ParserRule getRule() { return rule; }
+		
+		//value=DATE
+		public Assignment getValueAssignment() { return cValueAssignment; }
+		
+		//DATE
+		public RuleCall getValueDATETerminalRuleCall_0() { return cValueDATETerminalRuleCall_0; }
+	}
+	public class TimeLiteralElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.TimeLiteral");
+		private final Assignment cValueAssignment = (Assignment)rule.eContents().get(1);
+		private final RuleCall cValueTIMETerminalRuleCall_0 = (RuleCall)cValueAssignment.eContents().get(0);
+		
+		//TimeLiteral:
+		//	value=TIME;
+		@Override public ParserRule getRule() { return rule; }
+		
+		//value=TIME
+		public Assignment getValueAssignment() { return cValueAssignment; }
+		
+		//TIME
+		public RuleCall getValueTIMETerminalRuleCall_0() { return cValueTIMETerminalRuleCall_0; }
+	}
+	public class DateTimeLiteralElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.DateTimeLiteral");
+		private final Assignment cValueAssignment = (Assignment)rule.eContents().get(1);
+		private final RuleCall cValueDATETIMETerminalRuleCall_0 = (RuleCall)cValueAssignment.eContents().get(0);
+		
+		//DateTimeLiteral:
+		//	value=DATETIME;
+		@Override public ParserRule getRule() { return rule; }
+		
+		//value=DATETIME
+		public Assignment getValueAssignment() { return cValueAssignment; }
+		
+		//DATETIME
+		public RuleCall getValueDATETIMETerminalRuleCall_0() { return cValueDATETIMETerminalRuleCall_0; }
+	}
+	public class PathLiteralElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.PathLiteral");
+		private final Assignment cValueAssignment = (Assignment)rule.eContents().get(1);
+		private final RuleCall cValuePATHTerminalRuleCall_0 = (RuleCall)cValueAssignment.eContents().get(0);
+		
+		//PathLiteral:
+		//	value=PATH;
+		@Override public ParserRule getRule() { return rule; }
+		
+		//value=PATH
+		public Assignment getValueAssignment() { return cValueAssignment; }
+		
+		//PATH
+		public RuleCall getValuePATHTerminalRuleCall_0() { return cValuePATHTerminalRuleCall_0; }
 	}
 	public class ListLiteralElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.ListLiteral");
@@ -1594,25 +1665,6 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//TEXT
 		public RuleCall getTextTEXTTerminalRuleCall_3_0() { return cTextTEXTTerminalRuleCall_3_0; }
 	}
-	public class PathElements extends AbstractParserRuleElementFinder {
-		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.Path");
-		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final RuleCall cPIDTerminalRuleCall_0 = (RuleCall)cGroup.eContents().get(0);
-		private final RuleCall cPIDTerminalRuleCall_1 = (RuleCall)cGroup.eContents().get(1);
-		
-		//Path:
-		//	PID => PID*;
-		@Override public ParserRule getRule() { return rule; }
-		
-		//PID => PID*
-		public Group getGroup() { return cGroup; }
-		
-		//PID
-		public RuleCall getPIDTerminalRuleCall_0() { return cPIDTerminalRuleCall_0; }
-		
-		//=> PID*
-		public RuleCall getPIDTerminalRuleCall_1() { return cPIDTerminalRuleCall_1; }
-	}
 	public class BREAKElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.BREAK");
 		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
@@ -1663,20 +1715,26 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	private final StrLiteralElements pStrLiteral;
 	private final IntLiteralElements pIntLiteral;
 	private final FltLiteralElements pFltLiteral;
+	private final DateLiteralElements pDateLiteral;
+	private final TimeLiteralElements pTimeLiteral;
+	private final DateTimeLiteralElements pDateTimeLiteral;
+	private final PathLiteralElements pPathLiteral;
 	private final ListLiteralElements pListLiteral;
 	private final MapLiteralElements pMapLiteral;
 	private final MapEntryLiteralElements pMapEntryLiteral;
 	private final EnumLiteralElements pEnumLiteral;
 	private final PatternLiteralElements pPatternLiteral;
-	private final PathElements pPath;
 	private final BREAKElements pBREAK;
 	private final TerminalRule tBEGIN;
 	private final TerminalRule tEND;
-	private final TerminalRule tPID;
+	private final TerminalRule tPATH;
 	private final TerminalRule tID;
 	private final TerminalRule tINT;
 	private final TerminalRule tNATURAL;
 	private final TerminalRule tFLOAT;
+	private final TerminalRule tDATE;
+	private final TerminalRule tTIME;
+	private final TerminalRule tDATETIME;
 	private final TerminalRule tTEXT;
 	private final TerminalRule tML_COMMENT;
 	private final TerminalRule tSL_COMMENT;
@@ -1717,20 +1775,26 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		this.pStrLiteral = new StrLiteralElements();
 		this.pIntLiteral = new IntLiteralElements();
 		this.pFltLiteral = new FltLiteralElements();
+		this.pDateLiteral = new DateLiteralElements();
+		this.pTimeLiteral = new TimeLiteralElements();
+		this.pDateTimeLiteral = new DateTimeLiteralElements();
+		this.pPathLiteral = new PathLiteralElements();
 		this.pListLiteral = new ListLiteralElements();
 		this.pMapLiteral = new MapLiteralElements();
 		this.pMapEntryLiteral = new MapEntryLiteralElements();
 		this.pEnumLiteral = new EnumLiteralElements();
 		this.pPatternLiteral = new PatternLiteralElements();
-		this.pPath = new PathElements();
 		this.pBREAK = new BREAKElements();
 		this.tBEGIN = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.BEGIN");
 		this.tEND = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.END");
-		this.tPID = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.PID");
+		this.tPATH = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.PATH");
 		this.tID = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.ID");
 		this.tINT = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.INT");
 		this.tNATURAL = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.NATURAL");
 		this.tFLOAT = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.FLOAT");
+		this.tDATE = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.DATE");
+		this.tTIME = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.TIME");
+		this.tDATETIME = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.DATETIME");
 		this.tTEXT = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.TEXT");
 		this.tML_COMMENT = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.ML_COMMENT");
 		this.tSL_COMMENT = (TerminalRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.SL_COMMENT");
@@ -1765,7 +1829,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	//// Module Header
 	//// ------------------------------------------------------------------------------------------------------------------------------
 	//Module:
-	//	'module' name=Path
+	//	'module' name=PathLiteral
 	//	imports+=Import*
 	//	plugs+=PlugDsl* ('definitions:'
 	//	BEGIN
@@ -1802,7 +1866,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//ImportOperation Import:
-	//	name=Path 'from' ref=Path;
+	//	name=PathLiteral 'from' ref=PathLiteral;
 	public ImportOperationElements getImportOperationAccess() {
 		return pImportOperation;
 	}
@@ -1812,7 +1876,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//ImportDefinition Import:
-	//	(defs+=ExternalDef (',' defs+=ExternalDef)*) 'from' ref=Path;
+	//	(defs+=ExternalDef (',' defs+=ExternalDef)*) 'from' ref=PathLiteral;
 	public ImportDefinitionElements getImportDefinitionAccess() {
 		return pImportDefinition;
 	}
@@ -1836,7 +1900,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	//// Operations
 	//// ------------------------------------------------------------------------------------------------------------------------------
 	//SubPath:
-	//	'def' name=Path
+	//	'def' name=PathLiteral
 	//	BEGIN
 	//	opers+=Operation+
 	//	END;
@@ -1849,7 +1913,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//Operation:
-	//	'def' (isGet?='get' | 'set') name=Path? param=ParamDef? ('->' result=ElementDef)? ':'
+	//	'def' (isGet?='get' | 'set') name=PathLiteral? param=ParamDef? ('->' result=ElementDef)? ':'
 	//	body=BlockExpression;
 	public OperationElements getOperationAccess() {
 		return pOperation;
@@ -1896,7 +1960,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//OperationCall:
-	//	async?='async'? (isGet?='get' | 'set') ref=[Operation|Path] param=MapExpression;
+	//	async?='async'? (isGet?='get' | 'set') ref=[Operation] param=MapExpression;
 	public OperationCallElements getOperationCallAccess() {
 		return pOperationCall;
 	}
@@ -2030,7 +2094,8 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//NativeDef:
-	//	'any' | 'bool' | 'str' | 'int' | 'flt' | 'path'
+	//	'any' | 'path'
+	//	| 'bool' | 'str' | 'int' | 'flt'
 	//	| 'lda' | 'ltm' | 'ldt'
 	//	| 'map' | 'lst' | 'enum';
 	public NativeDefElements getNativeDefAccess() {
@@ -2041,9 +2106,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		return getNativeDefAccess().getRule();
 	}
 	
-	///*NativePatternDef:
-	//  NativeDef | 'map' | 'lst' | 'enum'
-	//;*/ // ------------------------------------------------------------------------------------------------------------------------------
+	//// ------------------------------------------------------------------------------------------------------------------------------
 	//// Literals
 	//// ------------------------------------------------------------------------------------------------------------------------------
 	//Literal:
@@ -2051,11 +2114,14 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	//	| StrLiteral
 	//	| IntLiteral
 	//	| FltLiteral
+	//	| DateLiteral
+	//	| TimeLiteral
+	//	| DateTimeLiteral
+	//	| PathLiteral
 	//	| ListLiteral
 	//	| MapLiteral
 	//	| EnumLiteral
-	//	| PatternLiteral
-	//	| path=Path;
+	//	| PatternLiteral;
 	public LiteralElements getLiteralAccess() {
 		return pLiteral;
 	}
@@ -2102,6 +2168,46 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	
 	public ParserRule getFltLiteralRule() {
 		return getFltLiteralAccess().getRule();
+	}
+	
+	//DateLiteral:
+	//	value=DATE;
+	public DateLiteralElements getDateLiteralAccess() {
+		return pDateLiteral;
+	}
+	
+	public ParserRule getDateLiteralRule() {
+		return getDateLiteralAccess().getRule();
+	}
+	
+	//TimeLiteral:
+	//	value=TIME;
+	public TimeLiteralElements getTimeLiteralAccess() {
+		return pTimeLiteral;
+	}
+	
+	public ParserRule getTimeLiteralRule() {
+		return getTimeLiteralAccess().getRule();
+	}
+	
+	//DateTimeLiteral:
+	//	value=DATETIME;
+	public DateTimeLiteralElements getDateTimeLiteralAccess() {
+		return pDateTimeLiteral;
+	}
+	
+	public ParserRule getDateTimeLiteralRule() {
+		return getDateTimeLiteralAccess().getRule();
+	}
+	
+	//PathLiteral:
+	//	value=PATH;
+	public PathLiteralElements getPathLiteralAccess() {
+		return pPathLiteral;
+	}
+	
+	public ParserRule getPathLiteralRule() {
+		return getPathLiteralAccess().getRule();
 	}
 	
 	//ListLiteral:
@@ -2158,16 +2264,6 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		return getPatternLiteralAccess().getRule();
 	}
 	
-	//Path:
-	//	PID => PID*;
-	public PathElements getPathAccess() {
-		return pPath;
-	}
-	
-	public ParserRule getPathRule() {
-		return getPathAccess().getRule();
-	}
-	
 	//BREAK:
 	//	('\n' | '\r')*;
 	public BREAKElements getBREAKAccess() {
@@ -2190,10 +2286,10 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		return tEND;
 	}
 	
-	//terminal PID:
-	//	'/' ('a'..'z' | '-' | '0'..'9')+;
-	public TerminalRule getPIDRule() {
-		return tPID;
+	//terminal PATH:
+	//	'/' ('a'..'z' | '-' | '0'..'9')+*;
+	public TerminalRule getPATHRule() {
+		return tPATH;
 	}
 	
 	//terminal ID:
@@ -2218,6 +2314,24 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	//	NATURAL ('.' INT)?;
 	public TerminalRule getFLOATRule() {
 		return tFLOAT;
+	}
+	
+	//terminal DATE:
+	//	INT '-' ('0' '1'..'9' | '1' '0'..'2') '-' ('0' '1'..'9' | '1'..'2' '0'..'9' | '3' '0'..'1');
+	public TerminalRule getDATERule() {
+		return tDATE;
+	}
+	
+	//terminal TIME:
+	//	('0'..'1' '0'..'9' | '2' '0'..'3') ':' ('0'..'5' '0'..'9') ':' ('0'..'5' '0'..'9');
+	public TerminalRule getTIMERule() {
+		return tTIME;
+	}
+	
+	//terminal DATETIME:
+	//	DATE 'T' TIME;
+	public TerminalRule getDATETIMERule() {
+		return tDATETIME;
 	}
 	
 	//terminal TEXT:

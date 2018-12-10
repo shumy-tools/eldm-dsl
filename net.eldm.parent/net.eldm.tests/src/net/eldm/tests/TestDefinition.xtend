@@ -96,7 +96,7 @@ class TestDefinition {
       module /test
       
       definitions:
-        typedef ptr mask 'A#a#-##.n#NX'
+        typedef ptr mask 'A#a#-##.n#NXX'
         
         typedef email match """[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}"""
         
@@ -125,7 +125,7 @@ class TestDefinition {
           O { desc: """Other""", list: List@'[ { id: 3 }, { id: 10, or: 11 } ]' }
         
         typedef New enum { id: flt, seq?: ptr }:
-          ALEX { id: 1.3, seq: ptr@'R3g7-60.e5U\' }
+          ALEX { id: 1.3, seq: ptr@'R3g7-60.e5U\ ' }
       
     ''')
   }

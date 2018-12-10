@@ -1,10 +1,9 @@
 package net.eldm.util
 
 import com.google.inject.Inject
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
 import net.eldm.eldmDsl.BoolLiteral
+import net.eldm.eldmDsl.DateLiteral
+import net.eldm.eldmDsl.DateTimeLiteral
 import net.eldm.eldmDsl.Definition
 import net.eldm.eldmDsl.ElementDef
 import net.eldm.eldmDsl.EnumDef
@@ -19,40 +18,28 @@ import net.eldm.eldmDsl.MapDef
 import net.eldm.eldmDsl.MapEntryDef
 import net.eldm.eldmDsl.MapEntryLiteral
 import net.eldm.eldmDsl.MapLiteral
+import net.eldm.eldmDsl.PathLiteral
 import net.eldm.eldmDsl.PatternLiteral
 import net.eldm.eldmDsl.StrLiteral
+import net.eldm.eldmDsl.TimeLiteral
 import net.eldm.eldmDsl.TypeDef
-import net.eldm.spi.PathLiteral
 
-import static net.eldm.spi.Natives.*
+import static extension net.eldm.spi.Natives.*
+import static extension net.eldm.spi.Collections.*
 
 class TypeValidator {
-  @Inject extension InlineParser iParser
+  @Inject extension PatternParser iParser
   @Inject extension TypeResolver tResolver
   
-  def boolean is(Literal lValue, Class<?> type) {
-    if (Literal.isAssignableFrom(type))
-      return type.isAssignableFrom(lValue.class) // type -> Literal
-        || lValue instanceof PatternLiteral && type.parse(lValue as PatternLiteral) !== null
-    else if (PathLiteral.isAssignableFrom(type)) // type -> PathLiteral
-      return lValue.path !== null
-        || lValue instanceof PatternLiteral && type.parse(lValue as PatternLiteral) !== null
-    else // type -> LocalDate | LocalTime | LocalDateTime
-      return lValue instanceof PatternLiteral && type.parse(lValue as PatternLiteral) !== null
+  def boolean is(Literal lValue, Class<? extends Literal> type) {
+    return type.isAssignableFrom(lValue.class) || lValue instanceof PatternLiteral && type.parse(lValue) !== null
   }
   
   def boolean is(Literal value, String natType) {
-    return switch value {
-      BoolLiteral case natType == BOOL: true
-      StrLiteral case natType == STR: true
-      IntLiteral case natType == INT: true
-      
-      MapLiteral case natType == MAP: true
-      ListLiteral case natType == LST: true
-      EnumLiteral case natType == ENUM: true
-      
-      default: false
-    }
+    if (value.nativeType == natType) return true
+    if (value.collectionType == natType) return true
+    
+    return false
   }
   
   def String is(Literal lValue, Definition defDef) {
@@ -80,16 +67,16 @@ class TypeValidator {
     if (elmDef.native !== null) {
       switch elmDef.native {
         case ANY:  return null
-        case PATH: if (lValue.is(PathLiteral)) return null
         
         case BOOL: if (lValue.is(BoolLiteral)) return null
         case STR:  if (lValue.is(StrLiteral)) return null
         case INT:  if (lValue.is(IntLiteral)) return null
         case FLT:  if (lValue.is(FltLiteral)) return null
         
-        case LDA:  if (lValue.is(LocalDate)) return null
-        case LTM:  if (lValue.is(LocalTime)) return null
-        case LDT:  if (lValue.is(LocalDateTime)) return null
+        case LDA:  if (lValue.is(DateLiteral)) return null
+        case LTM:  if (lValue.is(TimeLiteral)) return null
+        case LDT:  if (lValue.is(DateTimeLiteral)) return null
+        case PATH: if (lValue.is(PathLiteral)) return null
         
         default:   return '''Unrecognized native type: «elmDef.native». Please report this bug.'''
       }
@@ -124,7 +111,6 @@ class TypeValidator {
       
       // mandatory KeyDef not set!
       val mandatory = mapDef.defs.filter[!opt && value === null]
-      //println('''«type.defs.map['''(«name», «opt»)''']» -> «mandatory.map[name]»''')
       for(keyDef : mandatory)
         if (!use.contains(keyDef))
           return '''Mandatory KeyDef '«keyDef.name»' not set.'''

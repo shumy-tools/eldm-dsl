@@ -2,27 +2,17 @@ package net.eldm.util
 
 import com.google.inject.Inject
 import java.io.StringReader
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import net.eldm.eldmDsl.BoolLiteral
 import net.eldm.eldmDsl.EldmDslFactory
-import net.eldm.eldmDsl.EnumLiteral
-import net.eldm.eldmDsl.FltLiteral
-import net.eldm.eldmDsl.IntLiteral
-import net.eldm.eldmDsl.ListLiteral
 import net.eldm.eldmDsl.Literal
-import net.eldm.eldmDsl.MapLiteral
 import net.eldm.eldmDsl.PatternLiteral
 import net.eldm.eldmDsl.StrLiteral
 import net.eldm.eldmDsl.TypeDef
 import net.eldm.parser.antlr.EldmDslParser
 import net.eldm.services.EldmDslGrammarAccess
-import net.eldm.spi.PathLiteral
 
 import static net.eldm.spi.Natives.*
 
-class InlineParser {
+class PatternParser {
   @Inject EldmDslParser eldmParser
   @Inject EldmDslGrammarAccess eldmRules
   @Inject extension TypeValidator tValidator
@@ -44,58 +34,42 @@ class InlineParser {
     return null
   }
   
-  def <T> T parse(Class<T> type, Literal value) {
+  def Literal parse(PatternLiteral value) {
+    val text = if (value.native == STR) value.text else value.extractText
+    
+    val result = eldmParser.parse(eldmRules.literalRule, new StringReader(text))
+    if (result.hasSyntaxErrors || !(result.rootASTElement instanceof Literal)) {
+      println('''Failed to parse («text») to «value.native ?: value.ref.name»''')
+      return null
+    }
+    
+    val res = result.rootASTElement as Literal
+    
+    //validate if it's assignable to value.native ?
+    if (value.native !== null && res.is(value.native))
+      return res
+    
+    //validate if it's assignable to value.ref ?
+    if (value.ref !== null && res.is(value.ref) === null)
+      return res
+    
+    return null
+  }
+  
+  def <T extends Literal> T parse(Class<T> type, Literal value) {
     if (value instanceof PatternLiteral)
       return type.parse(value)
     
     return null
   }
   
-  def <T> T parse(Class<T> type, PatternLiteral value) {
-    val text = if (value.native == STR) value.text else value.extractText
+  def <T extends Literal> T parse(Class<T> type, PatternLiteral value) {
+    val res = value.parse
     
-    if (Literal.isAssignableFrom(type)) {
-      val rule = switch type {
-        case BoolLiteral: eldmRules.boolLiteralRule
-        case StrLiteral:  eldmRules.strLiteralRule
-        case IntLiteral:  eldmRules.intLiteralRule
-        case FltLiteral:  eldmRules.fltLiteralRule
-        
-        case MapLiteral:  eldmRules.mapLiteralRule
-        case ListLiteral: eldmRules.listLiteralRule
-        case EnumLiteral: eldmRules.enumLiteralRule
-        
-        default: eldmRules.literalRule
-      }
-      
-      val result = eldmParser.parse(rule, new StringReader(text))
-      if (result.hasSyntaxErrors) {
-        println('''Failed to parse («text») to type «type.simpleName»''')
-        return null
-      }
-      
-      val res = result.rootASTElement as Literal
-      
-      //validate if it's assignable to value.native ?
-      if (value.native !== null && res.is(value.native))
-        return res as T
-      
-      //validate if it's assignable to value.ref ?
-      if (value.ref !== null && res.is(value.ref) === null)
-        return res as T
-      
-      return null
-    } else {
-      val res = switch type {
-        case PathLiteral: PathLiteral.parse(text)
-        case LocalDate: LocalDate.parse(text)
-        case LocalTime: LocalTime.parse(text)
-        case LocalDateTime: LocalDateTime.parse(text)
-        default: null
-      }
-      
-      return res as T
-    }
+    if (res === null) return null
+    if (!type.isAssignableFrom(res.class)) return null
+    
+    return res as T
   }
   
   private def masked(String value, String mask) {
@@ -120,7 +94,7 @@ class InlineParser {
           case 'n': if (v.matches("[0-9a-z]")) vIndex++ else return false
           
           // any special symbol -!$%^&*()_+|~=`{}[]:";'<>?,./\ or space
-          case 'X': if ("-!$%^&*()_+|~=`{}[]:\";'<>?,./\\".contains(v)) vIndex++ else return false
+          case 'X': if ("-!$%^&*()_+|~=`{}[]:\";'<>?,./\\ ".contains(v)) vIndex++ else return false
           
           // matching the char
           default: if (value.charAt(vIndex) == c) vIndex++ else return false

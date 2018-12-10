@@ -6,6 +6,8 @@ package net.eldm.serializer;
 import com.google.inject.Inject;
 import java.util.Set;
 import net.eldm.eldmDsl.BoolLiteral;
+import net.eldm.eldmDsl.DateLiteral;
+import net.eldm.eldmDsl.DateTimeLiteral;
 import net.eldm.eldmDsl.EldmDslPackage;
 import net.eldm.eldmDsl.ElementDef;
 import net.eldm.eldmDsl.EnumDef;
@@ -18,7 +20,6 @@ import net.eldm.eldmDsl.IntLiteral;
 import net.eldm.eldmDsl.LambdaDef;
 import net.eldm.eldmDsl.ListDef;
 import net.eldm.eldmDsl.ListLiteral;
-import net.eldm.eldmDsl.Literal;
 import net.eldm.eldmDsl.MapDef;
 import net.eldm.eldmDsl.MapEntryDef;
 import net.eldm.eldmDsl.MapEntryLiteral;
@@ -26,10 +27,12 @@ import net.eldm.eldmDsl.MapLiteral;
 import net.eldm.eldmDsl.Operation;
 import net.eldm.eldmDsl.OperationCall;
 import net.eldm.eldmDsl.ParamDef;
+import net.eldm.eldmDsl.PathLiteral;
 import net.eldm.eldmDsl.PatternLiteral;
 import net.eldm.eldmDsl.PlugDsl;
 import net.eldm.eldmDsl.StrLiteral;
 import net.eldm.eldmDsl.SubPath;
+import net.eldm.eldmDsl.TimeLiteral;
 import net.eldm.eldmDsl.TypeDef;
 import net.eldm.eldmDsl.VariableDef;
 import net.eldm.services.EldmDslGrammarAccess;
@@ -59,6 +62,12 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 			switch (semanticObject.eClass().getClassifierID()) {
 			case EldmDslPackage.BOOL_LITERAL:
 				sequence_BoolLiteral(context, (BoolLiteral) semanticObject); 
+				return; 
+			case EldmDslPackage.DATE_LITERAL:
+				sequence_DateLiteral(context, (DateLiteral) semanticObject); 
+				return; 
+			case EldmDslPackage.DATE_TIME_LITERAL:
+				sequence_DateTimeLiteral(context, (DateTimeLiteral) semanticObject); 
 				return; 
 			case EldmDslPackage.ELEMENT_DEF:
 				sequence_ElementDef(context, (ElementDef) semanticObject); 
@@ -104,9 +113,6 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 			case EldmDslPackage.LIST_LITERAL:
 				sequence_ListLiteral(context, (ListLiteral) semanticObject); 
 				return; 
-			case EldmDslPackage.LITERAL:
-				sequence_Literal(context, (Literal) semanticObject); 
-				return; 
 			case EldmDslPackage.MAP_DEF:
 				sequence_MapDef(context, (MapDef) semanticObject); 
 				return; 
@@ -131,6 +137,9 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 			case EldmDslPackage.PARAM_DEF:
 				sequence_ParamDef(context, (ParamDef) semanticObject); 
 				return; 
+			case EldmDslPackage.PATH_LITERAL:
+				sequence_PathLiteral(context, (PathLiteral) semanticObject); 
+				return; 
 			case EldmDslPackage.PATTERN_LITERAL:
 				sequence_PatternLiteral(context, (PatternLiteral) semanticObject); 
 				return; 
@@ -142,6 +151,9 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 				return; 
 			case EldmDslPackage.SUB_PATH:
 				sequence_SubPath(context, (SubPath) semanticObject); 
+				return; 
+			case EldmDslPackage.TIME_LITERAL:
+				sequence_TimeLiteral(context, (TimeLiteral) semanticObject); 
 				return; 
 			case EldmDslPackage.TYPE_DEF:
 				sequence_TypeDef(context, (TypeDef) semanticObject); 
@@ -164,6 +176,44 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 */
 	protected void sequence_BoolLiteral(ISerializationContext context, BoolLiteral semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
+	 *     Literal returns DateLiteral
+	 *     DateLiteral returns DateLiteral
+	 *
+	 * Constraint:
+	 *     value=DATE
+	 */
+	protected void sequence_DateLiteral(ISerializationContext context, DateLiteral semanticObject) {
+		if (errorAcceptor != null) {
+			if (transientValues.isValueTransient(semanticObject, EldmDslPackage.Literals.DATE_LITERAL__VALUE) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, EldmDslPackage.Literals.DATE_LITERAL__VALUE));
+		}
+		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
+		feeder.accept(grammarAccess.getDateLiteralAccess().getValueDATETerminalRuleCall_0(), semanticObject.getValue());
+		feeder.finish();
+	}
+	
+	
+	/**
+	 * Contexts:
+	 *     Literal returns DateTimeLiteral
+	 *     DateTimeLiteral returns DateTimeLiteral
+	 *
+	 * Constraint:
+	 *     value=DATETIME
+	 */
+	protected void sequence_DateTimeLiteral(ISerializationContext context, DateTimeLiteral semanticObject) {
+		if (errorAcceptor != null) {
+			if (transientValues.isValueTransient(semanticObject, EldmDslPackage.Literals.DATE_TIME_LITERAL__VALUE) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, EldmDslPackage.Literals.DATE_TIME_LITERAL__VALUE));
+		}
+		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
+		feeder.accept(grammarAccess.getDateTimeLiteralAccess().getValueDATETIMETerminalRuleCall_0(), semanticObject.getValue());
+		feeder.finish();
 	}
 	
 	
@@ -269,7 +319,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     ImportDefinition returns Import
 	 *
 	 * Constraint:
-	 *     (defs+=ExternalDef defs+=ExternalDef* ref=Path)
+	 *     (defs+=ExternalDef defs+=ExternalDef* ref=PathLiteral)
 	 */
 	protected void sequence_ImportDefinition(ISerializationContext context, Import semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -281,7 +331,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     Import returns Import
 	 *
 	 * Constraint:
-	 *     ((name=Path ref=Path) | (defs+=ExternalDef defs+=ExternalDef* ref=Path))
+	 *     ((name=PathLiteral ref=PathLiteral) | (defs+=ExternalDef defs+=ExternalDef* ref=PathLiteral))
 	 */
 	protected void sequence_ImportDefinition_ImportOperation(ISerializationContext context, Import semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -293,7 +343,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     ImportOperation returns Import
 	 *
 	 * Constraint:
-	 *     (name=Path ref=Path)
+	 *     (name=PathLiteral ref=PathLiteral)
 	 */
 	protected void sequence_ImportOperation(ISerializationContext context, Import semanticObject) {
 		if (errorAcceptor != null) {
@@ -303,8 +353,8 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, EldmDslPackage.Literals.IMPORT__REF));
 		}
 		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
-		feeder.accept(grammarAccess.getImportOperationAccess().getNamePathParserRuleCall_0_0(), semanticObject.getName());
-		feeder.accept(grammarAccess.getImportOperationAccess().getRefPathParserRuleCall_2_0(), semanticObject.getRef());
+		feeder.accept(grammarAccess.getImportOperationAccess().getNamePathLiteralParserRuleCall_0_0(), semanticObject.getName());
+		feeder.accept(grammarAccess.getImportOperationAccess().getRefPathLiteralParserRuleCall_2_0(), semanticObject.getRef());
 		feeder.finish();
 	}
 	
@@ -374,24 +424,6 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	
 	/**
 	 * Contexts:
-	 *     Literal returns Literal
-	 *
-	 * Constraint:
-	 *     path=Path
-	 */
-	protected void sequence_Literal(ISerializationContext context, Literal semanticObject) {
-		if (errorAcceptor != null) {
-			if (transientValues.isValueTransient(semanticObject, EldmDslPackage.Literals.LITERAL__PATH) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, EldmDslPackage.Literals.LITERAL__PATH));
-		}
-		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
-		feeder.accept(grammarAccess.getLiteralAccess().getPathPathParserRuleCall_8_0(), semanticObject.getPath());
-		feeder.finish();
-	}
-	
-	
-	/**
-	 * Contexts:
 	 *     ElementDef returns MapDef
 	 *     MapDef returns MapDef
 	 *
@@ -455,7 +487,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *
 	 * Constraint:
 	 *     (
-	 *         name=Path 
+	 *         name=PathLiteral 
 	 *         imports+=Import* 
 	 *         plugs+=PlugDsl* 
 	 *         defs+=Definition* 
@@ -473,7 +505,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     OperationCall returns OperationCall
 	 *
 	 * Constraint:
-	 *     (async?='async'? isGet?='get'? ref=[Operation|Path] param=MapExpression)
+	 *     (async?='async'? isGet?='get'? ref=[Operation|ID] param=MapExpression)
 	 */
 	protected void sequence_OperationCall(ISerializationContext context, OperationCall semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -485,7 +517,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     Operation returns Operation
 	 *
 	 * Constraint:
-	 *     (isGet?='get'? name=Path? param=ParamDef? result=ElementDef? body=BlockExpression)
+	 *     (isGet?='get'? name=PathLiteral? param=ParamDef? result=ElementDef? body=BlockExpression)
 	 */
 	protected void sequence_Operation(ISerializationContext context, Operation semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -501,6 +533,25 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 */
 	protected void sequence_ParamDef(ISerializationContext context, ParamDef semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
+	 *     Literal returns PathLiteral
+	 *     PathLiteral returns PathLiteral
+	 *
+	 * Constraint:
+	 *     value=PATH
+	 */
+	protected void sequence_PathLiteral(ISerializationContext context, PathLiteral semanticObject) {
+		if (errorAcceptor != null) {
+			if (transientValues.isValueTransient(semanticObject, EldmDslPackage.Literals.PATH_LITERAL__VALUE) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, EldmDslPackage.Literals.PATH_LITERAL__VALUE));
+		}
+		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
+		feeder.accept(grammarAccess.getPathLiteralAccess().getValuePATHTerminalRuleCall_0(), semanticObject.getValue());
+		feeder.finish();
 	}
 	
 	
@@ -562,10 +613,29 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     SubPath returns SubPath
 	 *
 	 * Constraint:
-	 *     (name=Path opers+=Operation+)
+	 *     (name=PathLiteral opers+=Operation+)
 	 */
 	protected void sequence_SubPath(ISerializationContext context, SubPath semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
+	 *     Literal returns TimeLiteral
+	 *     TimeLiteral returns TimeLiteral
+	 *
+	 * Constraint:
+	 *     value=TIME
+	 */
+	protected void sequence_TimeLiteral(ISerializationContext context, TimeLiteral semanticObject) {
+		if (errorAcceptor != null) {
+			if (transientValues.isValueTransient(semanticObject, EldmDslPackage.Literals.TIME_LITERAL__VALUE) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, EldmDslPackage.Literals.TIME_LITERAL__VALUE));
+		}
+		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
+		feeder.accept(grammarAccess.getTimeLiteralAccess().getValueTIMETerminalRuleCall_0(), semanticObject.getValue());
+		feeder.finish();
 	}
 	
 	

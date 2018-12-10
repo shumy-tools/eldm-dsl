@@ -107,7 +107,7 @@ fragment RULE_BEGIN : ;
 
 fragment RULE_END : ;
 
-RULE_PID : '/' ('a'..'z'|'-'|'0'..'9')+;
+RULE_PATH : ('/' ('a'..'z'|'-'|'0'..'9')+)*;
 
 RULE_ID : '^'? ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'-'|'_'|'0'..'9')*;
 
@@ -116,6 +116,12 @@ fragment RULE_INT : ('0'..'9')+;
 RULE_NATURAL : '-'? RULE_INT;
 
 RULE_FLOAT : RULE_NATURAL ('.' RULE_INT)?;
+
+RULE_DATE : RULE_INT '-' ('0' '1'..'9'|'1' '0'..'2') '-' ('0' '1'..'9'|'1'..'2' '0'..'9'|'3' '0'..'1');
+
+RULE_TIME : ('0'..'1' '0'..'9'|'2' '0'..'3') ':' '0'..'5' '0'..'9' ':' '0'..'5' '0'..'9';
+
+RULE_DATETIME : RULE_DATE 'T' RULE_TIME;
 
 RULE_TEXT : ('\'' ~(('\''|'\r'|'\n'))* '\''|'"""' ( options {greedy=false;} : . )*'"""');
 

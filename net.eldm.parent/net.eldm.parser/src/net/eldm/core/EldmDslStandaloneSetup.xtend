@@ -8,8 +8,8 @@ import com.google.inject.Injector
 import com.google.inject.Guice
 import com.google.inject.AbstractModule
 import net.eldm.util.TypeValidator
-import net.eldm.util.InlineParser
 import net.eldm.util.TypeResolver
+import net.eldm.util.PatternParser
 
 /**
  * Initialization support for running Xtext languages without Equinox extension registry.
@@ -17,7 +17,7 @@ import net.eldm.util.TypeResolver
 class EldmDslStandaloneSetup extends EldmDslStandaloneSetupGenerated {
   val module = new AbstractModule() {
     override protected configure() {
-      bind(InlineParser).to(InlineParser)
+      bind(PatternParser).to(PatternParser)
       bind(TypeResolver).to(TypeResolver)
       bind(TypeValidator).to(TypeValidator)
     }
