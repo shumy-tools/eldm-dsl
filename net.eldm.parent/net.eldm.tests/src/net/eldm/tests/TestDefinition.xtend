@@ -124,8 +124,10 @@ class TestDefinition {
           F { desc: 'Female', other: { id: int@"""10""", date: lda@'2018-01-20' }, mail: email@'alex@gmail.com' }
           O { desc: """Other""", list: List@'[ { id: 3 }, { id: 10, or: 11 } ]' }
         
-        typedef New enum { id: flt, seq?: ptr }:
-          ALEX { id: 1.3, seq: ptr@'R3g7-60.e5U\ ' }
+        typedef New enum { id: flt, seq?: ptr, mp: map }:
+          ALEX { id: 1.3, seq: ptr@'R3g7-60.e5U\ ', mp: { x: -10, y: 12.5 } }
+          MICA { id: 1.5, mp: map@'{ x: 10 }' }
+          PAUL { id: -1.0, mp: Other@'{ id: 0, date: 2016-01-12 }' }
       
     ''')
   }

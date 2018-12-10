@@ -50,19 +50,6 @@ class TypeValidator {
     }
   }
   
-  def String is(Literal lValue, TypeDef typeDef) {
-    if (typeDef.type !== null)
-      return lValue.is(typeDef.type)
-     
-    if (typeDef.parser !== null) {
-      val pattern = lValue.parsePattern
-      if (pattern !== null)
-        return null
-    }
-    
-    return "Literal value not assignable to TypeDef."
-  }
-  
   def String is(Literal lValue, ElementDef elmDef) {
     if (elmDef.native !== null) {
       switch elmDef.native {
@@ -77,6 +64,10 @@ class TypeValidator {
         case LTM:  if (lValue.is(TimeLiteral)) return null
         case LDT:  if (lValue.is(DateTimeLiteral)) return null
         case PATH: if (lValue.is(PathLiteral)) return null
+        
+        case MAP:  if (lValue.is(MapLiteral)) return null
+        case LST:  if (lValue.is(ListLiteral)) return null
+        case ENUM: if (lValue.is(EnumLiteral)) return null
         
         default:   return '''Unrecognized native type: «elmDef.native». Please report this bug.'''
       }
@@ -145,6 +136,19 @@ class TypeValidator {
     }
     
     return "Literal value not assignable to EnumDef."
+  }
+  
+  def String is(Literal lValue, TypeDef typeDef) {
+    if (typeDef.type !== null)
+      return lValue.is(typeDef.type)
+     
+    if (typeDef.parser !== null) {
+      val pattern = lValue.parsePattern
+      if (pattern !== null)
+        return null
+    }
+    
+    return "Literal value not assignable to TypeDef."
   }
   
   def String is(Literal lValue, ExternalDef extDef) {
