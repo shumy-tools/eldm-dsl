@@ -12,6 +12,10 @@ import net.eldm.eldmDsl.MapLiteral
 import net.eldm.eldmDsl.PathLiteral
 import net.eldm.eldmDsl.StrLiteral
 import net.eldm.eldmDsl.TimeLiteral
+import net.eldm.eldmDsl.ElementDef
+import net.eldm.eldmDsl.MapDef
+import net.eldm.eldmDsl.ListDef
+import net.eldm.eldmDsl.EnumDef
 
 class Natives {
   public static String ANY = 'any'
@@ -41,6 +45,15 @@ class Natives {
       PathLiteral: PATH
     }
   }
+  
+  static def getNativeType(ElementDef elmDef) {
+    if (elmDef === null) return ANY
+    
+    if (elmDef.native !== null)
+      return elmDef.native
+    
+    return Collections.getCollectionType(elmDef)
+  }
 }
 
 class Collections {
@@ -53,6 +66,14 @@ class Collections {
       MapLiteral: MAP
       ListLiteral: LST
       EnumLiteral: ENUM
+    }
+  }
+  
+  static def getCollectionType(ElementDef elmDef) {
+    return switch elmDef {
+      MapDef: MAP
+      ListDef: LST
+      EnumDef: ENUM
     }
   }
 }

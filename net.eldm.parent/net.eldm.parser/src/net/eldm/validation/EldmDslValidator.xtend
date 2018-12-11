@@ -24,8 +24,11 @@ class EldmDslValidator extends AbstractEldmDslValidator {
   @Inject extension TypeValidator tValidator
   @Inject extension TypeResolver tResolver
   
-  def error(EObject source, String message) {
-    error(message, source.eContainer, source.eContainingFeature)
+  def error(EObject invalid, String message) {
+    val obj = if (invalid.eResource !== null) invalid else invalid.inferredValue
+    
+    println('''ERROR («obj?.class.simpleName») -> «message»''')
+    error(message, obj.eContainer, obj.eContainingFeature)
   }
   
   /*TODO: required validations
@@ -76,8 +79,11 @@ class EldmDslValidator extends AbstractEldmDslValidator {
   }
   
   @Check
-  def void checkLetValue(LetValue lv) {
-    val resDef = lv.result.inferType
-    lv.is(resDef)
+  def void checkLetValue(LetValue it) {
+    val rType = result.inferType
+    if (rType.inElement(type))
+      type = rType // override type specification
+    else
+      error("ResultExpression not assignable to let type.", it, EldmDslPackage.Literals.LET_VALUE__RESULT)
   }
 }

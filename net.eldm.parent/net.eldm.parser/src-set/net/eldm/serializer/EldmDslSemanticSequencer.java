@@ -461,7 +461,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     LetValue returns LetValue
 	 *
 	 * Constraint:
-	 *     (name=ID type=ElementDef? result=ResultExpression)
+	 *     (name=ID (isTypeExplicit?=':' type=ElementDef)? result=ResultExpression)
 	 */
 	protected void sequence_LetValue(ISerializationContext context, LetValue semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);

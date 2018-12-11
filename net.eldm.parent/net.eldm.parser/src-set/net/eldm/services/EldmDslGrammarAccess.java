@@ -518,7 +518,8 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Assignment cNameAssignment_1 = (Assignment)cGroup.eContents().get(1);
 		private final RuleCall cNameIDTerminalRuleCall_1_0 = (RuleCall)cNameAssignment_1.eContents().get(0);
 		private final Group cGroup_2 = (Group)cGroup.eContents().get(2);
-		private final Keyword cColonKeyword_2_0 = (Keyword)cGroup_2.eContents().get(0);
+		private final Assignment cIsTypeExplicitAssignment_2_0 = (Assignment)cGroup_2.eContents().get(0);
+		private final Keyword cIsTypeExplicitColonKeyword_2_0_0 = (Keyword)cIsTypeExplicitAssignment_2_0.eContents().get(0);
 		private final Assignment cTypeAssignment_2_1 = (Assignment)cGroup_2.eContents().get(1);
 		private final RuleCall cTypeElementDefParserRuleCall_2_1_0 = (RuleCall)cTypeAssignment_2_1.eContents().get(0);
 		private final Keyword cEqualsSignKeyword_3 = (Keyword)cGroup.eContents().get(3);
@@ -526,10 +527,10 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cResultResultExpressionParserRuleCall_4_0 = (RuleCall)cResultAssignment_4.eContents().get(0);
 		
 		//LetValue:
-		//	'let' name=ID (':' type=ElementDef)? '=' result=ResultExpression;
+		//	'let' name=ID (isTypeExplicit?=':' type=ElementDef)? '=' result=ResultExpression;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//'let' name=ID (':' type=ElementDef)? '=' result=ResultExpression
+		//'let' name=ID (isTypeExplicit?=':' type=ElementDef)? '=' result=ResultExpression
 		public Group getGroup() { return cGroup; }
 		
 		//'let'
@@ -541,11 +542,14 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//ID
 		public RuleCall getNameIDTerminalRuleCall_1_0() { return cNameIDTerminalRuleCall_1_0; }
 		
-		//(':' type=ElementDef)?
+		//(isTypeExplicit?=':' type=ElementDef)?
 		public Group getGroup_2() { return cGroup_2; }
 		
+		//isTypeExplicit?=':'
+		public Assignment getIsTypeExplicitAssignment_2_0() { return cIsTypeExplicitAssignment_2_0; }
+		
 		//':'
-		public Keyword getColonKeyword_2_0() { return cColonKeyword_2_0; }
+		public Keyword getIsTypeExplicitColonKeyword_2_0_0() { return cIsTypeExplicitColonKeyword_2_0_0; }
 		
 		//type=ElementDef
 		public Assignment getTypeAssignment_2_1() { return cTypeAssignment_2_1; }
@@ -2415,7 +2419,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//LetValue:
-	//	'let' name=ID (':' type=ElementDef)? '=' result=ResultExpression;
+	//	'let' name=ID (isTypeExplicit?=':' type=ElementDef)? '=' result=ResultExpression;
 	public LetValueElements getLetValueAccess() {
 		return pLetValue;
 	}

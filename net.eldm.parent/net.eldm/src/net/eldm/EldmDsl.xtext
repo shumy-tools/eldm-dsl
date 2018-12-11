@@ -74,7 +74,7 @@ BlockExpression: {BlockExpression}
   ;
     
   LetValue:
-    'let' name=ID (':' type=ElementDef)? '=' result=ResultExpression
+    'let' name=ID (isTypeExplicit?=':' type=ElementDef)? '=' result=ResultExpression
   ;
 
 // the result expression must be equivalent to a Literal

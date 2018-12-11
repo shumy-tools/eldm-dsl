@@ -936,10 +936,20 @@ ruleLetValue returns [EObject current=null]
 			)
 		)
 		(
-			otherlv_2=Colon
-			{
-				newLeafNode(otherlv_2, grammarAccess.getLetValueAccess().getColonKeyword_2_0());
-			}
+			(
+				(
+					lv_isTypeExplicit_2_0=Colon
+					{
+						newLeafNode(lv_isTypeExplicit_2_0, grammarAccess.getLetValueAccess().getIsTypeExplicitColonKeyword_2_0_0());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getLetValueRule());
+						}
+						setWithLastConsumed($current, "isTypeExplicit", true, ":");
+					}
+				)
+			)
 			(
 				(
 					{

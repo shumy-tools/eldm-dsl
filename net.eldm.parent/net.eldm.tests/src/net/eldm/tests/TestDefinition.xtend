@@ -47,7 +47,7 @@ class TestDefinition {
           M { desc: 10 }
           F { desc: 'Female' }
       
-    ''', "Native value not assignable to type 'str'.")
+    ''', "Inferred type not assignable to type 'str'.")
   }
   
   @Test

@@ -1,6 +1,7 @@
 package net.eldm.util
 
 import com.google.inject.Inject
+import com.google.inject.Singleton
 import java.io.StringReader
 import net.eldm.eldmDsl.EldmDslFactory
 import net.eldm.eldmDsl.Literal
@@ -12,6 +13,7 @@ import net.eldm.services.EldmDslGrammarAccess
 
 import static net.eldm.spi.Natives.*
 
+@Singleton
 class PatternParser {
   @Inject EldmDslParser eldmParser
   @Inject EldmDslGrammarAccess eldmRules
@@ -36,6 +38,19 @@ class PatternParser {
   
   def Literal parse(PatternLiteral value) {
     val text = if (value.native == STR) value.text else value.extractText
+    
+    if (value.ref instanceof TypeDef && (value.ref as TypeDef).parser !== null) {
+      val eFact = EldmDslFactory.eINSTANCE
+      val tDef = value.ref as TypeDef
+      val code = tDef.extractCode
+      
+      switch tDef.parser {
+        case 'match': if (text.matches(code)) return eFact.createStrLiteral => [ value = text ]
+        case 'mask': if (text.masked(code)) return eFact.createStrLiteral => [ value = text ]
+      }
+      
+      return null
+    }
     
     val result = eldmParser.parse(eldmRules.literalRule, new StringReader(text))
     if (result.hasSyntaxErrors || !(result.rootASTElement instanceof Literal)) {
