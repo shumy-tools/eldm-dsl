@@ -11,6 +11,7 @@ import net.eldm.eldmDsl.EnumLiteral
 import net.eldm.eldmDsl.ExternalDef
 import net.eldm.eldmDsl.FltLiteral
 import net.eldm.eldmDsl.IntLiteral
+import net.eldm.eldmDsl.LetValue
 import net.eldm.eldmDsl.ListDef
 import net.eldm.eldmDsl.ListLiteral
 import net.eldm.eldmDsl.Literal
@@ -23,13 +24,15 @@ import net.eldm.eldmDsl.PatternLiteral
 import net.eldm.eldmDsl.StrLiteral
 import net.eldm.eldmDsl.TimeLiteral
 import net.eldm.eldmDsl.TypeDef
+import net.eldm.validation.EldmDslValidator
 
-import static extension net.eldm.spi.Natives.*
 import static extension net.eldm.spi.Collections.*
+import static extension net.eldm.spi.Natives.*
 
 class TypeValidator {
   @Inject extension PatternParser iParser
   @Inject extension TypeResolver tResolver
+  @Inject extension EldmDslValidator eValidator
   
   def boolean is(Literal lValue, Class<? extends Literal> type) {
     return type.isAssignableFrom(lValue.class) || lValue instanceof PatternLiteral && type.parse(lValue) !== null
@@ -42,117 +45,144 @@ class TypeValidator {
     return false
   }
   
-  def String is(Literal lValue, Definition defDef) {
+  def boolean is(LetValue lValue, ElementDef elmDef) {
+    lValue.error("Test incorrect")
+    return false
+  }
+  
+  def boolean is(Literal lValue, Definition defDef) {
     switch defDef {
       TypeDef: return lValue.is(defDef)
       ExternalDef: return lValue.is(defDef)
-      default: return '''Unrecognized Definition: «defDef.class». Please report this bug.'''
+      
+      default: {
+        lValue.error('''Unrecognized Definition: «defDef.class.simpleName». Please report this bug.''')
+        return false
+      }
     }
   }
   
-  def String is(Literal lValue, ElementDef elmDef) {
+  def boolean is(Literal lValue, ElementDef elmDef) {
     if (elmDef.native !== null) {
-      switch elmDef.native {
-        case ANY:  return null
+      val isValidNative = switch elmDef.native {
+        case ANY: true
         
-        case BOOL: if (lValue.is(BoolLiteral)) return null
-        case STR:  if (lValue.is(StrLiteral)) return null
-        case INT:  if (lValue.is(IntLiteral)) return null
-        case FLT:  if (lValue.is(FltLiteral)) return null
+        case BOOL: lValue.is(BoolLiteral)
+        case STR:  lValue.is(StrLiteral)
+        case INT:  lValue.is(IntLiteral)
+        case FLT:  lValue.is(FltLiteral)
         
-        case LDA:  if (lValue.is(DateLiteral)) return null
-        case LTM:  if (lValue.is(TimeLiteral)) return null
-        case LDT:  if (lValue.is(DateTimeLiteral)) return null
-        case PATH: if (lValue.is(PathLiteral)) return null
+        case LDA:  lValue.is(DateLiteral)
+        case LTM:  lValue.is(TimeLiteral)
+        case LDT:  lValue.is(DateTimeLiteral)
+        case PATH: lValue.is(PathLiteral)
         
-        case MAP:  if (lValue.is(MapLiteral)) return null
-        case LST:  if (lValue.is(ListLiteral)) return null
-        case ENUM: if (lValue.is(EnumLiteral)) return null
+        case MAP:  lValue.is(MapLiteral)
+        case LST:  lValue.is(ListLiteral)
+        case ENUM: lValue.is(EnumLiteral)
         
-        default:   return '''Unrecognized native type: «elmDef.native». Please report this bug.'''
+        default: {
+          lValue.error('''Unrecognized native type: «elmDef.native». Please report this bug.''')
+          return false
+        }  
       }
       
-      return '''Native value not assignable to type '«elmDef.native»'.'''
+      if (!isValidNative)
+        lValue.error('''Native value not assignable to type '«elmDef.native»'.''')
+      
+      return isValidNative
     }
     
     if (elmDef.ref !== null)
       return lValue.is(elmDef.ref)
     
-    switch elmDef {
-      MapDef: return lValue.is(elmDef)
-      ListDef: return lValue.is(elmDef)
-      EnumDef: return lValue.is(elmDef)
-      default: return '''Unrecognized ElementDef: «elmDef.class». Please report this bug.'''
+    return switch elmDef {
+      MapDef: lValue.is(elmDef)
+      ListDef: lValue.is(elmDef)
+      EnumDef: lValue.is(elmDef)
+      
+      default: {
+        lValue.error('''Unrecognized ElementDef: «elmDef.class.simpleName». Please report this bug.''')
+        false
+      }
     }
   }
   
-  def String is(Literal lValue, MapDef mapDef) {
+  def boolean is(Literal lValue, MapDef mapDef) {
     val use = MapLiteral.parse(lValue) ?: lValue
     if (use instanceof MapLiteral) {
       // Invalid KeyDef sets!
       for(entry : use.entries) {
         val kd = mapDef.getKeyDef(entry)
-        if (kd === null)
-          return '''KeyDef '«entry.name»' does not exist.'''
+        if (kd === null) {
+          lValue.error('''KeyDef '«entry.name»' does not exist.''')
+          return false
+        }
         
-        val msg = entry.value.is(kd.entryType)
-        if (msg !== null)
-          return msg
+        if (!entry.value.is(kd.entryType))
+          return false
       }
       
       // mandatory KeyDef not set!
       val mandatory = mapDef.defs.filter[!opt && value === null]
       for(keyDef : mandatory)
-        if (!use.contains(keyDef))
-          return '''Mandatory KeyDef '«keyDef.name»' not set.'''
-      
-      return null
+        if (!use.contains(keyDef)) {
+          lValue.error('''Mandatory KeyDef '«keyDef.name»' not set.''')
+          return false 
+        }
+        
+      return true
     }
     
-    return "Literal value not assignable to MapDef."
+    lValue.error("Literal value not assignable to MapDef.")
+    return false 
   }
   
-  def String is(Literal lValue, ListDef lstDef) {
+  def boolean is(Literal lValue, ListDef lstDef) {
     val use = ListLiteral.parse(lValue) ?: lValue
     if (use instanceof ListLiteral) {
       for (item : use.vals) {
-        val msg = item.is(lstDef.type)
-        if (msg !== null)
-          return msg
+        if (!item.is(lstDef.type))
+          return false
       }
       
-      return null
+      return true
     }
     
-    return "Literal value not assignable to ListDef."
+    lValue.error("Literal value not assignable to ListDef.")
+    return false
   }
   
-  def String is(Literal lValue, EnumDef enumRef) {
+  def boolean is(Literal lValue, EnumDef enumRef) {
     val use = EnumLiteral.parse(lValue) ?: lValue
     if (use instanceof EnumLiteral) {
       for (ed : enumRef.defs)
         if (ed === use.ref)
-          return null
+          return true
     }
     
-    return "Literal value not assignable to EnumDef."
+    lValue.error("Literal value not assignable to EnumDef.")
+    return false
   }
   
-  def String is(Literal lValue, TypeDef typeDef) {
+  def boolean is(Literal lValue, TypeDef typeDef) {
     if (typeDef.type !== null)
       return lValue.is(typeDef.type)
      
     if (typeDef.parser !== null) {
       val pattern = lValue.parsePattern
       if (pattern !== null)
-        return null
+        return true
     }
     
-    return "Literal value not assignable to TypeDef."
+    lValue.error("Literal value not assignable to TypeDef.")
+    return false
   }
   
-  def String is(Literal lValue, ExternalDef extDef) {
-    return "External definitions not yet supported!" //TODO: support external defs
+  def boolean is(Literal lValue, ExternalDef extDef) {
+    //TODO: support external defs
+    lValue.error("External definitions not yet supported!")
+    return false 
     
     //return "Literal value not assignable to ExternalDef."
   }

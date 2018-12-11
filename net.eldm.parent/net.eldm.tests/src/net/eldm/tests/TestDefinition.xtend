@@ -105,24 +105,24 @@ class TestDefinition {
           name: ptr
           comp: {
             email: email
-            arr: ..{ id?: int, or = 10 }
+            arr: ..{ id?: int, orx = 10 }
           }
         }
         
         typedef Other { id: int, date: lda }
         
-        typedef List ..{ id?: int, or = 10 }
+        typedef List ..{ id?: int, orx = 10 }
         
         typedef ListRef {
           id?: int
-          or = 10
+          orx = 10
           list: List
         }
         
         typedef Sex enum { desc: str, other?: Other, list?: List, mail?: email }:
-          M { desc: str@'Male', list: [ { id: int@'12' }, map@'{ id: 5, or: 3 }' ] }
+          M { desc: str@'Male', list: [ { id: int@'12' }, map@'{ id: 5, orx: 3 }' ] }
           F { desc: 'Female', other: { id: int@"""10""", date: lda@'2018-01-20' }, mail: email@'alex@gmail.com' }
-          O { desc: """Other""", list: List@'[ { id: 3 }, { id: 10, or: 11 } ]' }
+          O { desc: """Other""", list: List@'[ { id: 3 }, { id: 10, orx: 11 } ]' }
         
         typedef New enum { id: flt, seq?: ptr, mp: map }:
           ALEX { id: 1.3, seq: ptr@'R3g7-60.e5U\ ', mp: { x: -10, y: 12.5 } }

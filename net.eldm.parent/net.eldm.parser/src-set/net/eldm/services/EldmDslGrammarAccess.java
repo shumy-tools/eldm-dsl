@@ -38,8 +38,8 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cBEGINTerminalRuleCall_4_1 = (RuleCall)cGroup_4.eContents().get(1);
 		private final Assignment cDefsAssignment_4_2 = (Assignment)cGroup_4.eContents().get(2);
 		private final RuleCall cDefsDefinitionParserRuleCall_4_2_0 = (RuleCall)cDefsAssignment_4_2.eContents().get(0);
-		private final Assignment cValDefsAssignment_4_3 = (Assignment)cGroup_4.eContents().get(3);
-		private final RuleCall cValDefsLetParserRuleCall_4_3_0 = (RuleCall)cValDefsAssignment_4_3.eContents().get(0);
+		private final Assignment cValsAssignment_4_3 = (Assignment)cGroup_4.eContents().get(3);
+		private final RuleCall cValsLetValueParserRuleCall_4_3_0 = (RuleCall)cValsAssignment_4_3.eContents().get(0);
 		private final RuleCall cENDTerminalRuleCall_4_4 = (RuleCall)cGroup_4.eContents().get(4);
 		private final Assignment cOpersAssignment_5 = (Assignment)cGroup.eContents().get(5);
 		private final RuleCall cOpersOperationParserRuleCall_5_0 = (RuleCall)cOpersAssignment_5.eContents().get(0);
@@ -55,13 +55,13 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//	plugs+=PlugDsl* ('definitions:'
 		//	BEGIN
 		//	defs+=Definition*
-		//	valDefs+=Let*
+		//	vals+=LetValue*
 		//	END)?
 		//	opers+=Operation*
 		//	paths+=SubPath*;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//'module' name=PathLiteral imports+=Import* plugs+=PlugDsl* ('definitions:' BEGIN defs+=Definition* valDefs+=Let* END)?
+		//'module' name=PathLiteral imports+=Import* plugs+=PlugDsl* ('definitions:' BEGIN defs+=Definition* vals+=LetValue* END)?
 		//opers+=Operation* paths+=SubPath*
 		public Group getGroup() { return cGroup; }
 		
@@ -86,7 +86,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//PlugDsl
 		public RuleCall getPlugsPlugDslParserRuleCall_3_0() { return cPlugsPlugDslParserRuleCall_3_0; }
 		
-		//('definitions:' BEGIN defs+=Definition* valDefs+=Let* END)?
+		//('definitions:' BEGIN defs+=Definition* vals+=LetValue* END)?
 		public Group getGroup_4() { return cGroup_4; }
 		
 		//'definitions:'
@@ -101,11 +101,11 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//Definition
 		public RuleCall getDefsDefinitionParserRuleCall_4_2_0() { return cDefsDefinitionParserRuleCall_4_2_0; }
 		
-		//valDefs+=Let*
-		public Assignment getValDefsAssignment_4_3() { return cValDefsAssignment_4_3; }
+		//vals+=LetValue*
+		public Assignment getValsAssignment_4_3() { return cValsAssignment_4_3; }
 		
-		//Let
-		public RuleCall getValDefsLetParserRuleCall_4_3_0() { return cValDefsLetParserRuleCall_4_3_0; }
+		//LetValue
+		public RuleCall getValsLetValueParserRuleCall_4_3_0() { return cValsLetValueParserRuleCall_4_3_0; }
 		
 		//END
 		public RuleCall getENDTerminalRuleCall_4_4() { return cENDTerminalRuleCall_4_4; }
@@ -501,46 +501,57 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	public class ExpressionElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.Expression");
-		private final RuleCall cLetParserRuleCall = (RuleCall)rule.eContents().get(1);
+		private final RuleCall cLetValueParserRuleCall = (RuleCall)rule.eContents().get(1);
 		
 		//Expression:
-		//	Let //TODO: add more expressions?
+		//	LetValue //TODO: add more expressions?
 		//;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//Let
-		public RuleCall getLetParserRuleCall() { return cLetParserRuleCall; }
+		//LetValue
+		public RuleCall getLetValueParserRuleCall() { return cLetValueParserRuleCall; }
 	}
-	public class LetElements extends AbstractParserRuleElementFinder {
-		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.Let");
+	public class LetValueElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.LetValue");
 		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final Action cLetAction_0 = (Action)cGroup.eContents().get(0);
-		private final Keyword cLetKeyword_1 = (Keyword)cGroup.eContents().get(1);
-		private final Assignment cNameAssignment_2 = (Assignment)cGroup.eContents().get(2);
-		private final RuleCall cNameIDTerminalRuleCall_2_0 = (RuleCall)cNameAssignment_2.eContents().get(0);
+		private final Keyword cLetKeyword_0 = (Keyword)cGroup.eContents().get(0);
+		private final Assignment cNameAssignment_1 = (Assignment)cGroup.eContents().get(1);
+		private final RuleCall cNameIDTerminalRuleCall_1_0 = (RuleCall)cNameAssignment_1.eContents().get(0);
+		private final Group cGroup_2 = (Group)cGroup.eContents().get(2);
+		private final Keyword cColonKeyword_2_0 = (Keyword)cGroup_2.eContents().get(0);
+		private final Assignment cTypeAssignment_2_1 = (Assignment)cGroup_2.eContents().get(1);
+		private final RuleCall cTypeElementDefParserRuleCall_2_1_0 = (RuleCall)cTypeAssignment_2_1.eContents().get(0);
 		private final Keyword cEqualsSignKeyword_3 = (Keyword)cGroup.eContents().get(3);
 		private final Assignment cResultAssignment_4 = (Assignment)cGroup.eContents().get(4);
 		private final RuleCall cResultResultExpressionParserRuleCall_4_0 = (RuleCall)cResultAssignment_4.eContents().get(0);
 		
-		//Let Expression:
-		//	{Let}
-		//	'let' name=ID '=' result=ResultExpression;
+		//LetValue:
+		//	'let' name=ID (':' type=ElementDef)? '=' result=ResultExpression;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//{Let} 'let' name=ID '=' result=ResultExpression
+		//'let' name=ID (':' type=ElementDef)? '=' result=ResultExpression
 		public Group getGroup() { return cGroup; }
 		
-		//{Let}
-		public Action getLetAction_0() { return cLetAction_0; }
-		
 		//'let'
-		public Keyword getLetKeyword_1() { return cLetKeyword_1; }
+		public Keyword getLetKeyword_0() { return cLetKeyword_0; }
 		
 		//name=ID
-		public Assignment getNameAssignment_2() { return cNameAssignment_2; }
+		public Assignment getNameAssignment_1() { return cNameAssignment_1; }
 		
 		//ID
-		public RuleCall getNameIDTerminalRuleCall_2_0() { return cNameIDTerminalRuleCall_2_0; }
+		public RuleCall getNameIDTerminalRuleCall_1_0() { return cNameIDTerminalRuleCall_1_0; }
+		
+		//(':' type=ElementDef)?
+		public Group getGroup_2() { return cGroup_2; }
+		
+		//':'
+		public Keyword getColonKeyword_2_0() { return cColonKeyword_2_0; }
+		
+		//type=ElementDef
+		public Assignment getTypeAssignment_2_1() { return cTypeAssignment_2_1; }
+		
+		//ElementDef
+		public RuleCall getTypeElementDefParserRuleCall_2_1_0() { return cTypeElementDefParserRuleCall_2_1_0; }
 		
 		//'='
 		public Keyword getEqualsSignKeyword_3() { return cEqualsSignKeyword_3; }
@@ -556,6 +567,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cOrExpressionParserRuleCall = (RuleCall)rule.eContents().get(1);
 		
 		//// the result expression must be equivalent to a Literal
+		//// ResultExpression -> (left feature right)
 		//ResultExpression:
 		//	OrExpression;
 		@Override public ParserRule getRule() { return rule; }
@@ -572,43 +584,43 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Group cGroup_1_0_0 = (Group)cGroup_1_0.eContents().get(0);
 		private final Action cResultExpressionLeftAction_1_0_0_0 = (Action)cGroup_1_0_0.eContents().get(0);
 		private final Assignment cFeatureAssignment_1_0_0_1 = (Assignment)cGroup_1_0_0.eContents().get(1);
-		private final Keyword cFeatureVerticalLineKeyword_1_0_0_1_0 = (Keyword)cFeatureAssignment_1_0_0_1.eContents().get(0);
+		private final Keyword cFeatureOrKeyword_1_0_0_1_0 = (Keyword)cFeatureAssignment_1_0_0_1.eContents().get(0);
 		private final Assignment cRightAssignment_1_1 = (Assignment)cGroup_1.eContents().get(1);
-		private final RuleCall cRightOrExpressionParserRuleCall_1_1_0 = (RuleCall)cRightAssignment_1_1.eContents().get(0);
+		private final RuleCall cRightAndExpressionParserRuleCall_1_1_0 = (RuleCall)cRightAssignment_1_1.eContents().get(0);
 		
 		//OrExpression ResultExpression:
-		//	AndExpression (=> ({ResultExpression.left=current} feature='|') right=OrExpression)?;
+		//	AndExpression (=> ({ResultExpression.left=current} feature='or') right=AndExpression)*;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//AndExpression (=> ({ResultExpression.left=current} feature='|') right=OrExpression)?
+		//AndExpression (=> ({ResultExpression.left=current} feature='or') right=AndExpression)*
 		public Group getGroup() { return cGroup; }
 		
 		//AndExpression
 		public RuleCall getAndExpressionParserRuleCall_0() { return cAndExpressionParserRuleCall_0; }
 		
-		//(=> ({ResultExpression.left=current} feature='|') right=OrExpression)?
+		//(=> ({ResultExpression.left=current} feature='or') right=AndExpression)*
 		public Group getGroup_1() { return cGroup_1; }
 		
-		//=> ({ResultExpression.left=current} feature='|')
+		//=> ({ResultExpression.left=current} feature='or')
 		public Group getGroup_1_0() { return cGroup_1_0; }
 		
-		//{ResultExpression.left=current} feature='|'
+		//{ResultExpression.left=current} feature='or'
 		public Group getGroup_1_0_0() { return cGroup_1_0_0; }
 		
 		//{ResultExpression.left=current}
 		public Action getResultExpressionLeftAction_1_0_0_0() { return cResultExpressionLeftAction_1_0_0_0; }
 		
-		//feature='|'
+		//feature='or'
 		public Assignment getFeatureAssignment_1_0_0_1() { return cFeatureAssignment_1_0_0_1; }
 		
-		//'|'
-		public Keyword getFeatureVerticalLineKeyword_1_0_0_1_0() { return cFeatureVerticalLineKeyword_1_0_0_1_0; }
+		//'or'
+		public Keyword getFeatureOrKeyword_1_0_0_1_0() { return cFeatureOrKeyword_1_0_0_1_0; }
 		
-		//right=OrExpression
+		//right=AndExpression
 		public Assignment getRightAssignment_1_1() { return cRightAssignment_1_1; }
 		
-		//OrExpression
-		public RuleCall getRightOrExpressionParserRuleCall_1_1_0() { return cRightOrExpressionParserRuleCall_1_1_0; }
+		//AndExpression
+		public RuleCall getRightAndExpressionParserRuleCall_1_1_0() { return cRightAndExpressionParserRuleCall_1_1_0; }
 	}
 	public class AndExpressionElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.AndExpression");
@@ -619,37 +631,37 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Group cGroup_1_0_0 = (Group)cGroup_1_0.eContents().get(0);
 		private final Action cResultExpressionLeftAction_1_0_0_0 = (Action)cGroup_1_0_0.eContents().get(0);
 		private final Assignment cFeatureAssignment_1_0_0_1 = (Assignment)cGroup_1_0_0.eContents().get(1);
-		private final Keyword cFeatureAmpersandKeyword_1_0_0_1_0 = (Keyword)cFeatureAssignment_1_0_0_1.eContents().get(0);
+		private final Keyword cFeatureAndKeyword_1_0_0_1_0 = (Keyword)cFeatureAssignment_1_0_0_1.eContents().get(0);
 		private final Assignment cRightAssignment_1_1 = (Assignment)cGroup_1.eContents().get(1);
 		private final RuleCall cRightEqualityExpressionParserRuleCall_1_1_0 = (RuleCall)cRightAssignment_1_1.eContents().get(0);
 		
 		//AndExpression ResultExpression:
-		//	EqualityExpression (=> ({ResultExpression.left=current} feature='&') right=EqualityExpression)*;
+		//	EqualityExpression (=> ({ResultExpression.left=current} feature='and') right=EqualityExpression)*;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//EqualityExpression (=> ({ResultExpression.left=current} feature='&') right=EqualityExpression)*
+		//EqualityExpression (=> ({ResultExpression.left=current} feature='and') right=EqualityExpression)*
 		public Group getGroup() { return cGroup; }
 		
 		//EqualityExpression
 		public RuleCall getEqualityExpressionParserRuleCall_0() { return cEqualityExpressionParserRuleCall_0; }
 		
-		//(=> ({ResultExpression.left=current} feature='&') right=EqualityExpression)*
+		//(=> ({ResultExpression.left=current} feature='and') right=EqualityExpression)*
 		public Group getGroup_1() { return cGroup_1; }
 		
-		//=> ({ResultExpression.left=current} feature='&')
+		//=> ({ResultExpression.left=current} feature='and')
 		public Group getGroup_1_0() { return cGroup_1_0; }
 		
-		//{ResultExpression.left=current} feature='&'
+		//{ResultExpression.left=current} feature='and'
 		public Group getGroup_1_0_0() { return cGroup_1_0_0; }
 		
 		//{ResultExpression.left=current}
 		public Action getResultExpressionLeftAction_1_0_0_0() { return cResultExpressionLeftAction_1_0_0_0; }
 		
-		//feature='&'
+		//feature='and'
 		public Assignment getFeatureAssignment_1_0_0_1() { return cFeatureAssignment_1_0_0_1; }
 		
-		//'&'
-		public Keyword getFeatureAmpersandKeyword_1_0_0_1_0() { return cFeatureAmpersandKeyword_1_0_0_1_0; }
+		//'and'
+		public Keyword getFeatureAndKeyword_1_0_0_1_0() { return cFeatureAndKeyword_1_0_0_1_0; }
 		
 		//right=EqualityExpression
 		public Assignment getRightAssignment_1_1() { return cRightAssignment_1_1; }
@@ -720,7 +732,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Group cGroup_1_0 = (Group)cAlternatives_1.eContents().get(0);
 		private final Group cGroup_1_0_0 = (Group)cGroup_1_0.eContents().get(0);
 		private final Group cGroup_1_0_0_0 = (Group)cGroup_1_0_0.eContents().get(0);
-		private final Action cInstanceOfExpressionExpressionAction_1_0_0_0_0 = (Action)cGroup_1_0_0_0.eContents().get(0);
+		private final Action cIsExpressionExpressionAction_1_0_0_0_0 = (Action)cGroup_1_0_0_0.eContents().get(0);
 		private final Keyword cIsKeyword_1_0_0_0_1 = (Keyword)cGroup_1_0_0_0.eContents().get(1);
 		private final Assignment cTypeAssignment_1_0_1 = (Assignment)cGroup_1_0.eContents().get(1);
 		private final RuleCall cTypeElementDefParserRuleCall_1_0_1_0 = (RuleCall)cTypeAssignment_1_0_1.eContents().get(0);
@@ -738,32 +750,32 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cRightAdditiveExpressionParserRuleCall_1_1_1_0 = (RuleCall)cRightAssignment_1_1_1.eContents().get(0);
 		
 		//RelationalExpression ResultExpression:
-		//	AdditiveExpression (=> ({InstanceOfExpression.expression=current} 'is') type=ElementDef
+		//	AdditiveExpression (=> ({IsExpression.expression=current} 'is') type=ElementDef
 		//	| => ({ResultExpression.left=current} feature=('>=' | '<=' | '>' | '<')) right=AdditiveExpression)*;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//AdditiveExpression (=> ({InstanceOfExpression.expression=current} 'is') type=ElementDef | =>
-		//({ResultExpression.left=current} feature=('>=' | '<=' | '>' | '<')) right=AdditiveExpression)*
+		//AdditiveExpression (=> ({IsExpression.expression=current} 'is') type=ElementDef | => ({ResultExpression.left=current}
+		//feature=('>=' | '<=' | '>' | '<')) right=AdditiveExpression)*
 		public Group getGroup() { return cGroup; }
 		
 		//AdditiveExpression
 		public RuleCall getAdditiveExpressionParserRuleCall_0() { return cAdditiveExpressionParserRuleCall_0; }
 		
-		//(=> ({InstanceOfExpression.expression=current} 'is') type=ElementDef | => ({ResultExpression.left=current} feature=('>='
-		//| '<=' | '>' | '<')) right=AdditiveExpression)*
+		//(=> ({IsExpression.expression=current} 'is') type=ElementDef | => ({ResultExpression.left=current} feature=('>=' | '<='
+		//| '>' | '<')) right=AdditiveExpression)*
 		public Alternatives getAlternatives_1() { return cAlternatives_1; }
 		
-		//=> ({InstanceOfExpression.expression=current} 'is') type=ElementDef
+		//=> ({IsExpression.expression=current} 'is') type=ElementDef
 		public Group getGroup_1_0() { return cGroup_1_0; }
 		
-		//=> ({InstanceOfExpression.expression=current} 'is')
+		//=> ({IsExpression.expression=current} 'is')
 		public Group getGroup_1_0_0() { return cGroup_1_0_0; }
 		
-		//{InstanceOfExpression.expression=current} 'is'
+		//{IsExpression.expression=current} 'is'
 		public Group getGroup_1_0_0_0() { return cGroup_1_0_0_0; }
 		
-		//{InstanceOfExpression.expression=current}
-		public Action getInstanceOfExpressionExpressionAction_1_0_0_0_0() { return cInstanceOfExpressionExpressionAction_1_0_0_0_0; }
+		//{IsExpression.expression=current}
+		public Action getIsExpressionExpressionAction_1_0_0_0_0() { return cIsExpressionExpressionAction_1_0_0_0_0; }
 		
 		//'is'
 		public Keyword getIsKeyword_1_0_0_0_1() { return cIsKeyword_1_0_0_0_1; }
@@ -932,46 +944,38 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.UnaryOperation");
 		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
 		private final Group cGroup_0 = (Group)cAlternatives.eContents().get(0);
-		private final Assignment cFeatureAssignment_0_0 = (Assignment)cGroup_0.eContents().get(0);
-		private final Alternatives cFeatureAlternatives_0_0_0 = (Alternatives)cFeatureAssignment_0_0.eContents().get(0);
-		private final Keyword cFeatureExclamationMarkKeyword_0_0_0_0 = (Keyword)cFeatureAlternatives_0_0_0.eContents().get(0);
-		private final Keyword cFeaturePlusSignKeyword_0_0_0_1 = (Keyword)cFeatureAlternatives_0_0_0.eContents().get(1);
-		private final Keyword cFeatureHyphenMinusKeyword_0_0_0_2 = (Keyword)cFeatureAlternatives_0_0_0.eContents().get(2);
-		private final Assignment cOperandAssignment_0_1 = (Assignment)cGroup_0.eContents().get(1);
-		private final RuleCall cOperandUnaryOperationParserRuleCall_0_1_0 = (RuleCall)cOperandAssignment_0_1.eContents().get(0);
+		private final Action cUnaryOperationAction_0_0 = (Action)cGroup_0.eContents().get(0);
+		private final Assignment cFeatureAssignment_0_1 = (Assignment)cGroup_0.eContents().get(1);
+		private final Keyword cFeatureExclamationMarkKeyword_0_1_0 = (Keyword)cFeatureAssignment_0_1.eContents().get(0);
+		private final Assignment cOperandAssignment_0_2 = (Assignment)cGroup_0.eContents().get(2);
+		private final RuleCall cOperandUnaryOperationParserRuleCall_0_2_0 = (RuleCall)cOperandAssignment_0_2.eContents().get(0);
 		private final RuleCall cPostfixOperationParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
 		
+		//// UnaryOperation -> (feature operand)
 		//UnaryOperation ResultExpression:
-		//	feature=('!' | '+' | '-') operand=UnaryOperation
-		//	| PostfixOperation;
+		//	{UnaryOperation} feature='!' operand=UnaryOperation | PostfixOperation;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//feature=('!' | '+' | '-') operand=UnaryOperation | PostfixOperation
+		//{UnaryOperation} feature='!' operand=UnaryOperation | PostfixOperation
 		public Alternatives getAlternatives() { return cAlternatives; }
 		
-		//feature=('!' | '+' | '-') operand=UnaryOperation
+		//{UnaryOperation} feature='!' operand=UnaryOperation
 		public Group getGroup_0() { return cGroup_0; }
 		
-		//feature=('!' | '+' | '-')
-		public Assignment getFeatureAssignment_0_0() { return cFeatureAssignment_0_0; }
+		//{UnaryOperation}
+		public Action getUnaryOperationAction_0_0() { return cUnaryOperationAction_0_0; }
 		
-		//('!' | '+' | '-')
-		public Alternatives getFeatureAlternatives_0_0_0() { return cFeatureAlternatives_0_0_0; }
+		//feature='!'
+		public Assignment getFeatureAssignment_0_1() { return cFeatureAssignment_0_1; }
 		
 		//'!'
-		public Keyword getFeatureExclamationMarkKeyword_0_0_0_0() { return cFeatureExclamationMarkKeyword_0_0_0_0; }
-		
-		//'+'
-		public Keyword getFeaturePlusSignKeyword_0_0_0_1() { return cFeaturePlusSignKeyword_0_0_0_1; }
-		
-		//'-'
-		public Keyword getFeatureHyphenMinusKeyword_0_0_0_2() { return cFeatureHyphenMinusKeyword_0_0_0_2; }
+		public Keyword getFeatureExclamationMarkKeyword_0_1_0() { return cFeatureExclamationMarkKeyword_0_1_0; }
 		
 		//operand=UnaryOperation
-		public Assignment getOperandAssignment_0_1() { return cOperandAssignment_0_1; }
+		public Assignment getOperandAssignment_0_2() { return cOperandAssignment_0_2; }
 		
 		//UnaryOperation
-		public RuleCall getOperandUnaryOperationParserRuleCall_0_1_0() { return cOperandUnaryOperationParserRuleCall_0_1_0; }
+		public RuleCall getOperandUnaryOperationParserRuleCall_0_2_0() { return cOperandUnaryOperationParserRuleCall_0_2_0; }
 		
 		//PostfixOperation
 		public RuleCall getPostfixOperationParserRuleCall_1() { return cPostfixOperationParserRuleCall_1; }
@@ -982,30 +986,30 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cBaseExpressionParserRuleCall_0 = (RuleCall)cGroup.eContents().get(0);
 		private final Group cGroup_1 = (Group)cGroup.eContents().get(1);
 		private final Group cGroup_1_0 = (Group)cGroup_1.eContents().get(0);
-		private final Action cPostfixOperationOperandAction_1_0_0 = (Action)cGroup_1_0.eContents().get(0);
+		private final Action cUnaryOperationOperandAction_1_0_0 = (Action)cGroup_1_0.eContents().get(0);
 		private final Assignment cFeatureAssignment_1_0_1 = (Assignment)cGroup_1_0.eContents().get(1);
 		private final Alternatives cFeatureAlternatives_1_0_1_0 = (Alternatives)cFeatureAssignment_1_0_1.eContents().get(0);
 		private final Keyword cFeaturePlusSignPlusSignKeyword_1_0_1_0_0 = (Keyword)cFeatureAlternatives_1_0_1_0.eContents().get(0);
 		private final Keyword cFeatureHyphenMinusHyphenMinusKeyword_1_0_1_0_1 = (Keyword)cFeatureAlternatives_1_0_1_0.eContents().get(1);
 		
 		//PostfixOperation ResultExpression:
-		//	BaseExpression => ({PostfixOperation.operand=current} feature=('++' | '--'))?;
+		//	BaseExpression => ({UnaryOperation.operand=current} feature=('++' | '--'))?;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//BaseExpression => ({PostfixOperation.operand=current} feature=('++' | '--'))?
+		//BaseExpression => ({UnaryOperation.operand=current} feature=('++' | '--'))?
 		public Group getGroup() { return cGroup; }
 		
 		//BaseExpression
 		public RuleCall getBaseExpressionParserRuleCall_0() { return cBaseExpressionParserRuleCall_0; }
 		
-		//=> ({PostfixOperation.operand=current} feature=('++' | '--'))?
+		//=> ({UnaryOperation.operand=current} feature=('++' | '--'))?
 		public Group getGroup_1() { return cGroup_1; }
 		
-		//{PostfixOperation.operand=current} feature=('++' | '--')
+		//{UnaryOperation.operand=current} feature=('++' | '--')
 		public Group getGroup_1_0() { return cGroup_1_0; }
 		
-		//{PostfixOperation.operand=current}
-		public Action getPostfixOperationOperandAction_1_0_0() { return cPostfixOperationOperandAction_1_0_0; }
+		//{UnaryOperation.operand=current}
+		public Action getUnaryOperationOperandAction_1_0_0() { return cUnaryOperationOperandAction_1_0_0; }
 		
 		//feature=('++' | '--')
 		public Assignment getFeatureAssignment_1_0_1() { return cFeatureAssignment_1_0_1; }
@@ -1057,17 +1061,17 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cValueLiteralParserRuleCall_0_0 = (RuleCall)cValueAssignment_0.eContents().get(0);
 		private final Group cGroup_1 = (Group)cAlternatives.eContents().get(1);
 		private final Assignment cTargetAssignment_1_0 = (Assignment)cGroup_1.eContents().get(0);
-		private final CrossReference cTargetLetCrossReference_1_0_0 = (CrossReference)cTargetAssignment_1_0.eContents().get(0);
-		private final RuleCall cTargetLetIDTerminalRuleCall_1_0_0_1 = (RuleCall)cTargetLetCrossReference_1_0_0.eContents().get(1);
+		private final CrossReference cTargetLetValueCrossReference_1_0_0 = (CrossReference)cTargetAssignment_1_0.eContents().get(0);
+		private final RuleCall cTargetLetValueIDTerminalRuleCall_1_0_0_1 = (RuleCall)cTargetLetValueCrossReference_1_0_0.eContents().get(1);
 		private final Assignment cMembersAssignment_1_1 = (Assignment)cGroup_1.eContents().get(1);
 		private final RuleCall cMembersMemberGetParserRuleCall_1_1_0 = (RuleCall)cMembersAssignment_1_1.eContents().get(0);
 		
 		//Primary ResultExpression:
 		//	value=Literal
-		//	| => target=[Let] members+=MemberGet*;
+		//	| => target=[LetValue] members+=MemberGet*;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//value=Literal | => target=[Let] members+=MemberGet*
+		//value=Literal | => target=[LetValue] members+=MemberGet*
 		public Alternatives getAlternatives() { return cAlternatives; }
 		
 		//value=Literal
@@ -1076,17 +1080,17 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//Literal
 		public RuleCall getValueLiteralParserRuleCall_0_0() { return cValueLiteralParserRuleCall_0_0; }
 		
-		//=> target=[Let] members+=MemberGet*
+		//=> target=[LetValue] members+=MemberGet*
 		public Group getGroup_1() { return cGroup_1; }
 		
-		//=> target=[Let]
+		//=> target=[LetValue]
 		public Assignment getTargetAssignment_1_0() { return cTargetAssignment_1_0; }
 		
-		//[Let]
-		public CrossReference getTargetLetCrossReference_1_0_0() { return cTargetLetCrossReference_1_0_0; }
+		//[LetValue]
+		public CrossReference getTargetLetValueCrossReference_1_0_0() { return cTargetLetValueCrossReference_1_0_0; }
 		
 		//ID
-		public RuleCall getTargetLetIDTerminalRuleCall_1_0_0_1() { return cTargetLetIDTerminalRuleCall_1_0_0_1; }
+		public RuleCall getTargetLetValueIDTerminalRuleCall_1_0_0_1() { return cTargetLetValueIDTerminalRuleCall_1_0_0_1; }
 		
 		//members+=MemberGet*
 		public Assignment getMembersAssignment_1_1() { return cMembersAssignment_1_1; }
@@ -2129,7 +2133,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	private final SubPathElements pSubPath;
 	private final BlockExpressionElements pBlockExpression;
 	private final ExpressionElements pExpression;
-	private final LetElements pLet;
+	private final LetValueElements pLetValue;
 	private final ResultExpressionElements pResultExpression;
 	private final OrExpressionElements pOrExpression;
 	private final AndExpressionElements pAndExpression;
@@ -2198,7 +2202,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		this.pSubPath = new SubPathElements();
 		this.pBlockExpression = new BlockExpressionElements();
 		this.pExpression = new ExpressionElements();
-		this.pLet = new LetElements();
+		this.pLetValue = new LetValueElements();
 		this.pResultExpression = new ResultExpressionElements();
 		this.pOrExpression = new OrExpressionElements();
 		this.pAndExpression = new AndExpressionElements();
@@ -2284,7 +2288,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	//	plugs+=PlugDsl* ('definitions:'
 	//	BEGIN
 	//	defs+=Definition*
-	//	valDefs+=Let*
+	//	vals+=LetValue*
 	//	END)?
 	//	opers+=Operation*
 	//	paths+=SubPath*;
@@ -2400,7 +2404,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//Expression:
-	//	Let //TODO: add more expressions?
+	//	LetValue //TODO: add more expressions?
 	//;
 	public ExpressionElements getExpressionAccess() {
 		return pExpression;
@@ -2410,18 +2414,18 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		return getExpressionAccess().getRule();
 	}
 	
-	//Let Expression:
-	//	{Let}
-	//	'let' name=ID '=' result=ResultExpression;
-	public LetElements getLetAccess() {
-		return pLet;
+	//LetValue:
+	//	'let' name=ID (':' type=ElementDef)? '=' result=ResultExpression;
+	public LetValueElements getLetValueAccess() {
+		return pLetValue;
 	}
 	
-	public ParserRule getLetRule() {
-		return getLetAccess().getRule();
+	public ParserRule getLetValueRule() {
+		return getLetValueAccess().getRule();
 	}
 	
 	//// the result expression must be equivalent to a Literal
+	//// ResultExpression -> (left feature right)
 	//ResultExpression:
 	//	OrExpression;
 	public ResultExpressionElements getResultExpressionAccess() {
@@ -2433,7 +2437,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//OrExpression ResultExpression:
-	//	AndExpression (=> ({ResultExpression.left=current} feature='|') right=OrExpression)?;
+	//	AndExpression (=> ({ResultExpression.left=current} feature='or') right=AndExpression)*;
 	public OrExpressionElements getOrExpressionAccess() {
 		return pOrExpression;
 	}
@@ -2443,7 +2447,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//AndExpression ResultExpression:
-	//	EqualityExpression (=> ({ResultExpression.left=current} feature='&') right=EqualityExpression)*;
+	//	EqualityExpression (=> ({ResultExpression.left=current} feature='and') right=EqualityExpression)*;
 	public AndExpressionElements getAndExpressionAccess() {
 		return pAndExpression;
 	}
@@ -2463,7 +2467,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//RelationalExpression ResultExpression:
-	//	AdditiveExpression (=> ({InstanceOfExpression.expression=current} 'is') type=ElementDef
+	//	AdditiveExpression (=> ({IsExpression.expression=current} 'is') type=ElementDef
 	//	| => ({ResultExpression.left=current} feature=('>=' | '<=' | '>' | '<')) right=AdditiveExpression)*;
 	public RelationalExpressionElements getRelationalExpressionAccess() {
 		return pRelationalExpression;
@@ -2493,9 +2497,9 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		return getMultiplicativeExpressionAccess().getRule();
 	}
 	
+	//// UnaryOperation -> (feature operand)
 	//UnaryOperation ResultExpression:
-	//	feature=('!' | '+' | '-') operand=UnaryOperation
-	//	| PostfixOperation;
+	//	{UnaryOperation} feature='!' operand=UnaryOperation | PostfixOperation;
 	public UnaryOperationElements getUnaryOperationAccess() {
 		return pUnaryOperation;
 	}
@@ -2505,7 +2509,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//PostfixOperation ResultExpression:
-	//	BaseExpression => ({PostfixOperation.operand=current} feature=('++' | '--'))?;
+	//	BaseExpression => ({UnaryOperation.operand=current} feature=('++' | '--'))?;
 	public PostfixOperationElements getPostfixOperationAccess() {
 		return pPostfixOperation;
 	}
@@ -2526,7 +2530,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	
 	//Primary ResultExpression:
 	//	value=Literal
-	//	| => target=[Let] members+=MemberGet*;
+	//	| => target=[LetValue] members+=MemberGet*;
 	public PrimaryElements getPrimaryAccess() {
 		return pPrimary;
 	}

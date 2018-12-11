@@ -9,6 +9,7 @@ import net.eldm.eldmDsl.Literal
 import net.eldm.eldmDsl.MapEntryDef
 import net.eldm.eldmDsl.MapLiteral
 import net.eldm.eldmDsl.PatternLiteral
+import net.eldm.eldmDsl.ResultExpression
 
 import static extension net.eldm.spi.Natives.*
 
@@ -16,10 +17,10 @@ class TypeResolver {
   @Inject extension PatternParser iParser
   
   def ElementDef getEntryType(MapEntryDef kd) {
-    return kd.type ?: kd.value.valueType //TODO: cache return type on kd.type ?
+    return kd.type ?: { kd.type = kd.value.inferType; kd.type }
   }
   
-  def ElementDef getValueType(Literal value) {
+  def ElementDef inferType(Literal value) {
     val eFact = EldmDslFactory.eINSTANCE
     
     val nativeType = value.nativeType
@@ -28,7 +29,7 @@ class TypeResolver {
     
     switch value {
       ListLiteral: return eFact.createListDef => [
-        type = value.vals.head.valueType
+        type = value.vals.head.inferType
       ]
       
       MapLiteral: return eFact.createMapDef => [
@@ -36,16 +37,20 @@ class TypeResolver {
           eFact.createMapEntryDef => [
             opt = false
             name = entry.name
-            type = entry.value.valueType
+            type = entry.value.inferType
           ]
         ]
       ]
       
-      EnumLiteral: return value.ref.value.valueType
+      EnumLiteral: return value.ref.value.inferType
       
-      PatternLiteral: return value.parse.valueType
+      PatternLiteral: return value.parse.inferType
     }
     
+    return null
+  }
+  
+  def ElementDef inferType(ResultExpression exp) {
     return null
   }
 }

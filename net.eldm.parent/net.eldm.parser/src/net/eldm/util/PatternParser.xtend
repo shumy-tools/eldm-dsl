@@ -50,7 +50,7 @@ class PatternParser {
       return res
     
     //validate if it's assignable to value.ref ?
-    if (value.ref !== null && res.is(value.ref) === null)
+    if (value.ref !== null && res.is(value.ref))
       return res
     
     return null

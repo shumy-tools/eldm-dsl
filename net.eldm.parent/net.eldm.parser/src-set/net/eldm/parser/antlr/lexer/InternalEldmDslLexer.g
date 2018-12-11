@@ -37,6 +37,8 @@ Path : 'path';
 
 True : 'true';
 
+And : 'and';
+
 Any : 'any';
 
 Def : 'def';
@@ -87,6 +89,8 @@ As : 'as';
 
 Is : 'is';
 
+Or : 'or';
+
 LineFeed : '\n';
 
 CarriageReturn : '\r';
@@ -94,8 +98,6 @@ CarriageReturn : '\r';
 ExclamationMark : '!';
 
 PercentSign : '%';
-
-Ampersand : '&';
 
 LeftParenthesis : '(';
 
@@ -130,8 +132,6 @@ LeftSquareBracket : '[';
 RightSquareBracket : ']';
 
 LeftCurlyBracket : '{';
-
-VerticalLine : '|';
 
 RightCurlyBracket : '}';
 

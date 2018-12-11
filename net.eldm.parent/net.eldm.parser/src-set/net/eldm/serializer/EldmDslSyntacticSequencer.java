@@ -96,13 +96,11 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *
 	 * This ambiguous syntax occurs at:
 	 *     (rule start) (ambiguity) feature='!'
-	 *     (rule start) (ambiguity) feature='+'
-	 *     (rule start) (ambiguity) feature='-'
-	 *     (rule start) (ambiguity) target=[Let|ID]
+	 *     (rule start) (ambiguity) target=[LetValue|ID]
 	 *     (rule start) (ambiguity) value=Literal
-	 *     (rule start) (ambiguity) {InstanceOfExpression.expression=}
-	 *     (rule start) (ambiguity) {PostfixOperation.operand=}
+	 *     (rule start) (ambiguity) {IsExpression.expression=}
 	 *     (rule start) (ambiguity) {ResultExpression.left=}
+	 *     (rule start) (ambiguity) {UnaryOperation.operand=}
 	 */
 	protected void emit_BaseExpression_LeftParenthesisKeyword_1_0_a(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
 		acceptNodes(transition, nodes);
@@ -114,11 +112,9 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *
 	 * This ambiguous syntax occurs at:
 	 *     (rule start) (ambiguity) feature='!'
-	 *     (rule start) (ambiguity) feature='+'
-	 *     (rule start) (ambiguity) feature='-'
-	 *     (rule start) (ambiguity) {InstanceOfExpression.expression=}
-	 *     (rule start) (ambiguity) {PostfixOperation.operand=}
+	 *     (rule start) (ambiguity) {IsExpression.expression=}
 	 *     (rule start) (ambiguity) {ResultExpression.left=}
+	 *     (rule start) (ambiguity) {UnaryOperation.operand=}
 	 */
 	protected void emit_BaseExpression_LeftParenthesisKeyword_1_0_p(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
 		acceptNodes(transition, nodes);
