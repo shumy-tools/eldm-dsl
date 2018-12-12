@@ -99,7 +99,7 @@ class TestDefinition {
     )
   }
   
-    @Test
+  @Test
   def void testIncompatibleTypesInList() {
     ph.testExpectedErrors('''
       module /test
@@ -109,6 +109,20 @@ class TestDefinition {
         
         typedef Sex enum { id: int, list: List }:
           M { id: 10, list: [ { id: 10, osx: 10 }, { id: '10' } ] }
+      
+    ''', "Incompatible element types in list.")
+  }
+  
+  @Test
+  def void testComplexIncompatibleTypesInList() {
+    ph.testExpectedErrors('''
+      module /test
+      
+      definitions:
+        typedef List ..{ id: int, osx?: int }
+        
+        typedef Sex enum { id: int, list: List }:
+          M { id: 10, list: [ { osx: int@'22' }, map@'{ id: 5, osx: 3 }', { id: int@'12' } ] }
       
     ''', "Incompatible element types in list.")
   }
@@ -143,7 +157,7 @@ class TestDefinition {
         }
         
         typedef Sex enum { desc: str, other?: Other, list?: List, mail?: email }:
-          M { desc: str@'Male', list: [ { id: int@'12' }, map@'{ id: 5, orx: 3 }' ] }
+          M { desc: str@'Male', list: [ { orx: int@'22' }, { id: int@'12' }, map@'{ id: 5, orx: 3 }' ] }
           F { desc: 'Female', other: { id: int@"""10""", date: lda@'2018-01-20' }, mail: email@'alex@gmail.com' }
           O { desc: """Other""", list: List@'[ { id: 3 }, { id: 10, orx: 11 } ]' }
         

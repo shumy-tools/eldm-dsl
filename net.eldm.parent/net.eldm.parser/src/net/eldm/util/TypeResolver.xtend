@@ -59,7 +59,7 @@ class TypeResolver {
           eFact.createMapEntryDef => [
             opt = false
             name = entry.name
-            type = entry.value.inferType
+            type = entry.value.inferType //TODO: lazy inference, set value instead? Only for MapLiteral or PatternLiteral!
           ]
         ]
       ]
@@ -113,7 +113,12 @@ class TypeResolver {
     return null
   }
   
+  private def MapDef minimalInfer(ListLiteral lValue, MapDef one, MapDef two) {
+    
+  }
+  
   //TODO: literals are not adequate for minimal requirements, ie: [ {id: 10}, {osx: 'str'}, {id: 4, osx:'rt'} ] all fields are optional -> returning lst
+  // maybe we can solve this by lazy MapLiteral inference, setting the value instead of type!
   private def MapDef minimalInfer(ListLiteral lValue, MapLiteral one, MapLiteral two) {
     val eFact = EldmDslFactory.eINSTANCE
     return eFact.createMapDef => [
