@@ -14,6 +14,7 @@ import net.eldm.util.TypeResolver
 import net.eldm.util.TypeValidator
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.validation.Check
+import net.eldm.eldmDsl.MapLiteral
 
 /**
  * This class contains custom validation rules. 
@@ -59,10 +60,27 @@ class EldmDslValidator extends AbstractEldmDslValidator {
   }
   
   @Check
-  def void checkMapDefUniqueKeys(MapEntryDef kd) {
-    val parent = (kd.eContainer as MapDef)
-    if (parent.defs.filter[name == kd.name].size > 1)
-      error("Multiple keys with the same name.", kd, EldmDslPackage.Literals.MAP_ENTRY_DEF__NAME)
+  def void checkMapDefUniqueKeys(MapDef mapDef) {
+    if (mapDef.defs.length > 1)
+      for (i : 0..mapDef.defs.length) {
+        for (j : (i+1)..mapDef.defs.length) {
+          if (mapDef.defs.get(i).name == mapDef.defs.get(j).name)
+            error("Multiple keys with the same name.", mapDef, EldmDslPackage.Literals.MAP_DEF__DEFS)
+            return
+        }
+      }
+  }
+  
+  @Check
+  def void checkMapLitteralUniqueKeys(MapLiteral map) {
+    if (map.entries.length > 1)
+      for (i : 0..map.entries.length) {
+        for (j : (i+1)..map.entries.length) {
+          if (map.entries.get(i).name == map.entries.get(j).name)
+            error("Multiple keys with the same name.", map, EldmDslPackage.Literals.MAP_LITERAL__ENTRIES)
+            return
+        }
+      }
   }
   
   @Check
@@ -70,12 +88,15 @@ class EldmDslValidator extends AbstractEldmDslValidator {
     if (ed.type === null) {
       ed.defs.forEach[
         if (value !== null)
-          error("Enum has no value definition.", it, EldmDslPackage.Literals.ENUM_ITEM_DEF__VALUE)
+          error("Enum has no value definition.", it, EldmDslPackage.Literals.ENUM_ITEM_DEF__NAME)
       ]
       return
     }
       
-    ed.defs.forEach[ value.is(ed.type) ]
+    ed.defs.forEach[
+      if (!value.inferType.inElement(ed.type))
+        error("Enum value no assignable to enum type.", it, EldmDslPackage.Literals.ENUM_ITEM_DEF__VALUE)
+    ]
   }
   
   @Check

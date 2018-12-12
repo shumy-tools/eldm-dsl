@@ -6,41 +6,26 @@ import java.io.StringReader
 import net.eldm.eldmDsl.EldmDslFactory
 import net.eldm.eldmDsl.Literal
 import net.eldm.eldmDsl.PatternLiteral
-import net.eldm.eldmDsl.StrLiteral
 import net.eldm.eldmDsl.TypeDef
 import net.eldm.parser.antlr.EldmDslParser
 import net.eldm.services.EldmDslGrammarAccess
+import net.eldm.validation.EldmDslValidator
 
-import static net.eldm.spi.Natives.*
+import static extension net.eldm.spi.Natives.*
 
 @Singleton
 class PatternParser {
   @Inject EldmDslParser eldmParser
   @Inject EldmDslGrammarAccess eldmRules
   @Inject extension TypeValidator tValidator
-  
-  def StrLiteral parsePattern(Literal value) {
-    if (value instanceof PatternLiteral) {
-      val eFact = EldmDslFactory.eINSTANCE
-      
-      val tDef = value.ref as TypeDef
-      val code = tDef.extractCode
-      val text = value.extractText
-      
-      switch tDef.parser {
-        case 'match': if (text.matches(code)) return eFact.createStrLiteral => [ value = text ]
-        case 'mask': if (text.masked(code)) return eFact.createStrLiteral => [ value = text ] 
-      }
-    }
-    
-    return null
-  }
+  @Inject extension TypeResolver tResolver
+  @Inject extension EldmDslValidator eValidator
   
   def Literal parse(PatternLiteral value) {
+    val eFact = EldmDslFactory.eINSTANCE
     val text = if (value.native == STR) value.text else value.extractText
     
     if (value.ref instanceof TypeDef && (value.ref as TypeDef).parser !== null) {
-      val eFact = EldmDslFactory.eINSTANCE
       val tDef = value.ref as TypeDef
       val code = tDef.extractCode
       
@@ -49,42 +34,36 @@ class PatternParser {
         case 'mask': if (text.masked(code)) return eFact.createStrLiteral => [ value = text ]
       }
       
+      value.error('''Failed to parse '«text»' to pattern «value.native ?: value.ref.name».''')
       return null
     }
     
     val result = eldmParser.parse(eldmRules.literalRule, new StringReader(text))
     if (result.hasSyntaxErrors || !(result.rootASTElement instanceof Literal)) {
-      println('''Failed to parse («text») to «value.native ?: value.ref.name»''')
+      value.error('''Failed to parse '«text»' to pattern «value.native ?: value.ref.name».''')
       return null
     }
     
     val res = result.rootASTElement as Literal
+    val elmDef = res.inferType
+    
+    //TODO: check for validations in the EldmDslValidator!
     
     //validate if it's assignable to value.native ?
-    if (value.native !== null && res.is(value.native))
-      return res
+    if (value.native !== null) {
+      val superDef = eFact.createElementDef => [ native = value.native ]
+      if (elmDef.inElement(superDef))
+        return res
+    }
     
     //validate if it's assignable to value.ref ?
-    if (value.ref !== null && res.is(value.ref))
-      return res
+    if (value.ref !== null) {
+      if (elmDef.inDefinition(value.ref))
+        return res
+    }
     
+    value.error('''Failed to assign parsed value '«text»' to pattern «value.native ?: value.ref.name».''')
     return null
-  }
-  
-  def <T extends Literal> T parse(Class<T> type, Literal value) {
-    if (value instanceof PatternLiteral)
-      return type.parse(value)
-    
-    return null
-  }
-  
-  def <T extends Literal> T parse(Class<T> type, PatternLiteral value) {
-    val res = value.parse
-    
-    if (res === null) return null
-    if (!type.isAssignableFrom(res.class)) return null
-    
-    return res as T
   }
   
   private def masked(String value, String mask) {

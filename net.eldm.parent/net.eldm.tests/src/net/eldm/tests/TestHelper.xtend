@@ -22,7 +22,7 @@ class TestHelper {
     assertTrue(errors.empty, '''Unexpected errors: «errors.map[message].join(", ")»''')
   }
   
-  static def void testError(ParseHelper<?> ph, CharSequence code) {
+  static def void testForAnyError(ParseHelper<?> ph, CharSequence code) {
     val it = ph.parse(code)
     assertNotNull(it)
     
@@ -30,15 +30,15 @@ class TestHelper {
     assertTrue(!issues.empty, '''Expecting errors, but no errors returned!''')
   }
   
-  static def void testExpectedError(ParseHelper<?> ph, CharSequence code, String msg) {
+  static def void testExpectedErrors(ParseHelper<?> ph, CharSequence code, String ...msgList) {
     val it = ph.parse(code)
     assertNotNull(it)
     
     val issues = validate(eResource)
-    val expected = issues.filter[message == msg]
-    val unexpected = issues.filter[message != msg]
+    val expected = issues.filter[!msgList.filter[ msg | message == msg].empty]
+    val unexpected = issues.filter[msgList.filter[ msg | message == msg].empty]
     
     assertTrue(unexpected.empty, '''Unexpected errors of type: «unexpected.map[message].join(", ")»''')
-    assertTrue(!expected.empty, '''Expecting errors of type: «msg»''')
+    assertTrue(expected.length === msgList.length, '''Expecting errors of type: «msgList.join(", ")» -> Only present: «expected.map[message].join(", ")»''')
   }
 }

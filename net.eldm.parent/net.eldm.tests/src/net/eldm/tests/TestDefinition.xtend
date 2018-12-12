@@ -17,7 +17,7 @@ class TestDefinition {
   
   @Test
   def void testNonExistentType() {
-    ph.testExpectedError('''
+    ph.testExpectedErrors('''
       module /test
       
       definitions:
@@ -28,7 +28,7 @@ class TestDefinition {
   
   @Test
   def void testMultipleKeysWithSameName() {
-    ph.testExpectedError('''
+    ph.testExpectedErrors('''
       module /test
       
       definitions:
@@ -39,7 +39,7 @@ class TestDefinition {
   
   @Test
   def void testEnumInvalidType() {
-    ph.testExpectedError('''
+    ph.testExpectedErrors('''
       module /test
       
       definitions:
@@ -47,12 +47,14 @@ class TestDefinition {
           M { desc: 10 }
           F { desc: 'Female' }
       
-    ''', "Inferred type not assignable to type 'str'.")
+    ''',
+      "Enum value no assignable to enum type."
+    )
   }
   
   @Test
   def void testEnumNonExistentDef() {
-    ph.testExpectedError('''
+    ph.testExpectedErrors('''
       module /test
       
       definitions:
@@ -60,12 +62,14 @@ class TestDefinition {
           M { des: 'Male' }
           F { desc: 'Female' }
       
-    ''', "KeyDef 'des' does not exist.")
+    ''',
+      "Enum value no assignable to enum type."
+    )
   }
   
   @Test
   def void testEnumMandatoryDefNotSet() {
-    ph.testExpectedError('''
+    ph.testExpectedErrors('''
       module /test
       
       definitions:
@@ -73,12 +77,14 @@ class TestDefinition {
           M { id: 10, desc: 'Male' }
           F { desc: 'Female' }
       
-    ''', "Mandatory KeyDef 'id' not set.")
+    ''',
+      "Enum value no assignable to enum type."
+    )
   }
   
   @Test
   def void testInvalidMap() {
-    ph.testExpectedError('''
+    ph.testExpectedErrors('''
       module /test
       
       definitions:
@@ -87,7 +93,24 @@ class TestDefinition {
         typedef Sex enum { id: int, list: List }:
           M { id: 10, list: map@'[ { id: 10 } ]' }
       
-    ''', "Literal value not assignable to ListDef.")
+    ''',
+      "Enum value no assignable to enum type.",
+      "Failed to assign parsed value '[ { id: 10 } ]' to pattern map."
+    )
+  }
+  
+    @Test
+  def void testIncompatibleTypesInList() {
+    ph.testExpectedErrors('''
+      module /test
+      
+      definitions:
+        typedef List ..{ id: int, osx?: int }
+        
+        typedef Sex enum { id: int, list: List }:
+          M { id: 10, list: [ { id: 10, osx: 10 }, { id: '10' } ] }
+      
+    ''', "Incompatible element types in list.")
   }
   
   @Test
