@@ -26,12 +26,13 @@ import net.eldm.eldmDsl.MapDef;
 import net.eldm.eldmDsl.MapEntryDef;
 import net.eldm.eldmDsl.MapEntryLiteral;
 import net.eldm.eldmDsl.MapLiteral;
-import net.eldm.eldmDsl.MemberGet;
+import net.eldm.eldmDsl.MemberCall;
 import net.eldm.eldmDsl.Operation;
 import net.eldm.eldmDsl.ParamDef;
 import net.eldm.eldmDsl.PathLiteral;
 import net.eldm.eldmDsl.PatternLiteral;
 import net.eldm.eldmDsl.PlugDsl;
+import net.eldm.eldmDsl.Primary;
 import net.eldm.eldmDsl.ResultExpression;
 import net.eldm.eldmDsl.StrLiteral;
 import net.eldm.eldmDsl.SubPath;
@@ -134,8 +135,8 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 			case EldmDslPackage.MAP_LITERAL:
 				sequence_MapLiteral(context, (MapLiteral) semanticObject); 
 				return; 
-			case EldmDslPackage.MEMBER_GET:
-				sequence_MemberGet(context, (MemberGet) semanticObject); 
+			case EldmDslPackage.MEMBER_CALL:
+				sequence_MemberCall(context, (MemberCall) semanticObject); 
 				return; 
 			case EldmDslPackage.MODULE:
 				sequence_Module(context, (net.eldm.eldmDsl.Module) semanticObject); 
@@ -155,33 +156,12 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 			case EldmDslPackage.PLUG_DSL:
 				sequence_PlugDsl(context, (PlugDsl) semanticObject); 
 				return; 
+			case EldmDslPackage.PRIMARY:
+				sequence_Primary(context, (Primary) semanticObject); 
+				return; 
 			case EldmDslPackage.RESULT_EXPRESSION:
-				if (rule == grammarAccess.getResultExpressionRule()
-						|| rule == grammarAccess.getOrExpressionRule()
-						|| action == grammarAccess.getOrExpressionAccess().getResultExpressionLeftAction_1_0_0_0()
-						|| rule == grammarAccess.getAndExpressionRule()
-						|| action == grammarAccess.getAndExpressionAccess().getResultExpressionLeftAction_1_0_0_0()
-						|| rule == grammarAccess.getEqualityExpressionRule()
-						|| action == grammarAccess.getEqualityExpressionAccess().getResultExpressionLeftAction_1_0_0_0()
-						|| rule == grammarAccess.getRelationalExpressionRule()
-						|| action == grammarAccess.getRelationalExpressionAccess().getIsExpressionExpressionAction_1_0_0_0_0()
-						|| action == grammarAccess.getRelationalExpressionAccess().getResultExpressionLeftAction_1_1_0_0_0()
-						|| rule == grammarAccess.getAdditiveExpressionRule()
-						|| action == grammarAccess.getAdditiveExpressionAccess().getResultExpressionLeftAction_1_0_0_0()
-						|| rule == grammarAccess.getMultiplicativeExpressionRule()
-						|| action == grammarAccess.getMultiplicativeExpressionAccess().getResultExpressionLeftAction_1_0_0_0()
-						|| rule == grammarAccess.getUnaryOperationRule()
-						|| rule == grammarAccess.getPostfixOperationRule()
-						|| action == grammarAccess.getPostfixOperationAccess().getUnaryOperationOperandAction_1_0_0()
-						|| rule == grammarAccess.getBaseExpressionRule()) {
-					sequence_AdditiveExpression_AndExpression_EqualityExpression_MultiplicativeExpression_OrExpression_Primary_RelationalExpression(context, (ResultExpression) semanticObject); 
-					return; 
-				}
-				else if (rule == grammarAccess.getPrimaryRule()) {
-					sequence_Primary(context, (ResultExpression) semanticObject); 
-					return; 
-				}
-				else break;
+				sequence_AdditiveExpression_AndExpression_EqualityExpression_MultiplicativeExpression_OrExpression_RelationalExpression(context, (ResultExpression) semanticObject); 
+				return; 
 			case EldmDslPackage.STR_LITERAL:
 				sequence_StrLiteral(context, (StrLiteral) semanticObject); 
 				return; 
@@ -195,7 +175,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 				sequence_TypeDef(context, (TypeDef) semanticObject); 
 				return; 
 			case EldmDslPackage.UNARY_OPERATION:
-				sequence_PostfixOperation_UnaryOperation(context, (UnaryOperation) semanticObject); 
+				sequence_UnaryOperation(context, (UnaryOperation) semanticObject); 
 				return; 
 			}
 		if (errorAcceptor != null)
@@ -219,8 +199,6 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     MultiplicativeExpression returns ResultExpression
 	 *     MultiplicativeExpression.ResultExpression_1_0_0_0 returns ResultExpression
 	 *     UnaryOperation returns ResultExpression
-	 *     PostfixOperation returns ResultExpression
-	 *     PostfixOperation.UnaryOperation_1_0_0 returns ResultExpression
 	 *     BaseExpression returns ResultExpression
 	 *
 	 * Constraint:
@@ -230,12 +208,10 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *         (left=EqualityExpression_ResultExpression_1_0_0_0 (feature='==' | feature='!=') right=RelationalExpression) | 
 	 *         (left=RelationalExpression_ResultExpression_1_1_0_0_0 (feature='>=' | feature='<=' | feature='>' | feature='<') right=AdditiveExpression) | 
 	 *         (left=AdditiveExpression_ResultExpression_1_0_0_0 (feature='+' | feature='-') right=MultiplicativeExpression) | 
-	 *         (left=MultiplicativeExpression_ResultExpression_1_0_0_0 (feature='*' | feature='**' | feature='/' | feature='%') right=UnaryOperation) | 
-	 *         value=Literal | 
-	 *         (target=[LetValue|ID] members+=MemberGet*)
+	 *         (left=MultiplicativeExpression_ResultExpression_1_0_0_0 (feature='*' | feature='**' | feature='/' | feature='%') right=UnaryOperation)
 	 *     )
 	 */
-	protected void sequence_AdditiveExpression_AndExpression_EqualityExpression_MultiplicativeExpression_OrExpression_Primary_RelationalExpression(ISerializationContext context, ResultExpression semanticObject) {
+	protected void sequence_AdditiveExpression_AndExpression_EqualityExpression_MultiplicativeExpression_OrExpression_RelationalExpression(ISerializationContext context, ResultExpression semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
 	}
 	
@@ -561,12 +537,12 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	
 	/**
 	 * Contexts:
-	 *     MemberGet returns MemberGet
+	 *     MemberCall returns MemberCall
 	 *
 	 * Constraint:
 	 *     (isNullSafe?='?.'? member=ID)
 	 */
-	protected void sequence_MemberGet(ISerializationContext context, MemberGet semanticObject) {
+	protected void sequence_MemberCall(ISerializationContext context, MemberCall semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
 	}
 	
@@ -677,41 +653,28 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	
 	/**
 	 * Contexts:
-	 *     ResultExpression returns UnaryOperation
-	 *     OrExpression returns UnaryOperation
-	 *     OrExpression.ResultExpression_1_0_0_0 returns UnaryOperation
-	 *     AndExpression returns UnaryOperation
-	 *     AndExpression.ResultExpression_1_0_0_0 returns UnaryOperation
-	 *     EqualityExpression returns UnaryOperation
-	 *     EqualityExpression.ResultExpression_1_0_0_0 returns UnaryOperation
-	 *     RelationalExpression returns UnaryOperation
-	 *     RelationalExpression.IsExpression_1_0_0_0_0 returns UnaryOperation
-	 *     RelationalExpression.ResultExpression_1_1_0_0_0 returns UnaryOperation
-	 *     AdditiveExpression returns UnaryOperation
-	 *     AdditiveExpression.ResultExpression_1_0_0_0 returns UnaryOperation
-	 *     MultiplicativeExpression returns UnaryOperation
-	 *     MultiplicativeExpression.ResultExpression_1_0_0_0 returns UnaryOperation
-	 *     UnaryOperation returns UnaryOperation
-	 *     PostfixOperation returns UnaryOperation
-	 *     PostfixOperation.UnaryOperation_1_0_0 returns UnaryOperation
-	 *     BaseExpression returns UnaryOperation
+	 *     ResultExpression returns Primary
+	 *     OrExpression returns Primary
+	 *     OrExpression.ResultExpression_1_0_0_0 returns Primary
+	 *     AndExpression returns Primary
+	 *     AndExpression.ResultExpression_1_0_0_0 returns Primary
+	 *     EqualityExpression returns Primary
+	 *     EqualityExpression.ResultExpression_1_0_0_0 returns Primary
+	 *     RelationalExpression returns Primary
+	 *     RelationalExpression.IsExpression_1_0_0_0_0 returns Primary
+	 *     RelationalExpression.ResultExpression_1_1_0_0_0 returns Primary
+	 *     AdditiveExpression returns Primary
+	 *     AdditiveExpression.ResultExpression_1_0_0_0 returns Primary
+	 *     MultiplicativeExpression returns Primary
+	 *     MultiplicativeExpression.ResultExpression_1_0_0_0 returns Primary
+	 *     UnaryOperation returns Primary
+	 *     BaseExpression returns Primary
+	 *     Primary returns Primary
 	 *
 	 * Constraint:
-	 *     ((feature='!' operand=UnaryOperation) | (operand=PostfixOperation_UnaryOperation_1_0_0 (feature='++' | feature='--')))
+	 *     (value=Literal | (ref=[LetValue|ID] calls+=MemberCall*))
 	 */
-	protected void sequence_PostfixOperation_UnaryOperation(ISerializationContext context, UnaryOperation semanticObject) {
-		genericSequencer.createSequence(context, semanticObject);
-	}
-	
-	
-	/**
-	 * Contexts:
-	 *     Primary returns ResultExpression
-	 *
-	 * Constraint:
-	 *     (value=Literal | (target=[LetValue|ID] members+=MemberGet*))
-	 */
-	protected void sequence_Primary(ISerializationContext context, ResultExpression semanticObject) {
+	protected void sequence_Primary(ISerializationContext context, Primary semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
 	}
 	
@@ -733,22 +696,23 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     MultiplicativeExpression returns IsExpression
 	 *     MultiplicativeExpression.ResultExpression_1_0_0_0 returns IsExpression
 	 *     UnaryOperation returns IsExpression
-	 *     PostfixOperation returns IsExpression
-	 *     PostfixOperation.UnaryOperation_1_0_0 returns IsExpression
 	 *     BaseExpression returns IsExpression
 	 *
 	 * Constraint:
-	 *     (expression=RelationalExpression_IsExpression_1_0_0_0_0 type=ElementDef)
+	 *     (left=RelationalExpression_IsExpression_1_0_0_0_0 feature='is' type=ElementDef)
 	 */
 	protected void sequence_RelationalExpression(ISerializationContext context, IsExpression semanticObject) {
 		if (errorAcceptor != null) {
-			if (transientValues.isValueTransient(semanticObject, EldmDslPackage.Literals.IS_EXPRESSION__EXPRESSION) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, EldmDslPackage.Literals.IS_EXPRESSION__EXPRESSION));
+			if (transientValues.isValueTransient(semanticObject, EldmDslPackage.Literals.RESULT_EXPRESSION__LEFT) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, EldmDslPackage.Literals.RESULT_EXPRESSION__LEFT));
+			if (transientValues.isValueTransient(semanticObject, EldmDslPackage.Literals.RESULT_EXPRESSION__FEATURE) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, EldmDslPackage.Literals.RESULT_EXPRESSION__FEATURE));
 			if (transientValues.isValueTransient(semanticObject, EldmDslPackage.Literals.IS_EXPRESSION__TYPE) == ValueTransient.YES)
 				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, EldmDslPackage.Literals.IS_EXPRESSION__TYPE));
 		}
 		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
-		feeder.accept(grammarAccess.getRelationalExpressionAccess().getIsExpressionExpressionAction_1_0_0_0_0(), semanticObject.getExpression());
+		feeder.accept(grammarAccess.getRelationalExpressionAccess().getIsExpressionLeftAction_1_0_0_0_0(), semanticObject.getLeft());
+		feeder.accept(grammarAccess.getRelationalExpressionAccess().getFeatureIsKeyword_1_0_0_0_1_0(), semanticObject.getFeature());
 		feeder.accept(grammarAccess.getRelationalExpressionAccess().getTypeElementDefParserRuleCall_1_0_1_0(), semanticObject.getType());
 		feeder.finish();
 	}
@@ -814,6 +778,42 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 */
 	protected void sequence_TypeDef(ISerializationContext context, TypeDef semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
+	 *     ResultExpression returns UnaryOperation
+	 *     OrExpression returns UnaryOperation
+	 *     OrExpression.ResultExpression_1_0_0_0 returns UnaryOperation
+	 *     AndExpression returns UnaryOperation
+	 *     AndExpression.ResultExpression_1_0_0_0 returns UnaryOperation
+	 *     EqualityExpression returns UnaryOperation
+	 *     EqualityExpression.ResultExpression_1_0_0_0 returns UnaryOperation
+	 *     RelationalExpression returns UnaryOperation
+	 *     RelationalExpression.IsExpression_1_0_0_0_0 returns UnaryOperation
+	 *     RelationalExpression.ResultExpression_1_1_0_0_0 returns UnaryOperation
+	 *     AdditiveExpression returns UnaryOperation
+	 *     AdditiveExpression.ResultExpression_1_0_0_0 returns UnaryOperation
+	 *     MultiplicativeExpression returns UnaryOperation
+	 *     MultiplicativeExpression.ResultExpression_1_0_0_0 returns UnaryOperation
+	 *     UnaryOperation returns UnaryOperation
+	 *     BaseExpression returns UnaryOperation
+	 *
+	 * Constraint:
+	 *     (feature='!' operand=UnaryOperation)
+	 */
+	protected void sequence_UnaryOperation(ISerializationContext context, UnaryOperation semanticObject) {
+		if (errorAcceptor != null) {
+			if (transientValues.isValueTransient(semanticObject, EldmDslPackage.Literals.RESULT_EXPRESSION__FEATURE) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, EldmDslPackage.Literals.RESULT_EXPRESSION__FEATURE));
+			if (transientValues.isValueTransient(semanticObject, EldmDslPackage.Literals.UNARY_OPERATION__OPERAND) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, EldmDslPackage.Literals.UNARY_OPERATION__OPERAND));
+		}
+		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
+		feeder.accept(grammarAccess.getUnaryOperationAccess().getFeatureExclamationMarkKeyword_0_1_0(), semanticObject.getFeature());
+		feeder.accept(grammarAccess.getUnaryOperationAccess().getOperandUnaryOperationParserRuleCall_0_2_0(), semanticObject.getOperand());
+		feeder.finish();
 	}
 	
 	

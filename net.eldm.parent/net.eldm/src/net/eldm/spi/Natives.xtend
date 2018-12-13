@@ -13,6 +13,9 @@ import net.eldm.eldmDsl.MapDef
 import net.eldm.eldmDsl.PathLiteral
 import net.eldm.eldmDsl.StrLiteral
 import net.eldm.eldmDsl.TimeLiteral
+import net.eldm.eldmDsl.MapLiteral
+import net.eldm.eldmDsl.ListLiteral
+import net.eldm.eldmDsl.EnumLiteral
 
 class Natives {
   public static String ANY = 'any'
@@ -27,6 +30,34 @@ class Natives {
   public static String LDT = 'ldt'
   public static String PATH = 'path'
   
+  public static String MAP = 'map'
+  public static String LST = 'lst'
+  public static String ENUM = 'enum'
+  
+  static def isOneOf(ElementDef elmDef, String ...types) {
+    val nat = elmDef.nativeType
+    return types.exists[it == nat]
+  }
+  
+  static def isOneOf(Literal value, String ...types) {
+    val nat = value.nativeType
+    return types.exists[it == nat]
+  }
+  
+  
+  static def getNativeType(ElementDef elmDef) {
+    if (elmDef === null) return ANY
+    
+    if (elmDef.native !== null)
+      return elmDef.native
+    
+    return switch elmDef {
+      MapDef: MAP
+      ListDef: LST
+      EnumDef: ENUM
+    }
+  }
+  
   static def getNativeType(Literal value) {
     if (value === null) return ANY
     
@@ -40,29 +71,10 @@ class Natives {
       TimeLiteral: LTM
       DateTimeLiteral: LDT
       PathLiteral: PATH
-    }
-  }
-  
-  static def getNativeType(ElementDef elmDef) {
-    if (elmDef === null) return ANY
-    
-    if (elmDef.native !== null)
-      return elmDef.native
-    
-    return Collections.getCollectionType(elmDef)
-  }
-}
-
-class Collections {
-  public static String MAP = 'map'
-  public static String LST = 'lst'
-  public static String ENUM = 'enum'
-  
-  static def getCollectionType(ElementDef elmDef) {
-    return switch elmDef {
-      MapDef: MAP
-      ListDef: LST
-      EnumDef: ENUM
+      
+      MapLiteral: MAP
+      ListLiteral: LST
+      EnumLiteral: ENUM
     }
   }
 }

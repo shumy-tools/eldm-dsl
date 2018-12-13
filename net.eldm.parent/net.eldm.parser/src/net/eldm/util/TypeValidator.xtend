@@ -75,7 +75,7 @@ class TypeValidator {
       // is compatible type?
       // inferred.type is always present
       if (entry.opt && !kd.opt)
-        error('''Optional entry not assignable to required map entry.''')
+        error('''Inferred type not assignable to map with required key '«kd.name»'.''')
       
       entry.type.inElement(kd.entryType)
     }

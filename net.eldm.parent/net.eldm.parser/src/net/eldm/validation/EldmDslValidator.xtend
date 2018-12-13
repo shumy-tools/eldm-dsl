@@ -18,6 +18,8 @@ import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.validation.Check
 
 import static extension net.eldm.util.ValidationStack.*
+import java.util.List
+import java.util.ArrayList
 
 /**
  * This class contains custom validation rules. 
@@ -34,9 +36,23 @@ class EldmDslValidator extends AbstractEldmDslValidator {
         tryFunc.apply
       pop
     } catch (ValidationError err) {
-      err.printStackTrace
-      this.error(err.message, err.obj.eContainer, err.obj.eContainingFeature)
+      //err.printStackTrace
+      println("COMPILER-ERROR: " + err.message)
+      this.error(err.message, err.obj, null)
+    } catch (Throwable ex) {
+      ex.printStackTrace
     }
+  }
+  
+  def detectRepeatedKey(List<String> list) {
+    val detected = new ArrayList<String>
+    if (list.length > 1)
+      for (i : 0..(list.length - 2))
+        for (j : (i+1)..(list.length - 1))
+          if (list.get(i) == list.get(j))
+            detected.add(list.get(i))
+    
+    return detected
   }
   
   /*TODO: required validations
@@ -68,26 +84,20 @@ class EldmDslValidator extends AbstractEldmDslValidator {
   
   @Check
   def void checkMapDefUniqueKeys(MapDef mapDef) {
-    if (mapDef.defs.length > 1)
-      for (i : 0..mapDef.defs.length) {
-        for (j : (i+1)..mapDef.defs.length) {
-          if (mapDef.defs.get(i).name == mapDef.defs.get(j).name)
-            error("Multiple keys with the same name.", mapDef, EldmDslPackage.Literals.MAP_DEF__DEFS)
-            return
-        }
-      }
+    val list = mapDef.defs.map[name]
+    val keys = list.detectRepeatedKey
+    
+    if (!keys.empty)
+      error('''Multiple keys with the same name [«keys.join(", ")»]''', mapDef, EldmDslPackage.Literals.MAP_DEF__DEFS)
   }
   
   @Check
-  def void checkMapLitteralUniqueKeys(MapLiteral map) {
-    if (map.entries.length > 1)
-      for (i : 0..map.entries.length) {
-        for (j : (i+1)..map.entries.length) {
-          if (map.entries.get(i).name == map.entries.get(j).name)
-            error("Multiple keys with the same name.", map, EldmDslPackage.Literals.MAP_LITERAL__ENTRIES)
-            return
-        }
-      }
+  def void checkMapLitteralUniqueKeys(MapLiteral mapLit) {
+    val list = mapLit.entries.map[name]
+    val keys = list.detectRepeatedKey
+    
+    if (!keys.empty)
+      error('''Multiple keys with the same name [«keys.join(", ")»]''', mapLit, EldmDslPackage.Literals.MAP_LITERAL__ENTRIES)
   }
   
   @Check
@@ -97,26 +107,20 @@ class EldmDslValidator extends AbstractEldmDslValidator {
         if (value !== null)
           error("Enum has no value definition.", it, EldmDslPackage.Literals.ENUM_ITEM_DEF__NAME)
       ]
+      
       return
     }
-      
+    
     ed.defs.forEach[
       tryValidation[ value.inferType.inElement(ed.type) ]
-      
-      //if (!value.inferType.inElement(ed.type))
-      //  error("Enum value no assignable to enum type.", it, EldmDslPackage.Literals.ENUM_ITEM_DEF__VALUE)
     ]
   }
   
   @Check
   def void checkLetValue(LetValue it) {
-    val rType = result.inferType
-    tryValidation[ rType.inElement(type) ]
-    /*if (rType.inElement(type))
-      type = rType // override type specification
-    else
-      error("ResultExpression not assignable to let type.", it, EldmDslPackage.Literals.LET_VALUE__RESULT)
-    * /
-      */
+    tryValidation[
+      val rType = result.inferType
+      rType.inElement(type)
+    ]
   }
 }

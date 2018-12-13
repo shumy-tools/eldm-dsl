@@ -69,10 +69,6 @@ ExclamationMarkEqualsSign : '!=';
 
 AsteriskAsterisk : '**';
 
-PlusSignPlusSign : '++';
-
-HyphenMinusHyphenMinus : '--';
-
 HyphenMinusGreaterThanSign : '->';
 
 FullStopFullStop : '..';

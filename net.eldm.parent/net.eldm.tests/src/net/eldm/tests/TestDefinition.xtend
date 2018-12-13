@@ -34,7 +34,7 @@ class TestDefinition {
       definitions:
         typedef Subject { id?: int, id: str, name: str }
       
-    ''', "Multiple keys with the same name.")
+    ''', "Multiple keys with the same name [id]")
   }
   
   @Test
@@ -123,11 +123,30 @@ class TestDefinition {
         typedef Sex enum { id: int, list: List }:
           M { id: 10, list: [ { osx: int@'22' }, map@'{ id: 5, osx: 3 }', { id: int@'12' } ] }
       
-    ''', "Optional entry not assignable to required map entry.")
+    ''', "Inferred type not assignable to map with required key 'id'.")
   }
   
   @Test
-  def void testCorrect() {
+  def void testLetValues() {
+    ph.test('''
+      module /main/test
+      
+      definitions:
+        typedef Subject {
+          id: int
+          name?: str
+        }
+        
+        let x = { id: 20, name: 'Alex' }
+        let value: Subject = x + { id: 10 }
+        
+        let value = 10 + 30 * 2 is int and true == 2016-01-23 < 2017-05-12
+        
+    ''')
+  }
+  
+  @Test
+  def void testEnums() {
     ph.test('''
       module /test
       

@@ -98,7 +98,7 @@ ResultExpression:
   
   RelationalExpression returns ResultExpression:
     AdditiveExpression
-    ( =>({IsExpression.expression=current} 'is') type=ElementDef
+    ( =>({IsExpression.left=current} feature='is') type=ElementDef
       |=>({ResultExpression.left=current} feature=('>='|'<='|'>'|'<')) right=AdditiveExpression
     )*
   ;
@@ -114,28 +114,29 @@ ResultExpression:
   // UnaryOperation -> (feature operand)
   UnaryOperation returns ResultExpression:
     ({UnaryOperation} feature='!' operand=UnaryOperation)
-    | PostfixOperation
-  ;
-  
-  PostfixOperation returns ResultExpression:
-    BaseExpression =>({UnaryOperation.operand=current} feature=('++'|'--'))?
+    | BaseExpression
   ;
   
   BaseExpression returns ResultExpression:
     Primary | '(' ResultExpression ')'
   ;
   
-  Primary returns ResultExpression:
+  Primary:
     value=Literal
-    |=> target=[LetValue] (members+=MemberGet)*
+    |=> ref=[LetValue] (calls+=MemberCall)*
   ;
    
-    MemberGet: ('.'|isNullSafe?='?.') member=ID;
+    MemberCall: ('.'|isNullSafe?='?.') member=ID;
 
 /*
 OperationCall:
   async?='async'? (isGet?='get' | 'set') ref=[Operation] param=MapExpression
-;*/
+;
+
+PostfixOperation returns ResultExpression:
+  BaseExpression =>({UnaryOperation.operand=current} feature=('++'|'--'))?
+;
+* */
 
 // ------------------------------------------------------------------------------------------------------------------------------
 // Type Definitions
