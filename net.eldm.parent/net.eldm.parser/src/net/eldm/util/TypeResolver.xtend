@@ -6,6 +6,7 @@ import java.util.HashMap
 import net.eldm.eldmDsl.EldmDslFactory
 import net.eldm.eldmDsl.ElementDef
 import net.eldm.eldmDsl.EnumLiteral
+import net.eldm.eldmDsl.ListDef
 import net.eldm.eldmDsl.ListLiteral
 import net.eldm.eldmDsl.Literal
 import net.eldm.eldmDsl.MapDef
@@ -21,7 +22,7 @@ import static extension net.eldm.spi.Natives.*
 @Singleton
 class TypeResolver {
   @Inject extension PatternParser iParser
-  @Inject extension TypeValidator tValidator
+  //@Inject extension TypeValidator tValidator
   @Inject extension EldmDslValidator eValidator
   
   // TODO: how to manage destroyed objects?
@@ -71,25 +72,11 @@ class TypeResolver {
           return
         }
         
-        var current = head
         type = head.inferType
         for (elm: value.vals.tail) {
-          val elmValue = if (elm instanceof PatternLiteral) elm.parse else elm
-          val currentValue = if (current instanceof PatternLiteral) current.parse else current
-            
-          if (elmValue instanceof MapLiteral && currentValue instanceof MapLiteral) {
-            type = value.minimalInfer(elmValue as MapLiteral, currentValue as MapLiteral)
-            current = elmValue
-          } else {
-            val inferred = elmValue.inferType
-            if (type.inElement(inferred)) {
-              type = inferred
-              current = elmValue
-            } else if (!inferred.inElement(type)) {
-              type = eFact.createElementDef => [ native = ANY ]
-              return // ANY is compatible with all
-            }  
-          }
+          val elmDef = elm.inferType
+          type = minType(type, elmDef)
+          if (type.native == ANY) return
         }
       ]
       
@@ -113,68 +100,57 @@ class TypeResolver {
     return null
   }
   
-  private def MapDef minimalInfer(ListLiteral lValue, MapDef one, MapDef two) {
-    
-  }
-  
-  //TODO: literals are not adequate for minimal requirements, ie: [ {id: 10}, {osx: 'str'}, {id: 4, osx:'rt'} ] all fields are optional -> returning lst
-  // maybe we can solve this by lazy MapLiteral inference, setting the value instead of type!
-  private def MapDef minimalInfer(ListLiteral lValue, MapLiteral one, MapLiteral two) {
+  private def ElementDef minType(ElementDef current, ElementDef next) {
     val eFact = EldmDslFactory.eINSTANCE
-    return eFact.createMapDef => [
-      // all required at this level
-      val reo = one.entries.map[ oe |
-        val te = two.entries.findFirst[oe.name == name]
-        if (te !== null) #[oe, te]
-      ].filterNull
-      
-      // process required fields
-      // also process incompatible types oe.type != te.type
-      defs += reo.map[ entry |
-        val oev = entry.get(0).value
-        val tev = entry.get(1).value
+    
+    if (current.native !== null && current.native == next.native)
+      return current
+    
+    if (current.nativeType != next.nativeType)
+      return eFact.createElementDef => [ native = ANY ]
+    
+    return switch current {
+      MapDef: eFact.createMapDef => [
+        val nex = next as MapDef
         
-        val oeValue = if (oev instanceof PatternLiteral) oev.parse else oev
-        val teValue = if (tev instanceof PatternLiteral) tev.parse else tev
+        // intersected fields at this level
+        val intersect = current.defs.map[ oe |
+          val te = nex.defs.findFirst[oe.name == name]
+          if (te !== null) (oe -> te)
+        ].filterNull
         
-        //TODO: process pattern maps, ie: map@'{ id: 10, osx: 34 }'
-        if (oeValue instanceof MapLiteral && teValue instanceof MapLiteral) {
+        // set required fields and intersected optionals
+        defs += intersect.map[ tuple |
           eFact.createMapEntryDef => [
-            opt = false
-            name = entry.get(0).name
-            type = lValue.minimalInfer(oeValue as MapLiteral, teValue as MapLiteral)
+            name = tuple.key.name
+            opt = tuple.key.opt || tuple.value.opt
+            type = minType(tuple.key.type, tuple.value.type)
           ]
-        } else {
-          val oeInferred = oeValue.inferType
-          val teInferred = teValue.inferType
-          
-          val inferType = if (oeInferred.inElement(teInferred))
-            oeInferred
-          else if (teInferred.inElement(oeInferred))
-            teInferred
-          
-          if (inferType === null)
-            lValue.error("Incompatible element types in list.")
-          
+        ]
+        
+        // unique fields at this level
+        val optionals = current.defs.filter[ oe | !nex.defs.exists[oe.name == name]].toList
+        optionals.addAll(nex.defs.filter[ te | !current.defs.exists[te.name == name]])
+        
+        // set other optional fields
+        defs += optionals.map[ entry |
           eFact.createMapEntryDef => [
-            opt = false
-            name = entry.get(0).name
-            type = inferType
-          ]
-        }
+              opt = true
+              name = entry.name
+              type = entry.type
+            ]
+        ]
       ]
       
-      val optionals = one.entries.filter[ oe | !two.entries.exists[te | oe.name == te.name]].toList
-      optionals.addAll(two.entries.filter[ te | !one.entries.exists[oe | te.name == oe.name]])
-      
-      defs += optionals.map[ entry |
-        eFact.createMapEntryDef => [
-            opt = true
-            name = entry.name
-            type = entry.value.inferType
-          ]
+      ListDef: eFact.createListDef => [
+        val nex = next as ListDef
+        type = minType(current.type, nex.type)
       ]
       
-    ]
+      default: {
+        current.error('''Failed to calculate minType. Non recognized «current.ref.class.simpleName»! Please report this bug.''')
+        eFact.createElementDef => [ native = ANY ]
+      }
+    }
   }
 }

@@ -1401,15 +1401,16 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Assignment cTypeAssignment_1_0_2 = (Assignment)cGroup_1_0.eContents().get(2);
 		private final RuleCall cTypeElementDefParserRuleCall_1_0_2_0 = (RuleCall)cTypeAssignment_1_0_2.eContents().get(0);
 		private final Group cGroup_1_1 = (Group)cAlternatives_1.eContents().get(1);
-		private final Keyword cEqualsSignKeyword_1_1_0 = (Keyword)cGroup_1_1.eContents().get(0);
+		private final Assignment cOptAssignment_1_1_0 = (Assignment)cGroup_1_1.eContents().get(0);
+		private final Keyword cOptEqualsSignKeyword_1_1_0_0 = (Keyword)cOptAssignment_1_1_0.eContents().get(0);
 		private final Assignment cValueAssignment_1_1_1 = (Assignment)cGroup_1_1.eContents().get(1);
 		private final RuleCall cValueLiteralParserRuleCall_1_1_1_0 = (RuleCall)cValueAssignment_1_1_1.eContents().get(0);
 		
 		//MapEntryDef:
-		//	name=ID (opt?='?'? ':' type=ElementDef | '=' value=Literal);
+		//	name=ID (opt?='?'? ':' type=ElementDef | opt?='=' value=Literal);
 		@Override public ParserRule getRule() { return rule; }
 		
-		//name=ID (opt?='?'? ':' type=ElementDef | '=' value=Literal)
+		//name=ID (opt?='?'? ':' type=ElementDef | opt?='=' value=Literal)
 		public Group getGroup() { return cGroup; }
 		
 		//name=ID
@@ -1418,7 +1419,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//ID
 		public RuleCall getNameIDTerminalRuleCall_0_0() { return cNameIDTerminalRuleCall_0_0; }
 		
-		//opt?='?'? ':' type=ElementDef | '=' value=Literal
+		//opt?='?'? ':' type=ElementDef | opt?='=' value=Literal
 		public Alternatives getAlternatives_1() { return cAlternatives_1; }
 		
 		//opt?='?'? ':' type=ElementDef
@@ -1439,11 +1440,14 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//ElementDef
 		public RuleCall getTypeElementDefParserRuleCall_1_0_2_0() { return cTypeElementDefParserRuleCall_1_0_2_0; }
 		
-		//'=' value=Literal
+		//opt?='=' value=Literal
 		public Group getGroup_1_1() { return cGroup_1_1; }
 		
+		//opt?='='
+		public Assignment getOptAssignment_1_1_0() { return cOptAssignment_1_1_0; }
+		
 		//'='
-		public Keyword getEqualsSignKeyword_1_1_0() { return cEqualsSignKeyword_1_1_0; }
+		public Keyword getOptEqualsSignKeyword_1_1_0_0() { return cOptEqualsSignKeyword_1_1_0_0; }
 		
 		//value=Literal
 		public Assignment getValueAssignment_1_1_1() { return cValueAssignment_1_1_1; }
@@ -2608,7 +2612,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//MapEntryDef:
-	//	name=ID (opt?='?'? ':' type=ElementDef | '=' value=Literal);
+	//	name=ID (opt?='?'? ':' type=ElementDef | opt?='=' value=Literal);
 	public MapEntryDefElements getMapEntryDefAccess() {
 		return pMapEntryDef;
 	}

@@ -110,7 +110,7 @@ class TestDefinition {
         typedef Sex enum { id: int, list: List }:
           M { id: 10, list: [ { id: 10, osx: 10 }, { id: '10' } ] }
       
-    ''', "Incompatible element types in list.")
+    ''', "Enum value no assignable to enum type.")
   }
   
   @Test
@@ -124,7 +124,7 @@ class TestDefinition {
         typedef Sex enum { id: int, list: List }:
           M { id: 10, list: [ { osx: int@'22' }, map@'{ id: 5, osx: 3 }', { id: int@'12' } ] }
       
-    ''', "Incompatible element types in list.")
+    ''', "Enum value no assignable to enum type.")
   }
   
   @Test

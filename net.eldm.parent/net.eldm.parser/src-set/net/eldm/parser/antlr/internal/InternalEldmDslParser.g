@@ -2496,10 +2496,20 @@ ruleMapEntryDef returns [EObject current=null]
 			)
 			    |
 			(
-				otherlv_4=EqualsSign
-				{
-					newLeafNode(otherlv_4, grammarAccess.getMapEntryDefAccess().getEqualsSignKeyword_1_1_0());
-				}
+				(
+					(
+						lv_opt_4_0=EqualsSign
+						{
+							newLeafNode(lv_opt_4_0, grammarAccess.getMapEntryDefAccess().getOptEqualsSignKeyword_1_1_0_0());
+						}
+						{
+							if ($current==null) {
+								$current = createModelElement(grammarAccess.getMapEntryDefRule());
+							}
+							setWithLastConsumed($current, "opt", true, "=");
+						}
+					)
+				)
 				(
 					(
 						{

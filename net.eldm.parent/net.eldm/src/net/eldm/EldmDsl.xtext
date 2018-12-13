@@ -172,7 +172,7 @@ ElementDef:
   ;
   
     MapEntryDef:
-      name=ID ((opt?='?'? ':' type=ElementDef) | ('=' value=Literal))
+      name=ID ((opt?='?'? ':' type=ElementDef) | (opt?='=' value=Literal))
     ;
   
   ListDef: {ListDef}

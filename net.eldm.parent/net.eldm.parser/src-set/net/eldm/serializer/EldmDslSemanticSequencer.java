@@ -518,7 +518,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     MapEntryDef returns MapEntryDef
 	 *
 	 * Constraint:
-	 *     (name=ID ((opt?='?'? type=ElementDef) | value=Literal))
+	 *     (name=ID ((opt?='?'? type=ElementDef) | (opt?='=' value=Literal)))
 	 */
 	protected void sequence_MapEntryDef(ISerializationContext context, MapEntryDef semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);

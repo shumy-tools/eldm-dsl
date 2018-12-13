@@ -5,14 +5,11 @@ import net.eldm.eldmDsl.DateLiteral
 import net.eldm.eldmDsl.DateTimeLiteral
 import net.eldm.eldmDsl.ElementDef
 import net.eldm.eldmDsl.EnumDef
-import net.eldm.eldmDsl.EnumLiteral
 import net.eldm.eldmDsl.FltLiteral
 import net.eldm.eldmDsl.IntLiteral
 import net.eldm.eldmDsl.ListDef
-import net.eldm.eldmDsl.ListLiteral
 import net.eldm.eldmDsl.Literal
 import net.eldm.eldmDsl.MapDef
-import net.eldm.eldmDsl.MapLiteral
 import net.eldm.eldmDsl.PathLiteral
 import net.eldm.eldmDsl.StrLiteral
 import net.eldm.eldmDsl.TimeLiteral
@@ -60,14 +57,6 @@ class Collections {
   public static String MAP = 'map'
   public static String LST = 'lst'
   public static String ENUM = 'enum'
-  
-  static def getCollectionType(Literal value) {
-    return switch value {
-      MapLiteral: MAP
-      ListLiteral: LST
-      EnumLiteral: ENUM
-    }
-  }
   
   static def getCollectionType(ElementDef elmDef) {
     return switch elmDef {

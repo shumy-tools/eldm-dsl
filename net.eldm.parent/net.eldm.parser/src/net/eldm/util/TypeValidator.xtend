@@ -69,12 +69,12 @@ class TypeValidator {
       
       // is compatible type?
       // inferred.type is always present
-      if (!entry.type.inElement(kd.entryType))
+      if (entry.opt && !kd.opt || !entry.type.inElement(kd.entryType))
         return false
     }
     
     // mandatory KeyDef not set!
-    val mandatory = superDef.defs.filter[!opt && value === null]
+    val mandatory = superDef.defs.filter[!opt]
     for(kd : mandatory)
       if (!inferred.contains(kd.name))
         return false
