@@ -25,6 +25,13 @@ class ValidationStack {
     stack.clear
     throw new ValidationError(obj, msg)
   }
+  
+  static def isPresent(EObject obj) {
+    val stack = local.get
+    for (elm : stack)
+      if (obj === elm) return true
+    return false
+  }
 }
 
 class ValidationError extends RuntimeException {

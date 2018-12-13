@@ -62,7 +62,7 @@ class TypeValidator {
       return;
     }
     
-    error('''Uncompatible elements («inferred.class.simpleName», «superDef.class.simpleName»). Please report this bug.''')
+    error('''Non compatible elements («inferred.class.simpleName», «superDef.class.simpleName»). Please report this bug.''')
   }
   
   def void inMap(MapDef inferred, MapDef superDef) {

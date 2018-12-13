@@ -127,6 +127,19 @@ class TestDefinition {
   }
   
   @Test
+  def void testLetSelfReference() {
+    ph.testExpectedErrors('''
+      module /main/test
+      
+      definitions:
+        let b = b is { id: int, name: str }
+        
+    ''',
+      "Let expression cannot reference itself!"
+    )
+  }
+  
+  @Test
   def void testLetValues() {
     ph.test('''
       module /main/test
@@ -138,9 +151,13 @@ class TestDefinition {
         }
         
         let x = { id: 20, name: 'Alex' }
-        let value: Subject = x + { id: 10 }
+        let y: Subject = x + { id: 10 }
+        let z = 10 + 30 * 2 is int and true == 2016-01-23 < 2017-05-12
         
-        let value = 10 + 30 * 2 is int and true == 2016-01-23 < 2017-05-12
+        let a: map = { id: 20, name: 'Alex' }
+        let b = a is { id: int, name: str }
+        let c = { id: 20 } is map
+        let d = { id: 20, name: 'Alex' } is Subject
         
     ''')
   }

@@ -5,6 +5,8 @@ import com.google.inject.Singleton
 import net.eldm.eldmDsl.EldmDslFactory
 import net.eldm.eldmDsl.ElementDef
 import net.eldm.eldmDsl.EnumLiteral
+import net.eldm.eldmDsl.IsExpression
+import net.eldm.eldmDsl.LetValue
 import net.eldm.eldmDsl.ListDef
 import net.eldm.eldmDsl.ListLiteral
 import net.eldm.eldmDsl.Literal
@@ -14,22 +16,23 @@ import net.eldm.eldmDsl.MapLiteral
 import net.eldm.eldmDsl.PatternLiteral
 import net.eldm.eldmDsl.Primary
 import net.eldm.eldmDsl.ResultExpression
+import net.eldm.eldmDsl.TypeDef
 
 import static extension net.eldm.spi.Natives.*
 import static extension net.eldm.util.ValidationStack.*
-import net.eldm.eldmDsl.IsExpression
-import net.eldm.eldmDsl.LetValue
 
 @Singleton
 class TypeResolver {
   @Inject extension PatternParser iParser
-  @Inject extension TypeValidator tValidator
   
   def ElementDef getEntryType(MapEntryDef kd) {
     return kd.type ?: { kd.type = kd.value.inferType; kd.type }
   }
   
   def ElementDef getLetType(LetValue v) {
+    if (v.present)
+      error("Let expression cannot reference itself!")
+    
     return v.type ?: { v.type = v.result.inferType; v.type }
   }
   
@@ -57,14 +60,16 @@ class TypeResolver {
       }
       
       val lType = exp.left.inferType
-      val rType = exp.right.inferType
+      var rType = exp.right.inferType
       val min = lType.minType(rType)
       
       val inferred = switch exp.feature {
         case 'is': {
           if (exp instanceof IsExpression) {
-            lType.inElement(exp.type)
-            eFact.createElementDef => [ native = BOOL ]
+            rType = exp.type // override to output the correct error message in the end
+            val iMin = lType.minType(rType)
+            if (iMin.nativeType == lType.nativeType)
+              eFact.createElementDef => [ native = BOOL ]
           }
         }
         
@@ -166,8 +171,24 @@ class TypeResolver {
   private def ElementDef minType(ElementDef current, ElementDef next) {
     val eFact = EldmDslFactory.eINSTANCE
     
+    //BEGIN: analysing natives------------------------------------------
     if (current.native !== null && current.native == next.native)
       return current
+    
+    if (current.nativeType == next.native)
+      return eFact.createElementDef => [ native = next.native ]
+    
+    if (current.native == next.nativeType)
+      return eFact.createElementDef => [ native = current.native ]
+    //END: analysing natives--------------------------------------------
+    
+    //BEGIN: analysing Definition references----------------------------
+    if (current.ref instanceof TypeDef)
+      return next.minTypeDef(current.ref as TypeDef)
+    
+    if (next.ref instanceof TypeDef)
+      return current.minTypeDef(next.ref as TypeDef)
+    //END: analysing Definition references------------------------------
     
     if (current.nativeType != next.nativeType)
       return eFact.createElementDef => [ native = ANY ]
@@ -213,5 +234,13 @@ class TypeResolver {
       default:
         error('''Failed to calculate minType. Non recognized «current.ref.class.simpleName»! Please report this bug.''')
     }
+  }
+  
+  private def ElementDef minTypeDef(ElementDef left, TypeDef right) {
+    if (right.type !== null)
+      left.minType(right.type)
+    else
+      error("minType for ExternalDef - Not supported yet!")
+      //TODO: support ExternalDef
   }
 }

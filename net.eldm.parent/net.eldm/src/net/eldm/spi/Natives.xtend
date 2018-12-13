@@ -51,6 +51,9 @@ class Natives {
     if (elmDef.native !== null)
       return elmDef.native
     
+    if (elmDef.ref !== null)
+      return elmDef.ref.name
+          
     return switch elmDef {
       MapDef: MAP
       ListDef: LST
