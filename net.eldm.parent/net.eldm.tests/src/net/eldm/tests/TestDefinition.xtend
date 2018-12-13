@@ -48,7 +48,7 @@ class TestDefinition {
           F { desc: 'Female' }
       
     ''',
-      "Enum value no assignable to enum type."
+      "Inferred type not assignable to native 'str'."
     )
   }
   
@@ -63,7 +63,7 @@ class TestDefinition {
           F { desc: 'Female' }
       
     ''',
-      "Enum value no assignable to enum type."
+      "Key 'des' does not exist."
     )
   }
   
@@ -78,7 +78,7 @@ class TestDefinition {
           F { desc: 'Female' }
       
     ''',
-      "Enum value no assignable to enum type."
+      "Required key 'id' not set."
     )
   }
   
@@ -94,8 +94,7 @@ class TestDefinition {
           M { id: 10, list: map@'[ { id: 10 } ]' }
       
     ''',
-      "Enum value no assignable to enum type.",
-      "Failed to assign parsed value '[ { id: 10 } ]' to pattern map."
+      "Inferred type not assignable to native 'map'."
     )
   }
   
@@ -110,7 +109,7 @@ class TestDefinition {
         typedef Sex enum { id: int, list: List }:
           M { id: 10, list: [ { id: 10, osx: 10 }, { id: '10' } ] }
       
-    ''', "Enum value no assignable to enum type.")
+    ''', "Inferred type not assignable to native 'int'.")
   }
   
   @Test
@@ -124,7 +123,7 @@ class TestDefinition {
         typedef Sex enum { id: int, list: List }:
           M { id: 10, list: [ { osx: int@'22' }, map@'{ id: 5, osx: 3 }', { id: int@'12' } ] }
       
-    ''', "Enum value no assignable to enum type.")
+    ''', "Optional entry not assignable to required map entry.")
   }
   
   @Test

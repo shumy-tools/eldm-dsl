@@ -9,102 +9,110 @@ import net.eldm.eldmDsl.ExternalDef
 import net.eldm.eldmDsl.ListDef
 import net.eldm.eldmDsl.MapDef
 import net.eldm.eldmDsl.TypeDef
-import net.eldm.validation.EldmDslValidator
 
 import static extension net.eldm.spi.Natives.*
+import static extension net.eldm.util.ValidationStack.*
 
 @Singleton
 class TypeValidator {
   @Inject extension TypeResolver tResolver
-  @Inject extension EldmDslValidator eValidator
   
-  def boolean inDefinition(ElementDef inferred, Definition superDef) {
+  def void inDefinition(ElementDef inferred, Definition superDef) {
     switch superDef {
-      TypeDef: return inferred.inType(superDef)
-      ExternalDef: return inferred.inExternal(superDef)
+      TypeDef: inferred.inType(superDef)
+      ExternalDef: inferred.inExternal(superDef)
       
-      default: {
-        inferred.error('''Non recognized Definition: «superDef.class.simpleName»! Please report this bug.''')
-        return false
-      }
+      default:
+        error('''Non recognized Definition: «superDef.class.simpleName»! Please report this bug.''')
     }
   }
   
-  def boolean inElement(ElementDef inferred, ElementDef superDef) {
+  def void inElement(ElementDef inferred, ElementDef superDef) {
     if (superDef === null || superDef.native == ANY)
-      return true
+      return;
     
     if (superDef.native !== null) {
       if (inferred.nativeType == superDef.native)
-        return true
+        return;
       
       // inferred.ref is always null (inference calculation do not generate cross-references)
       if (inferred.ref !== null)
-        inferred.error("A cross-reference in inferred type! Please report this bug.")
+        error("A cross-reference in inferred type! Please report this bug.")
       
-      return false
+      error('''Inferred type not assignable to native '«superDef.native»'.''')
     }
     
-    if (superDef.ref !== null)
-      return inferred.inDefinition(superDef.ref)
+    if (superDef.ref !== null) {
+      inferred.inDefinition(superDef.ref)
+      return;
+    }
     
-    if (superDef instanceof MapDef && inferred instanceof MapDef)
-      return (inferred as MapDef).inMap(superDef as MapDef)
+    if (superDef instanceof MapDef && inferred instanceof MapDef) {
+      (inferred as MapDef).inMap(superDef as MapDef)
+      return;
+    }
     
-    if (superDef instanceof ListDef && inferred instanceof ListDef)
-      return (inferred as ListDef).inList(superDef as ListDef)
+    if (superDef instanceof ListDef && inferred instanceof ListDef) {
+      (inferred as ListDef).inList(superDef as ListDef)
+      return;
+    }
     
-    if (superDef instanceof EnumDef && inferred instanceof MapDef)
-      return (inferred as MapDef).inEnum(superDef as EnumDef)
+    if (superDef instanceof EnumDef && inferred instanceof MapDef) {
+      (inferred as MapDef).inEnum(superDef as EnumDef)
+      return;
+    }
     
-    return false
+    error('''Uncompatible elements («inferred.class.simpleName», «superDef.class.simpleName»). Please report this bug.''')
   }
   
-  def boolean inMap(MapDef inferred, MapDef superDef) {
+  def void inMap(MapDef inferred, MapDef superDef) {
     // invalid KeyDef sets!
     for(entry : inferred.defs) {
       val kd = superDef.getMapEntryDef(entry.name)
       if (kd === null)
-        return false
+        error('''Key '«entry.name»' does not exist.''')
       
       // is compatible type?
       // inferred.type is always present
-      if (entry.opt && !kd.opt || !entry.type.inElement(kd.entryType))
-        return false
+      if (entry.opt && !kd.opt)
+        error('''Optional entry not assignable to required map entry.''')
+      
+      entry.type.inElement(kd.entryType)
     }
     
     // mandatory KeyDef not set!
     val mandatory = superDef.defs.filter[!opt]
     for(kd : mandatory)
       if (!inferred.contains(kd.name))
-        return false
+        error('''Required key '«kd.name»' not set.''')
     
-    return true
+    return;
   }
   
-  def boolean inList(ListDef inferred, ListDef superDef) {
-    return inferred.type.inElement(superDef.type)
+  def void inList(ListDef inferred, ListDef superDef) {
+    inferred.type.inElement(superDef.type)
   }
   
-  def boolean inEnum(MapDef inferred, EnumDef superDef) {
-    return inferred.inMap(superDef.type)
+  def void inEnum(MapDef inferred, EnumDef superDef) {
+    inferred.inMap(superDef.type)
   }
   
-  def boolean inType(ElementDef inferred, TypeDef superDef) {
-    if (superDef.type !== null)
-      return inferred.inElement(superDef.type)
+  def void inType(ElementDef inferred, TypeDef superDef) {
+    if (superDef.type !== null) {
+      inferred.inElement(superDef.type)
+      return;
+    }
     
     // the parser already verified the content string
     if (superDef.parser !== null && inferred.native == STR)
-      return true
+      return;
     
-    return false
+    error("Literal value not assignable to TypeDef.")
   }
   
-  def boolean inExternal(ElementDef inferred, ExternalDef extDef) {
+  def void inExternal(ElementDef inferred, ExternalDef extDef) {
     //TODO: support external defs
-    inferred.error("inExternal - Not supported yet!")
-    return false 
+    error("inExternal - Not supported yet!")
   }
   
   

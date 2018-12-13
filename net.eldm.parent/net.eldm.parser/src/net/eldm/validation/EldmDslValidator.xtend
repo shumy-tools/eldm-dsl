@@ -9,12 +9,15 @@ import net.eldm.eldmDsl.EnumDef
 import net.eldm.eldmDsl.LetValue
 import net.eldm.eldmDsl.MapDef
 import net.eldm.eldmDsl.MapEntryDef
+import net.eldm.eldmDsl.MapLiteral
 import net.eldm.eldmDsl.TypeDef
 import net.eldm.util.TypeResolver
 import net.eldm.util.TypeValidator
+import net.eldm.util.ValidationError
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.validation.Check
-import net.eldm.eldmDsl.MapLiteral
+
+import static extension net.eldm.util.ValidationStack.*
 
 /**
  * This class contains custom validation rules. 
@@ -25,11 +28,15 @@ class EldmDslValidator extends AbstractEldmDslValidator {
   @Inject extension TypeValidator tValidator
   @Inject extension TypeResolver tResolver
   
-  def error(EObject invalid, String message) {
-    val obj = if (invalid.eResource !== null) invalid else invalid.inferredValue
-    
-    println('''ERROR («obj?.class.simpleName») -> «message»''')
-    error(message, obj.eContainer, obj.eContainingFeature)
+  def tryValidation(EObject obj, ()=>void tryFunc) {
+    try {
+      obj.push
+        tryFunc.apply
+      pop
+    } catch (ValidationError err) {
+      err.printStackTrace
+      this.error(err.message, err.obj.eContainer, err.obj.eContainingFeature)
+    }
   }
   
   /*TODO: required validations
@@ -94,17 +101,22 @@ class EldmDslValidator extends AbstractEldmDslValidator {
     }
       
     ed.defs.forEach[
-      if (!value.inferType.inElement(ed.type))
-        error("Enum value no assignable to enum type.", it, EldmDslPackage.Literals.ENUM_ITEM_DEF__VALUE)
+      tryValidation[ value.inferType.inElement(ed.type) ]
+      
+      //if (!value.inferType.inElement(ed.type))
+      //  error("Enum value no assignable to enum type.", it, EldmDslPackage.Literals.ENUM_ITEM_DEF__VALUE)
     ]
   }
   
   @Check
   def void checkLetValue(LetValue it) {
     val rType = result.inferType
-    if (rType.inElement(type))
+    tryValidation[ rType.inElement(type) ]
+    /*if (rType.inElement(type))
       type = rType // override type specification
     else
       error("ResultExpression not assignable to let type.", it, EldmDslPackage.Literals.LET_VALUE__RESULT)
+    * /
+      */
   }
 }

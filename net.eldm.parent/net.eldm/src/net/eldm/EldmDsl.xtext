@@ -54,6 +54,8 @@ Operation:
     def=MapDef | ref=[MapDef]
   ;
 
+//TODO: support error handling -> catch param=ParamDef? ':' body=BlockExpression
+
 SubPath:
   'def' name=PathLiteral
   BEGIN
