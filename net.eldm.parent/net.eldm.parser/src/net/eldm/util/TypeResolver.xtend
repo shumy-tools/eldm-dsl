@@ -6,7 +6,6 @@ import net.eldm.eldmDsl.EldmDslFactory
 import net.eldm.eldmDsl.ElementDef
 import net.eldm.eldmDsl.EnumDef
 import net.eldm.eldmDsl.EnumLiteral
-import net.eldm.eldmDsl.Function
 import net.eldm.eldmDsl.IsExpression
 import net.eldm.eldmDsl.ListDef
 import net.eldm.eldmDsl.ListLiteral
@@ -14,13 +13,11 @@ import net.eldm.eldmDsl.Literal
 import net.eldm.eldmDsl.MapDef
 import net.eldm.eldmDsl.MapEntryDef
 import net.eldm.eldmDsl.MapLiteral
-import net.eldm.eldmDsl.Module
 import net.eldm.eldmDsl.PatternLiteral
 import net.eldm.eldmDsl.Primary
 import net.eldm.eldmDsl.TypeDef
 import net.eldm.eldmDsl.ValueExpression
 import net.eldm.eldmDsl.Var
-import org.eclipse.emf.ecore.EObject
 
 import static extension net.eldm.spi.Natives.*
 import static extension net.eldm.util.ValidationStack.*
@@ -28,6 +25,7 @@ import static extension net.eldm.util.ValidationStack.*
 @Singleton
 class TypeResolver {
   @Inject extension PatternParser iParser
+  @Inject extension IdentifierResolver iResolver
   
   def ElementDef getEntryType(MapEntryDef kd) {
     return kd.type ?: { kd.type = kd.value.inferType; kd.type }
@@ -377,76 +375,5 @@ class TypeResolver {
     else
       error("maxTypeDef for ExternalDef - Not supported yet!")
       //TODO: support ExternalDef
-  }
-  
-  def ElementDef resolveIdentifier(Primary pr) {
-    val func = pr.findContainer(Function)
-    if (func !== null) {
-      // search variables in body
-      val type = func.decl.param.resolveVar(pr.ref)
-      if (type !== null)
-        return type
-      
-      // search in function parameter
-      val fParam = func.decl.param.mapDef
-      if (fParam !== null) {
-          val entry = fParam.getMapEntryDef(pr.ref)
-          if (entry !== null)
-            return entry.entryType
-      }
-      
-    } else {
-      val mod = pr.findContainer(Module)
-      if (mod !== null) {
-        // search module values (let)
-        val type = mod.resolveVar(pr.ref)
-        if (type !== null)
-          return type
-      }
-    }
-    
-    error('''Couldn't resolve reference '«pr.ref»'.''')
-    return null;
-  }
-  
-  def ElementDef resolveVar(EObject obj, String id) {
-    val ident = obj.eContents.filter(Var).findFirst[
-      name == id
-    ]
-    
-    if (ident !== null)
-      return ident.varType
-  }
-  
-  def <T extends EObject> T findContainer(EObject leaf, Class<T> type) {
-    if (leaf === null) return null
-    
-    var EObject obj = leaf
-    do
-      obj = obj.eContainer
-    while (obj !== null && !(type.isAssignableFrom(obj.class)))
-    
-    return obj as T
-  }
-  
-  def MapDef getMapDef(ElementDef type) {
-    if (type instanceof MapDef)
-      return type
-    
-    val tRef = type.ref
-    if (tRef instanceof TypeDef)
-      if (tRef.type instanceof ElementDef)
-        return (tRef.type as ElementDef).mapDef
-    
-    //TODO: if (param.ref instanceof ExternalDef)
-    error('''Couldn't resolve MapDef! Please report this bug.''')
-    return null
-  }
-  
-  def getMapEntryDef(MapDef type, String id) {
-    for (it : type.defs)
-      if (name == id)
-        return it
-    return null
   }
 }

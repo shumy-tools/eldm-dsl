@@ -16,12 +16,12 @@ import static extension net.eldm.util.ValidationStack.*
 @Singleton
 class TypeValidator {
   @Inject extension TypeResolver tResolver
+  @Inject extension IdentifierResolver iResolver
   
   def void inDefinition(ElementDef inferred, Definition superDef) {
     switch superDef {
       TypeDef: inferred.inType(superDef)
       ExternalDef: inferred.inExternal(superDef)
-      
       //default: compiler will automatically throw -> Couldn't resolve reference to Definition '«name»'.
     }
   }

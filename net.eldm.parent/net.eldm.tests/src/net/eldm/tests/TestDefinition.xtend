@@ -250,6 +250,8 @@ class TestDefinition {
         
       def get /subject Id -> Subject:
         let y = id is int
+        let a = { id: 10 }
+        let b = a set { name: 'Alex' }
         
     ''')
   }
