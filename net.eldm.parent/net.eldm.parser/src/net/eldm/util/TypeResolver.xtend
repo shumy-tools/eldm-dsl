@@ -6,7 +6,6 @@ import net.eldm.eldmDsl.EldmDslFactory
 import net.eldm.eldmDsl.ElementDef
 import net.eldm.eldmDsl.EnumLiteral
 import net.eldm.eldmDsl.IsExpression
-import net.eldm.eldmDsl.Value
 import net.eldm.eldmDsl.ListDef
 import net.eldm.eldmDsl.ListLiteral
 import net.eldm.eldmDsl.Literal
@@ -15,14 +14,12 @@ import net.eldm.eldmDsl.MapEntryDef
 import net.eldm.eldmDsl.MapLiteral
 import net.eldm.eldmDsl.PatternLiteral
 import net.eldm.eldmDsl.Primary
-import net.eldm.eldmDsl.ValueExpression
-import net.eldm.eldmDsl.VarExpression
 import net.eldm.eldmDsl.TypeDef
+import net.eldm.eldmDsl.ValueExpression
+import net.eldm.eldmDsl.Var
 
 import static extension net.eldm.spi.Natives.*
 import static extension net.eldm.util.ValidationStack.*
-import net.eldm.eldmDsl.Identifier
-import net.eldm.eldmDsl.Var
 
 @Singleton
 class TypeResolver {
@@ -32,27 +29,11 @@ class TypeResolver {
     return kd.type ?: { kd.type = kd.value.inferType; kd.type }
   }
   
-  def ElementDef getIndetifierType(Identifier id) {
+  def ElementDef getVarType(Var id) {
     if (id.present)
       error("Identifier expression cannot reference itself!")
     
-    val inferred = id.type ?: switch id {
-      Var: id.result.inferType
-      Value: id.result.inferType
-    }
-    
-    if (!id.typeExplicit)
-      id.type = inferred
-    
-    return id.type
-  }
-  
-  def ElementDef inferType(VarExpression exp) {
-    exp.push
-      val inferred = exp.value.inferType
-      
-    pop
-    return inferred
+    return id.type ?: { id.type = id.result.inferType; id.type }
   }
   
   def ElementDef inferType(ValueExpression exp) {
@@ -65,12 +46,20 @@ class TypeResolver {
         val inferred = if (exp.value !== null) {
           exp.value.inferType
         } else if (exp.ref !== null) {
-          val lType = exp.ref.indetifierType
-          if (exp.calls.empty)
-            lType
-          else
-            error("Calls not yet supported") //TODO: infer target type
-          
+          switch exp.ref {
+            Var: {
+              val lType = (exp.ref as Var).varType
+              if (exp.calls.empty)
+                lType
+              else
+                error("Calls not yet supported") //TODO: infer target type
+            }
+            
+            //TODO: infer parameter!
+            
+            default:
+              error('''Failed to infer. Non recognized Identifier: «exp.ref.class.simpleName»! Please report this bug.''')
+          }
         } else
           error('''Failed to infer ValueExpression! Path not recognized. Please report this bug.''')
         
@@ -109,16 +98,16 @@ class TypeResolver {
             eFact.createElementDef => [ native = BOOL ]
         }
         
-        case '+': {
+        case 'del', case 'set': {
           val max = lType.maxType(rType)
-          if (max.isOneOf(STR, INT, FLT, MAP, LST))
+          if (max.isOneOf(MAP))
             max
         }
         
-        case '-': {
+        case '+', case '-': {
           //TODO: this is more complex, i.e: MapLiteral - MapDef 
           val min = lType.minType(rType)
-          if (min.isOneOf(STR, INT, FLT))
+          if (min.isOneOf(STR, INT, FLT, LST))
             min
         }
         
@@ -164,7 +153,7 @@ class TypeResolver {
             ]
           ]
           
-          ext = value.ext
+          ext = false
         ]
         
         ListLiteral: eFact.createListDef => [

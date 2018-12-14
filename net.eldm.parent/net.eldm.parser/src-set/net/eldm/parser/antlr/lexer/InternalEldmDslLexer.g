@@ -19,7 +19,11 @@ Service : 'service';
 
 Typedef : 'typedef';
 
+Import : 'import';
+
 Module : 'module';
+
+Catch : 'catch';
 
 False : 'false';
 
@@ -42,6 +46,8 @@ And : 'and';
 Any : 'any';
 
 Def : 'def';
+
+Del : 'del';
 
 Flt : 'flt';
 

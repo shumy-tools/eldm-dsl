@@ -22,8 +22,7 @@ class TypeValidator {
       TypeDef: inferred.inType(superDef)
       ExternalDef: inferred.inExternal(superDef)
       
-      default:
-        error('''Non recognized Definition: «superDef.class.simpleName»! Please report this bug.''')
+      //default: compiler will automatically throw -> Couldn't resolve reference to Definition '«name»'.
     }
   }
   
@@ -113,7 +112,7 @@ class TypeValidator {
     if (superDef.parser !== null && inferred.native == STR)
       return;
     
-    error("Literal value not assignable to TypeDef.")
+    error('''Literal value not assignable to '«superDef.name»'.''')
   }
   
   def void inExternal(ElementDef inferred, ExternalDef extDef) {

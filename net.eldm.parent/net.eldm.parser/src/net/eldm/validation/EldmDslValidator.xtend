@@ -4,13 +4,18 @@
 package net.eldm.validation
 
 import com.google.inject.Inject
+import java.util.ArrayList
+import java.util.HashSet
+import java.util.List
 import net.eldm.eldmDsl.EldmDslPackage
 import net.eldm.eldmDsl.EnumDef
-import net.eldm.eldmDsl.Value
+import net.eldm.eldmDsl.Function
 import net.eldm.eldmDsl.MapDef
 import net.eldm.eldmDsl.MapEntryDef
 import net.eldm.eldmDsl.MapLiteral
+import net.eldm.eldmDsl.Module
 import net.eldm.eldmDsl.TypeDef
+import net.eldm.eldmDsl.Var
 import net.eldm.util.TypeResolver
 import net.eldm.util.TypeValidator
 import net.eldm.util.ValidationError
@@ -18,8 +23,7 @@ import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.validation.Check
 
 import static extension net.eldm.util.ValidationStack.*
-import java.util.List
-import java.util.ArrayList
+import net.eldm.eldmDsl.ElementDef
 
 /**
  * This class contains custom validation rules. 
@@ -55,15 +59,55 @@ class EldmDslValidator extends AbstractEldmDslValidator {
     return detected
   }
   
+  def boolean isMapDef(ElementDef param) {
+    if (param instanceof MapDef)
+      return true
+    
+    val tRef = param.ref 
+    if (tRef instanceof TypeDef)
+      if (tRef.type !== null)
+        return (tRef.type as ElementDef).isMapDef
+    
+    //TODO: if (param.ref instanceof ExternalDef)
+    
+    return false
+  }
+  
   /*TODO: required validations
-   * Verify already existing names for definitions
    * Verify the use of reserved keywords in map and enum entries
   */
   
   @Check
-  def void checkLetCase(Value it) {
+  def void checkUnique(Module it) {
+    val uniques = new HashSet<String>
+    
+    imports.filter[defs !== null].flatMap[defs].forEach[
+      if(uniques.contains(name))
+        error('''Multiple definitions with the same name.''', it, EldmDslPackage.Literals.EXTERNAL_DEF__REF)
+      uniques.add(name)
+    ]
+    
+    defs.forEach[
+      if(uniques.contains(name))
+        error('''Multiple definitions with the same name.''', it, EldmDslPackage.Literals.DEFINITION__NAME)
+      uniques.add(name)
+    ]
+  }
+  
+  @Check
+  def void checkFunction(Function it) {
+    if (decl.param !== null && !decl.param.isMapDef)
+      error('''The parameter can only be a map definition.''', it, EldmDslPackage.Literals.FUNCTION__DECL)
+    
+    if (decl.result !== null && !decl.result.isMapDef)
+      error('''The result can only be a map definition.''', it, EldmDslPackage.Literals.FUNCTION__DECL)
+  }
+  
+  
+  @Check
+  def void checkVarCase(Var it) {
     if (name != name.toLowerCase)
-      warning("Incorrect name for let-value! Set all chars to lower-case.", it, EldmDslPackage.Literals.IDENTIFIER__NAME)
+      warning("Incorrect name for let-value! Set all chars to lower-case.", it, EldmDslPackage.Literals.VAR__NAME)
   }
   
   @Check
@@ -83,21 +127,21 @@ class EldmDslValidator extends AbstractEldmDslValidator {
   }
   
   @Check
-  def void checkMapDefUniqueKeys(MapDef mapDef) {
-    val list = mapDef.defs.map[name]
+  def void checkMapDefUniqueKeys(MapDef it) {
+    val list = it.defs.map[name]
     val keys = list.detectRepeatedKey
     
     if (!keys.empty)
-      error('''Multiple keys with the same name [«keys.join(", ")»]''', mapDef, EldmDslPackage.Literals.MAP_DEF__DEFS)
+      error('''Multiple keys with the same name [«keys.join(", ")»]''', it, EldmDslPackage.Literals.MAP_DEF__DEFS)
   }
   
   @Check
-  def void checkMapLitteralUniqueKeys(MapLiteral mapLit) {
-    val list = mapLit.entries.map[name]
+  def void checkMapLitteralUniqueKeys(MapLiteral it) {
+    val list = entries.map[name]
     val keys = list.detectRepeatedKey
     
     if (!keys.empty)
-      error('''Multiple keys with the same name [«keys.join(", ")»]''', mapLit, EldmDslPackage.Literals.MAP_LITERAL__ENTRIES)
+      error('''Multiple keys with the same name [«keys.join(", ")»]''', it, EldmDslPackage.Literals.MAP_LITERAL__ENTRIES)
   }
   
   @Check
@@ -117,7 +161,7 @@ class EldmDslValidator extends AbstractEldmDslValidator {
   }
   
   @Check
-  def void checkLetValue(Value it) {
+  def void checkVar(Var it) {
     tryValidation[
       val rType = result.inferType
       rType.inElement(type)

@@ -15,51 +15,42 @@ Module:
   ('definitions:'
   BEGIN
     (defs+=Definition)*
-    (vals+=Value)*
+    (vars+=Var)*
   END)?
   
-  (opers+=Operation)*
+  (funcs+=Function)*
   (paths+=SubPath)*
 ;
 
-PlugDsl:
-  'plug-dsl' name=ID adaptor=PatternLiteral
-;
-
 Import:
-  ImportOperation | ImportDefinition
+  'import' (path=PathLiteral | (defs+=ExternalDef (',' defs+=ExternalDef)*)) 'from' ref=PathLiteral BREAK
 ;
 
-  ImportOperation returns Import:
-    name=PathLiteral 'from' ref=PathLiteral
+  ExternalDef:
+    ref=ID ('as' name=ID)? |=> name=ID //TODO: check-if is a valid reference to a Definition ID
   ;
-  
-  ImportDefinition returns Import:
-    (defs+=ExternalDef (',' defs+=ExternalDef)*) 'from' ref=PathLiteral
-  ;
-  
-    ExternalDef:
-      (ref=ID ('as' name=ID)?) |=> name=ID //TODO: check-if is a valid reference to a Definition ID
-    ;
-    
+
+PlugDsl:
+  'plug-dsl' name=ID 'from' ref=PathLiteral BREAK
+;
+
 // ------------------------------------------------------------------------------------------------------------------------------
 // Operations
 // ------------------------------------------------------------------------------------------------------------------------------
-Operation:
-  'def' srv?='service'? (get?='get' | 'set') name=PathLiteral? param=Param? ('->' result=ElementDef)? ':'
+Function:
+  decl=FuncDecl
     body=BlockExpression
 ;
 
-  Param:
-    def=MapDef
+  FuncDecl:
+    type='catch' param=ElementDef? ':'
+    | type='def' srv?='service'? (get?='get' | 'set') path=PathLiteral? param=ElementDef? ('->' result=ElementDef)? ':'
   ;
 
-//TODO: support error handling -> catch param=ParamDef? ':' body=BlockExpression
-
 SubPath:
-  'def' name=PathLiteral
+  'def' path=PathLiteral
   BEGIN
-    (opers+=Operation)+
+    (funcs+=Function)+
   END
 ;
 
@@ -76,15 +67,11 @@ BlockExpression: {BlockExpression}
   ;
   
   Identifier:
-    Value | Var
+    Var // | Param
   ;
   
-    Value:
-      'let' name=ID (typeExplicit?=':' type=ElementDef)? '=' result=ValueExpression
-    ;
-    
     Var:
-      'var' name=ID (typeExplicit?=':' type=ElementDef)? '=' result=VarExpression
+      (let?='let' | var?='var') name=ID (typeExplicit?=':' type=ElementDef)? '=' result=ValueExpression
     ;
   
 // the result expression must be equivalent to an immutable Literal
@@ -111,7 +98,7 @@ ValueExpression:
   ;
   
   AdditiveExpression returns ValueExpression:
-    MultiplicativeExpression (=>({ValueExpression.left=current} feature=('+'|'-')) right=MultiplicativeExpression)*
+    MultiplicativeExpression (=>({ValueExpression.left=current} feature=('+'|'-'|'set'|'del')) right=MultiplicativeExpression)*
   ;
   
   MultiplicativeExpression returns ValueExpression:
@@ -134,11 +121,6 @@ ValueExpression:
   ;
    
     MemberCall: ('.'|nullSafe?='?.') member=ID;
-
-
-VarExpression:
-  value=Literal
-;
 
 /*
 OperationCall:
@@ -181,7 +163,7 @@ ElementDef:
     => ({MapDef} '{' (defs+=MapEntryDef (',' defs+=MapEntryDef)*)? (',' ext?='*')? '}')
     | ({MapDef} '{'
     BEGIN
-      (defs+=MapEntryDef ( BREAK defs+=MapEntryDef)*)?
+      (defs+=MapEntryDef (','? BREAK defs+=MapEntryDef)*)?
       ext?='*'?
     END
     '}')
@@ -248,11 +230,10 @@ Literal:
   ;
   
   MapLiteral:
-    => ({MapLiteral} '{' (entries+=MapEntryLiteral (',' entries+=MapEntryLiteral)*)? (',' ext?='*')? '}')
+    => ({MapLiteral} '{' (entries+=MapEntryLiteral (',' entries+=MapEntryLiteral)*)? '}')
     | ({MapLiteral} '{'
     BEGIN
       (entries+=MapEntryLiteral ( BREAK entries+=MapEntryLiteral)*)?
-      ext?='*'?
     END
     '}')
   ;

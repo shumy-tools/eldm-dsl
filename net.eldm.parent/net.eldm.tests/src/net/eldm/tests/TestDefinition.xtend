@@ -24,7 +24,7 @@ class TestDefinition {
       
       definitions:
         typedef Subject { id: int, name: no-type }
-      
+        
     ''', "Couldn't resolve reference to Definition 'no-type'.")
   }
   
@@ -35,7 +35,7 @@ class TestDefinition {
       
       definitions:
         typedef Subject { id?: int, id: str, name: str }
-      
+        
     ''', "Multiple keys with the same name [id]")
   }
   
@@ -48,7 +48,7 @@ class TestDefinition {
         typedef Sex enum { desc: str }:
           M { desc: 10 }
           F { desc: 'Female' }
-      
+        
     ''',
       "Inferred type not assignable to native 'str'."
     )
@@ -63,7 +63,7 @@ class TestDefinition {
         typedef Sex enum { desc: str }:
           M { des: 'Male' }
           F { desc: 'Female' }
-      
+        
     ''',
       "Key 'des' does not exist."
     )
@@ -78,7 +78,7 @@ class TestDefinition {
         typedef Sex enum { id: int, desc: str }:
           M { id: 10, desc: 'Male' }
           F { desc: 'Female' }
-      
+        
     ''',
       "Required key 'id' not set."
     )
@@ -94,7 +94,7 @@ class TestDefinition {
         
         typedef Sex enum { id: int, list: List }:
           M { id: 10, list: map@'[ { id: 10 } ]' }
-      
+        
     ''',
       "Inferred type not assignable to native 'map'."
     )
@@ -110,7 +110,7 @@ class TestDefinition {
         
         typedef Sex enum { id: int, list: List }:
           M { id: 10, list: [ { id: 10, osx: 10 }, { id: '10' } ] }
-      
+        
     ''', "Inferred type not assignable to native 'int'.")
   }
   
@@ -124,7 +124,7 @@ class TestDefinition {
         
         typedef Sex enum { id: int, list: List }:
           M { id: 10, list: [ { osx: int@'22' }, map@'{ id: 5, osx: 3 }', { id: int@'12' } ] }
-      
+        
     ''', "Inferred type not assignable to map with required key 'id'.")
   }
   
@@ -196,8 +196,9 @@ class TestDefinition {
       definitions:
         typedef Map { id: int, name?: str }
         
-        let x: Map = { id: 10, * }
-      
+        let x: map = { id: 10 }
+        let y: Map = { id: 10 } set x // { id: int } + map -> { id: int, * }
+        
     ''',
       "Inferred type with extendable fields not assignable to defined map."
     )
@@ -219,13 +220,15 @@ class TestDefinition {
         let ex: Extended = { id: 10, other: 'field' }
         
         let x = { name: 'Alex' }
-        let y: Subject = x + { id: 10 }
+        let y: Subject = x set { id: 10 }
         let z = 10 + 30 * 2 is int and true == 2016-01-23 < 2017-05-12
         
         let a: map = { id: 20, name: 'Alex' }
         let b = a is { id: int, name: str }
         let c = { id: 20 } is map
         let d = { id: 20, name: 'Alex' } is Subject
+        
+        let d = [10, 30] + [5]
         
     ''')
   }
