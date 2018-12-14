@@ -15,7 +15,7 @@ Definitions : 'definitions:';
 
 PlugDsl : 'plug-dsl';
 
-Private : 'private';
+Service : 'service';
 
 Typedef : 'typedef';
 
@@ -64,6 +64,8 @@ Map : 'map';
 Set : 'set';
 
 Str : 'str';
+
+Var : 'var';
 
 ExclamationMarkEqualsSign : '!=';
 

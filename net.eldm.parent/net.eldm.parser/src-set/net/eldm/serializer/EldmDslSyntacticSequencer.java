@@ -24,8 +24,8 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 	protected EldmDslGrammarAccess grammarAccess;
 	protected AbstractElementAlias match_BaseExpression_LeftParenthesisKeyword_1_0_a;
 	protected AbstractElementAlias match_BaseExpression_LeftParenthesisKeyword_1_0_p;
-	protected AbstractElementAlias match_MapDef___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__;
-	protected AbstractElementAlias match_MapLiteral___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__;
+	protected AbstractElementAlias match_MapDef___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_4___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_5_RightCurlyBracketKeyword_1_6__;
+	protected AbstractElementAlias match_MapLiteral___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_4___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_5_RightCurlyBracketKeyword_1_6__;
 	protected AbstractElementAlias match_Module___DefinitionsKeyword_4_0_BEGINTerminalRuleCall_4_1_ENDTerminalRuleCall_4_4__q;
 	
 	@Inject
@@ -33,8 +33,8 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 		grammarAccess = (EldmDslGrammarAccess) access;
 		match_BaseExpression_LeftParenthesisKeyword_1_0_a = new TokenAlias(true, true, grammarAccess.getBaseExpressionAccess().getLeftParenthesisKeyword_1_0());
 		match_BaseExpression_LeftParenthesisKeyword_1_0_p = new TokenAlias(true, false, grammarAccess.getBaseExpressionAccess().getLeftParenthesisKeyword_1_0());
-		match_MapDef___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__ = new AlternativeAlias(false, false, new GroupAlias(false, false, new TokenAlias(false, false, grammarAccess.getMapDefAccess().getLeftCurlyBracketKeyword_0_0_1()), new TokenAlias(false, false, grammarAccess.getMapDefAccess().getRightCurlyBracketKeyword_0_0_3())), new GroupAlias(false, false, new TokenAlias(false, false, grammarAccess.getMapDefAccess().getLeftCurlyBracketKeyword_1_1()), new TokenAlias(false, false, grammarAccess.getMapDefAccess().getBEGINTerminalRuleCall_1_2()), new TokenAlias(false, false, grammarAccess.getMapDefAccess().getENDTerminalRuleCall_1_4()), new TokenAlias(false, false, grammarAccess.getMapDefAccess().getRightCurlyBracketKeyword_1_5())));
-		match_MapLiteral___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__ = new AlternativeAlias(false, false, new GroupAlias(false, false, new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getLeftCurlyBracketKeyword_0_0_1()), new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getRightCurlyBracketKeyword_0_0_3())), new GroupAlias(false, false, new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getLeftCurlyBracketKeyword_1_1()), new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getBEGINTerminalRuleCall_1_2()), new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getENDTerminalRuleCall_1_4()), new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getRightCurlyBracketKeyword_1_5())));
+		match_MapDef___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_4___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_5_RightCurlyBracketKeyword_1_6__ = new AlternativeAlias(false, false, new GroupAlias(false, false, new TokenAlias(false, false, grammarAccess.getMapDefAccess().getLeftCurlyBracketKeyword_0_0_1()), new TokenAlias(false, false, grammarAccess.getMapDefAccess().getRightCurlyBracketKeyword_0_0_4())), new GroupAlias(false, false, new TokenAlias(false, false, grammarAccess.getMapDefAccess().getLeftCurlyBracketKeyword_1_1()), new TokenAlias(false, false, grammarAccess.getMapDefAccess().getBEGINTerminalRuleCall_1_2()), new TokenAlias(false, false, grammarAccess.getMapDefAccess().getENDTerminalRuleCall_1_5()), new TokenAlias(false, false, grammarAccess.getMapDefAccess().getRightCurlyBracketKeyword_1_6())));
+		match_MapLiteral___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_4___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_5_RightCurlyBracketKeyword_1_6__ = new AlternativeAlias(false, false, new GroupAlias(false, false, new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getLeftCurlyBracketKeyword_0_0_1()), new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getRightCurlyBracketKeyword_0_0_4())), new GroupAlias(false, false, new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getLeftCurlyBracketKeyword_1_1()), new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getBEGINTerminalRuleCall_1_2()), new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getENDTerminalRuleCall_1_5()), new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getRightCurlyBracketKeyword_1_6())));
 		match_Module___DefinitionsKeyword_4_0_BEGINTerminalRuleCall_4_1_ENDTerminalRuleCall_4_4__q = new GroupAlias(false, true, new TokenAlias(false, false, grammarAccess.getModuleAccess().getDefinitionsKeyword_4_0()), new TokenAlias(false, false, grammarAccess.getModuleAccess().getBEGINTerminalRuleCall_4_1()), new TokenAlias(false, false, grammarAccess.getModuleAccess().getENDTerminalRuleCall_4_4()));
 	}
 	
@@ -80,10 +80,10 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 				emit_BaseExpression_LeftParenthesisKeyword_1_0_a(semanticObject, getLastNavigableState(), syntaxNodes);
 			else if (match_BaseExpression_LeftParenthesisKeyword_1_0_p.equals(syntax))
 				emit_BaseExpression_LeftParenthesisKeyword_1_0_p(semanticObject, getLastNavigableState(), syntaxNodes);
-			else if (match_MapDef___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__.equals(syntax))
-				emit_MapDef___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__(semanticObject, getLastNavigableState(), syntaxNodes);
-			else if (match_MapLiteral___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__.equals(syntax))
-				emit_MapLiteral___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__(semanticObject, getLastNavigableState(), syntaxNodes);
+			else if (match_MapDef___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_4___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_5_RightCurlyBracketKeyword_1_6__.equals(syntax))
+				emit_MapDef___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_4___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_5_RightCurlyBracketKeyword_1_6__(semanticObject, getLastNavigableState(), syntaxNodes);
+			else if (match_MapLiteral___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_4___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_5_RightCurlyBracketKeyword_1_6__.equals(syntax))
+				emit_MapLiteral___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_4___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_5_RightCurlyBracketKeyword_1_6__(semanticObject, getLastNavigableState(), syntaxNodes);
 			else if (match_Module___DefinitionsKeyword_4_0_BEGINTerminalRuleCall_4_1_ENDTerminalRuleCall_4_4__q.equals(syntax))
 				emit_Module___DefinitionsKeyword_4_0_BEGINTerminalRuleCall_4_1_ENDTerminalRuleCall_4_4__q(semanticObject, getLastNavigableState(), syntaxNodes);
 			else acceptNodes(getLastNavigableState(), syntaxNodes);
@@ -96,10 +96,10 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *
 	 * This ambiguous syntax occurs at:
 	 *     (rule start) (ambiguity) feature='!'
-	 *     (rule start) (ambiguity) ref=[LetValue|ID]
+	 *     (rule start) (ambiguity) ref=[Identifier|ID]
 	 *     (rule start) (ambiguity) value=Literal
 	 *     (rule start) (ambiguity) {IsExpression.left=}
-	 *     (rule start) (ambiguity) {ResultExpression.left=}
+	 *     (rule start) (ambiguity) {ValueExpression.left=}
 	 */
 	protected void emit_BaseExpression_LeftParenthesisKeyword_1_0_a(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
 		acceptNodes(transition, nodes);
@@ -112,7 +112,7 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 	 * This ambiguous syntax occurs at:
 	 *     (rule start) (ambiguity) feature='!'
 	 *     (rule start) (ambiguity) {IsExpression.left=}
-	 *     (rule start) (ambiguity) {ResultExpression.left=}
+	 *     (rule start) (ambiguity) {ValueExpression.left=}
 	 */
 	protected void emit_BaseExpression_LeftParenthesisKeyword_1_0_p(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
 		acceptNodes(transition, nodes);
@@ -125,7 +125,7 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 	 * This ambiguous syntax occurs at:
 	 *     (rule start) (ambiguity) (rule start)
 	 */
-	protected void emit_MapDef___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
+	protected void emit_MapDef___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_4___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_5_RightCurlyBracketKeyword_1_6__(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
 		acceptNodes(transition, nodes);
 	}
 	
@@ -136,7 +136,7 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 	 * This ambiguous syntax occurs at:
 	 *     (rule start) (ambiguity) (rule start)
 	 */
-	protected void emit_MapLiteral___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
+	protected void emit_MapLiteral___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_4___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_5_RightCurlyBracketKeyword_1_6__(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
 		acceptNodes(transition, nodes);
 	}
 	

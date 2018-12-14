@@ -6,7 +6,7 @@ package net.eldm.validation
 import com.google.inject.Inject
 import net.eldm.eldmDsl.EldmDslPackage
 import net.eldm.eldmDsl.EnumDef
-import net.eldm.eldmDsl.LetValue
+import net.eldm.eldmDsl.Value
 import net.eldm.eldmDsl.MapDef
 import net.eldm.eldmDsl.MapEntryDef
 import net.eldm.eldmDsl.MapLiteral
@@ -61,9 +61,9 @@ class EldmDslValidator extends AbstractEldmDslValidator {
   */
   
   @Check
-  def void checkLetCase(LetValue it) {
+  def void checkLetCase(Value it) {
     if (name != name.toLowerCase)
-      warning("Incorrect name for let-value! Set all chars to lower-case.", it, EldmDslPackage.Literals.LET_VALUE__NAME)
+      warning("Incorrect name for let-value! Set all chars to lower-case.", it, EldmDslPackage.Literals.IDENTIFIER__NAME)
   }
   
   @Check
@@ -117,7 +117,7 @@ class EldmDslValidator extends AbstractEldmDslValidator {
   }
   
   @Check
-  def void checkLetValue(LetValue it) {
+  def void checkLetValue(Value it) {
     tryValidation[
       val rType = result.inferType
       rType.inElement(type)

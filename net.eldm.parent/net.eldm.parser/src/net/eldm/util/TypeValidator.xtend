@@ -69,15 +69,17 @@ class TypeValidator {
     // invalid KeyDef sets!
     for(entry : inferred.defs) {
       val kd = superDef.getMapEntryDef(entry.name)
-      if (kd === null)
-        error('''Key '«entry.name»' does not exist.''')
-      
-      // is compatible type?
-      // inferred.type is always present
-      if (entry.opt && !kd.opt)
-        error('''Inferred type not assignable to map with required key '«kd.name»'.''')
-      
-      entry.type.inElement(kd.entryType)
+      if (kd === null) {
+        if (!superDef.ext) 
+          error('''Key '«entry.name»' does not exist.''')
+      } else {
+        // is compatible type?
+        // inferred.type is always present
+        if (entry.opt && !kd.opt)
+          error('''Inferred type not assignable to map with required key '«kd.name»'.''')
+        
+        entry.type.inElement(kd.entryType)  
+      }
     }
     
     // mandatory KeyDef not set!
@@ -85,6 +87,10 @@ class TypeValidator {
     for(kd : mandatory)
       if (!inferred.contains(kd.name))
         error('''Required key '«kd.name»' not set.''')
+    
+    // deal with extendable fields?
+    if (inferred.ext && !superDef.ext)
+      error('''Inferred type with extendable fields not assignable to defined map.''')
     
     return;
   }

@@ -15,7 +15,7 @@ Module:
   ('definitions:'
   BEGIN
     (defs+=Definition)*
-    (vals+=LetValue)*
+    (vals+=Value)*
   END)?
   
   (opers+=Operation)*
@@ -46,12 +46,12 @@ Import:
 // Operations
 // ------------------------------------------------------------------------------------------------------------------------------
 Operation:
-  isPrivate?='private'? 'def' (isGet?='get' | 'set') name=PathLiteral? param=ParamDef? ('->' result=ElementDef)? ':'
+  'def' srv?='service'? (get?='get' | 'set') name=PathLiteral? param=Param? ('->' result=ElementDef)? ':'
     body=BlockExpression
 ;
 
-  ParamDef:
-    def=MapDef | ref=[MapDef]
+  Param:
+    def=MapDef
   ;
 
 //TODO: support error handling -> catch param=ParamDef? ':' body=BlockExpression
@@ -71,62 +71,74 @@ BlockExpression: {BlockExpression}
     (expressions+=Expression)*
   END
 ;
-  Expression:
-    LetValue //TODO: add more expressions?
+  Expression: //TODO: add more expressions?
+    Identifier
   ;
+  
+  Identifier:
+    Value | Var
+  ;
+  
+    Value:
+      'let' name=ID (typeExplicit?=':' type=ElementDef)? '=' result=ValueExpression
+    ;
     
-  LetValue:
-    'let' name=ID (isTypeExplicit?=':' type=ElementDef)? '=' result=ResultExpression
-  ;
-
-// the result expression must be equivalent to a Literal
-// ResultExpression -> (left feature right)
-ResultExpression:
+    Var:
+      'var' name=ID (typeExplicit?=':' type=ElementDef)? '=' result=VarExpression
+    ;
+  
+// the result expression must be equivalent to an immutable Literal
+ValueExpression:
   OrExpression
 ;
-  OrExpression returns ResultExpression:
-    AndExpression (=>({ResultExpression.left=current} feature='or') right=AndExpression)*
+  OrExpression returns ValueExpression:
+    AndExpression (=>({ValueExpression.left=current} feature='or') right=AndExpression)*
   ;
   
-  AndExpression returns ResultExpression:
-    EqualityExpression (=>({ResultExpression.left=current} feature='and') right=EqualityExpression)*
+  AndExpression returns ValueExpression:
+    EqualityExpression (=>({ValueExpression.left=current} feature='and') right=EqualityExpression)*
   ;
   
-  EqualityExpression returns ResultExpression:
-    RelationalExpression (=>({ResultExpression.left=current} feature=('=='|'!=')) right=RelationalExpression)*
+  EqualityExpression returns ValueExpression:
+    RelationalExpression (=>({ValueExpression.left=current} feature=('=='|'!=')) right=RelationalExpression)*
   ;
   
-  RelationalExpression returns ResultExpression:
+  RelationalExpression returns ValueExpression:
     AdditiveExpression
     ( =>({IsExpression.left=current} feature='is') type=ElementDef
-      |=>({ResultExpression.left=current} feature=('>='|'<='|'>'|'<')) right=AdditiveExpression
+      |=>({ValueExpression.left=current} feature=('>='|'<='|'>'|'<')) right=AdditiveExpression
     )*
   ;
   
-  AdditiveExpression returns ResultExpression:
-    MultiplicativeExpression (=>({ResultExpression.left=current} feature=('+'|'-')) right=MultiplicativeExpression)*
+  AdditiveExpression returns ValueExpression:
+    MultiplicativeExpression (=>({ValueExpression.left=current} feature=('+'|'-')) right=MultiplicativeExpression)*
   ;
   
-  MultiplicativeExpression returns ResultExpression:
-    UnaryOperation (=>({ResultExpression.left=current} feature=('*'|'**'|'/'|'%')) right=UnaryOperation)*
+  MultiplicativeExpression returns ValueExpression:
+    UnaryOperation (=>({ValueExpression.left=current} feature=('*'|'**'|'/'|'%')) right=UnaryOperation)*
   ;
   
   // UnaryOperation -> (feature operand)
-  UnaryOperation returns ResultExpression:
+  UnaryOperation returns ValueExpression:
     ({UnaryOperation} feature='!' operand=UnaryOperation)
     | BaseExpression
   ;
   
-  BaseExpression returns ResultExpression:
-    Primary | '(' ResultExpression ')'
+  BaseExpression returns ValueExpression:
+    Primary | '(' ValueExpression ')'
   ;
   
   Primary:
     value=Literal
-    |=> ref=[LetValue] (calls+=MemberCall)*
+    |=> ref=[Identifier] (calls+=MemberCall)*
   ;
    
-    MemberCall: ('.'|isNullSafe?='?.') member=ID;
+    MemberCall: ('.'|nullSafe?='?.') member=ID;
+
+
+VarExpression:
+  value=Literal
+;
 
 /*
 OperationCall:
@@ -166,16 +178,17 @@ ElementDef:
 ;
 
   MapDef:
-    => ({MapDef} '{' (defs+=MapEntryDef (',' defs+=MapEntryDef)*)? '}')
+    => ({MapDef} '{' (defs+=MapEntryDef (',' defs+=MapEntryDef)*)? (',' ext?='*')? '}')
     | ({MapDef} '{'
     BEGIN
       (defs+=MapEntryDef ( BREAK defs+=MapEntryDef)*)?
+      ext?='*'?
     END
     '}')
   ;
   
     MapEntryDef:
-      name=ID ((opt?='?'? ':' type=ElementDef) | (opt?='=' value=Literal))
+      name=ID ((opt?='?'? ':' type=ElementDef) | (opt?='=' value=Literal))?
     ;
   
   ListDef: {ListDef}
@@ -220,7 +233,7 @@ Literal:
   | PatternLiteral
 ;
   
-  BoolLiteral: {BoolLiteral} ('false' | isTrue?='true');
+  BoolLiteral: {BoolLiteral} ('false' | value?='true');
   StrLiteral: value=TEXT;
   IntLiteral: value=NATURAL;
   FltLiteral: value=FLOAT;
@@ -235,10 +248,11 @@ Literal:
   ;
   
   MapLiteral:
-    => ({MapLiteral} '{' (entries+=MapEntryLiteral (',' entries+=MapEntryLiteral)*)? '}')
+    => ({MapLiteral} '{' (entries+=MapEntryLiteral (',' entries+=MapEntryLiteral)*)? (',' ext?='*')? '}')
     | ({MapLiteral} '{'
     BEGIN
       (entries+=MapEntryLiteral ( BREAK entries+=MapEntryLiteral)*)?
+      ext?='*'?
     END
     '}')
   ;

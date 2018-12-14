@@ -15,6 +15,8 @@ import static extension net.eldm.tests.TestHelper.*
 class TestDefinition {
   @Inject ParseHelper<Module> ph
   
+  // TEST with enums----------------------------------------------------------------------------------------------------------------------
+  
   @Test
   def void testNonExistentType() {
     ph.testExpectedErrors('''
@@ -127,42 +129,6 @@ class TestDefinition {
   }
   
   @Test
-  def void testLetSelfReference() {
-    ph.testExpectedErrors('''
-      module /main/test
-      
-      definitions:
-        let b = b is { id: int, name: str }
-        
-    ''',
-      "Let expression cannot reference itself!"
-    )
-  }
-  
-  @Test
-  def void testLetValues() {
-    ph.test('''
-      module /main/test
-      
-      definitions:
-        typedef Subject {
-          id: int
-          name?: str
-        }
-        
-        let x = { id: 20, name: 'Alex' }
-        let y: Subject = x + { id: 10 }
-        let z = 10 + 30 * 2 is int and true == 2016-01-23 < 2017-05-12
-        
-        let a: map = { id: 20, name: 'Alex' }
-        let b = a is { id: int, name: str }
-        let c = { id: 20 } is map
-        let d = { id: 20, name: 'Alex' } is Subject
-        
-    ''')
-  }
-  
-  @Test
   def void testEnums() {
     ph.test('''
       module /test
@@ -203,6 +169,63 @@ class TestDefinition {
         
         typedef Ox enum:
           X Y
+        
+    ''')
+  }
+  
+  // TEST with let values-----------------------------------------------------------------------------------------------------------------
+  
+  @Test
+  def void testLetSelfReference() {
+    ph.testExpectedErrors('''
+      module /main/test
+      
+      definitions:
+        let b = b is { id: int, name: str }
+        
+    ''',
+      "Identifier expression cannot reference itself!"
+    )
+  }
+  
+  @Test
+  def void testInvalidExtendableMapAssignement() {
+    ph.testExpectedErrors('''
+      module /test
+      
+      definitions:
+        typedef Map { id: int, name?: str }
+        
+        let x: Map = { id: 10, * }
+      
+    ''',
+      "Inferred type with extendable fields not assignable to defined map."
+    )
+  }
+  
+  @Test
+  def void testLetValues() {
+    ph.test('''
+      module /main/test
+      
+      definitions:
+        typedef Extended { id: int, * }
+              
+        typedef Subject {
+          id: int
+          name?: str
+        }
+        
+        let ex: Extended = { id: 10, other: 'field' }
+        
+        let x = { name: 'Alex' }
+        let y: Subject = x + { id: 10 }
+        let z = 10 + 30 * 2 is int and true == 2016-01-23 < 2017-05-12
+        
+        let a: map = { id: 20, name: 'Alex' }
+        let b = a is { id: int, name: str }
+        let c = { id: 20 } is map
+        let d = { id: 20, name: 'Alex' } is Subject
         
     ''')
   }

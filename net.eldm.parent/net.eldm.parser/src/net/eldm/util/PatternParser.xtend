@@ -119,6 +119,9 @@ class PatternParser {
   }
   
   private def extract(String value) {
+    if (value === null)
+      return ""
+    
     if (value.startsWith("'"))
       return value.substring(1, value.length - 1) // ' -> '
     else
