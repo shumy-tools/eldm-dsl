@@ -99,9 +99,9 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     '('*
 	 *
 	 * This ambiguous syntax occurs at:
+	 *     (rule start) (ambiguity) '«' type=ElementDef
 	 *     (rule start) (ambiguity) feature='!'
 	 *     (rule start) (ambiguity) ref=ID
-	 *     (rule start) (ambiguity) type=[ElementDef|ID]
 	 *     (rule start) (ambiguity) value=Literal
 	 *     (rule start) (ambiguity) {IsExpression.left=}
 	 *     (rule start) (ambiguity) {ValueExpression.left=}

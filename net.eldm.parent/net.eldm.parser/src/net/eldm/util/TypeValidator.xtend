@@ -103,10 +103,12 @@ class TypeValidator {
   }
   
   def void inType(ElementDef inferred, TypeDef superDef) {
-    if (superDef.type !== null) {
-      inferred.inElement(superDef.type)
-      return;
-    }
+    val sType = superDef.type
+    if (sType !== null)
+      switch sType {
+        ElementDef: { inferred.inElement(sType); return; }
+        EnumDef: { error("inType - EnumDef not supported"); return; }
+      }
     
     // the parser already verified the content string
     if (superDef.parser !== null && inferred.native == STR)
@@ -120,18 +122,7 @@ class TypeValidator {
     error("inExternal - Not supported yet!")
   }
   
-  
   def contains(MapDef type, String id) {
-    for (entry : type.defs)
-      if (entry.name == id)
-        return true
-    return false
-  }
-  
-  def getMapEntryDef(MapDef type, String id) {
-    for (it : type.defs)
-      if (name == id)
-        return it
-    return null
+    return type.getMapEntryDef(id) !== null
   }
 }

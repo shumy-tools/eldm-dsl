@@ -528,8 +528,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Alternatives cAlternatives_0 = (Alternatives)cGroup.eContents().get(0);
 		private final Assignment cLetAssignment_0_0 = (Assignment)cAlternatives_0.eContents().get(0);
 		private final Keyword cLetLetKeyword_0_0_0 = (Keyword)cLetAssignment_0_0.eContents().get(0);
-		private final Assignment cVarAssignment_0_1 = (Assignment)cAlternatives_0.eContents().get(1);
-		private final Keyword cVarVarKeyword_0_1_0 = (Keyword)cVarAssignment_0_1.eContents().get(0);
+		private final Keyword cVarKeyword_0_1 = (Keyword)cAlternatives_0.eContents().get(1);
 		private final Assignment cNameAssignment_1 = (Assignment)cGroup.eContents().get(1);
 		private final RuleCall cNameIDTerminalRuleCall_1_0 = (RuleCall)cNameAssignment_1.eContents().get(0);
 		private final Group cGroup_2 = (Group)cGroup.eContents().get(2);
@@ -542,13 +541,13 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cResultValueExpressionParserRuleCall_4_0 = (RuleCall)cResultAssignment_4.eContents().get(0);
 		
 		//Var:
-		//	(let?='let' | var?='var') name=ID (typeExplicit?=':' type=ElementDef)? '=' result=ValueExpression;
+		//	(let?='let' | 'var') name=ID (typeExplicit?=':' type=ElementDef)? '=' result=ValueExpression;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//(let?='let' | var?='var') name=ID (typeExplicit?=':' type=ElementDef)? '=' result=ValueExpression
+		//(let?='let' | 'var') name=ID (typeExplicit?=':' type=ElementDef)? '=' result=ValueExpression
 		public Group getGroup() { return cGroup; }
 		
-		//let?='let' | var?='var'
+		//let?='let' | 'var'
 		public Alternatives getAlternatives_0() { return cAlternatives_0; }
 		
 		//let?='let'
@@ -557,11 +556,8 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//'let'
 		public Keyword getLetLetKeyword_0_0_0() { return cLetLetKeyword_0_0_0; }
 		
-		//var?='var'
-		public Assignment getVarAssignment_0_1() { return cVarAssignment_0_1; }
-		
 		//'var'
-		public Keyword getVarVarKeyword_0_1_0() { return cVarVarKeyword_0_1_0; }
+		public Keyword getVarKeyword_0_1() { return cVarKeyword_0_1; }
 		
 		//name=ID
 		public Assignment getNameAssignment_1() { return cNameAssignment_1; }
@@ -1058,56 +1054,61 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	public class PrimaryElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.Primary");
 		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final Alternatives cAlternatives_0 = (Alternatives)cGroup.eContents().get(0);
-		private final Assignment cValueAssignment_0_0 = (Assignment)cAlternatives_0.eContents().get(0);
-		private final RuleCall cValueLiteralParserRuleCall_0_0_0 = (RuleCall)cValueAssignment_0_0.eContents().get(0);
-		private final Assignment cTypeAssignment_0_1 = (Assignment)cAlternatives_0.eContents().get(1);
-		private final CrossReference cTypeElementDefCrossReference_0_1_0 = (CrossReference)cTypeAssignment_0_1.eContents().get(0);
-		private final RuleCall cTypeElementDefIDTerminalRuleCall_0_1_0_1 = (RuleCall)cTypeElementDefCrossReference_0_1_0.eContents().get(1);
-		private final Assignment cRefAssignment_0_2 = (Assignment)cAlternatives_0.eContents().get(2);
-		private final RuleCall cRefIDTerminalRuleCall_0_2_0 = (RuleCall)cRefAssignment_0_2.eContents().get(0);
-		private final Assignment cCallsAssignment_1 = (Assignment)cGroup.eContents().get(1);
-		private final RuleCall cCallsMemberCallParserRuleCall_1_0 = (RuleCall)cCallsAssignment_1.eContents().get(0);
+		private final Group cGroup_0 = (Group)cGroup.eContents().get(0);
+		private final Keyword cLeftPointingDoubleAngleQuotationMarkKeyword_0_0 = (Keyword)cGroup_0.eContents().get(0);
+		private final Assignment cTypeAssignment_0_1 = (Assignment)cGroup_0.eContents().get(1);
+		private final RuleCall cTypeElementDefParserRuleCall_0_1_0 = (RuleCall)cTypeAssignment_0_1.eContents().get(0);
+		private final Keyword cRightPointingDoubleAngleQuotationMarkKeyword_0_2 = (Keyword)cGroup_0.eContents().get(2);
+		private final Alternatives cAlternatives_1 = (Alternatives)cGroup.eContents().get(1);
+		private final Assignment cValueAssignment_1_0 = (Assignment)cAlternatives_1.eContents().get(0);
+		private final RuleCall cValueLiteralParserRuleCall_1_0_0 = (RuleCall)cValueAssignment_1_0.eContents().get(0);
+		private final Assignment cRefAssignment_1_1 = (Assignment)cAlternatives_1.eContents().get(1);
+		private final RuleCall cRefIDTerminalRuleCall_1_1_0 = (RuleCall)cRefAssignment_1_1.eContents().get(0);
+		private final Assignment cCallsAssignment_2 = (Assignment)cGroup.eContents().get(2);
+		private final RuleCall cCallsMemberCallParserRuleCall_2_0 = (RuleCall)cCallsAssignment_2.eContents().get(0);
 		
 		//Primary:
-		//	(value=Literal | type=[ElementDef] | => ref=ID) calls+=MemberCall*;
+		//	('«' type=ElementDef '»')? (value=Literal | => ref=ID) calls+=MemberCall*;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//(value=Literal | type=[ElementDef] | => ref=ID) calls+=MemberCall*
+		//('«' type=ElementDef '»')? (value=Literal | => ref=ID) calls+=MemberCall*
 		public Group getGroup() { return cGroup; }
 		
-		////value=Literal
-		////|=> (ref=[Identifier] |=> param=ID) (calls+=MemberCall)*
-		//// better -> (value=Literal | ref=ID) type=[ElementDef]? (calls+=MemberCall)*
-		//value=Literal | type=[ElementDef] | => ref=ID
-		public Alternatives getAlternatives_0() { return cAlternatives_0; }
+		//('«' type=ElementDef '»')?
+		public Group getGroup_0() { return cGroup_0; }
 		
-		//value=Literal
-		public Assignment getValueAssignment_0_0() { return cValueAssignment_0_0; }
+		//'«'
+		public Keyword getLeftPointingDoubleAngleQuotationMarkKeyword_0_0() { return cLeftPointingDoubleAngleQuotationMarkKeyword_0_0; }
 		
-		//Literal
-		public RuleCall getValueLiteralParserRuleCall_0_0_0() { return cValueLiteralParserRuleCall_0_0_0; }
-		
-		//type=[ElementDef]
+		//type=ElementDef
 		public Assignment getTypeAssignment_0_1() { return cTypeAssignment_0_1; }
 		
-		//[ElementDef]
-		public CrossReference getTypeElementDefCrossReference_0_1_0() { return cTypeElementDefCrossReference_0_1_0; }
+		//ElementDef
+		public RuleCall getTypeElementDefParserRuleCall_0_1_0() { return cTypeElementDefParserRuleCall_0_1_0; }
 		
-		//ID
-		public RuleCall getTypeElementDefIDTerminalRuleCall_0_1_0_1() { return cTypeElementDefIDTerminalRuleCall_0_1_0_1; }
+		//'»'
+		public Keyword getRightPointingDoubleAngleQuotationMarkKeyword_0_2() { return cRightPointingDoubleAngleQuotationMarkKeyword_0_2; }
+		
+		//value=Literal | => ref=ID
+		public Alternatives getAlternatives_1() { return cAlternatives_1; }
+		
+		//value=Literal
+		public Assignment getValueAssignment_1_0() { return cValueAssignment_1_0; }
+		
+		//Literal
+		public RuleCall getValueLiteralParserRuleCall_1_0_0() { return cValueLiteralParserRuleCall_1_0_0; }
 		
 		//=> ref=ID
-		public Assignment getRefAssignment_0_2() { return cRefAssignment_0_2; }
+		public Assignment getRefAssignment_1_1() { return cRefAssignment_1_1; }
 		
 		//ID
-		public RuleCall getRefIDTerminalRuleCall_0_2_0() { return cRefIDTerminalRuleCall_0_2_0; }
+		public RuleCall getRefIDTerminalRuleCall_1_1_0() { return cRefIDTerminalRuleCall_1_1_0; }
 		
 		//calls+=MemberCall*
-		public Assignment getCallsAssignment_1() { return cCallsAssignment_1; }
+		public Assignment getCallsAssignment_2() { return cCallsAssignment_2; }
 		
 		//MemberCall
-		public RuleCall getCallsMemberCallParserRuleCall_1_0() { return cCallsMemberCallParserRuleCall_1_0; }
+		public RuleCall getCallsMemberCallParserRuleCall_2_0() { return cCallsMemberCallParserRuleCall_2_0; }
 	}
 	public class MemberCallElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.MemberCall");
@@ -1191,13 +1192,13 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Assignment cCodeAssignment_2_0_1 = (Assignment)cGroup_2_0.eContents().get(1);
 		private final RuleCall cCodeTEXTTerminalRuleCall_2_0_1_0 = (RuleCall)cCodeAssignment_2_0_1.eContents().get(0);
 		private final Assignment cTypeAssignment_2_1 = (Assignment)cAlternatives_2.eContents().get(1);
-		private final RuleCall cTypeElementDefParserRuleCall_2_1_0 = (RuleCall)cTypeAssignment_2_1.eContents().get(0);
+		private final RuleCall cTypeTopDefParserRuleCall_2_1_0 = (RuleCall)cTypeAssignment_2_1.eContents().get(0);
 		
 		//TypeDef:
-		//	'typedef' name=ID (parser=('match' | 'mask') code=TEXT | type=ElementDef);
+		//	'typedef' name=ID (parser=('match' | 'mask') code=TEXT | type=TopDef);
 		@Override public ParserRule getRule() { return rule; }
 		
-		//'typedef' name=ID (parser=('match' | 'mask') code=TEXT | type=ElementDef)
+		//'typedef' name=ID (parser=('match' | 'mask') code=TEXT | type=TopDef)
 		public Group getGroup() { return cGroup; }
 		
 		//'typedef'
@@ -1209,7 +1210,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//ID
 		public RuleCall getNameIDTerminalRuleCall_1_0() { return cNameIDTerminalRuleCall_1_0; }
 		
-		//parser=('match' | 'mask') code=TEXT | type=ElementDef
+		//parser=('match' | 'mask') code=TEXT | type=TopDef
 		public Alternatives getAlternatives_2() { return cAlternatives_2; }
 		
 		//parser=('match' | 'mask') code=TEXT
@@ -1233,11 +1234,30 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//TEXT
 		public RuleCall getCodeTEXTTerminalRuleCall_2_0_1_0() { return cCodeTEXTTerminalRuleCall_2_0_1_0; }
 		
-		//type=ElementDef
+		//type=TopDef
 		public Assignment getTypeAssignment_2_1() { return cTypeAssignment_2_1; }
 		
+		//TopDef
+		public RuleCall getTypeTopDefParserRuleCall_2_1_0() { return cTypeTopDefParserRuleCall_2_1_0; }
+	}
+	public class TopDefElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.TopDef");
+		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
+		private final RuleCall cElementDefParserRuleCall_0 = (RuleCall)cAlternatives.eContents().get(0);
+		private final RuleCall cEnumDefParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
+		
+		//TopDef:
+		//	ElementDef | EnumDef;
+		@Override public ParserRule getRule() { return rule; }
+		
+		//ElementDef | EnumDef
+		public Alternatives getAlternatives() { return cAlternatives; }
+		
 		//ElementDef
-		public RuleCall getTypeElementDefParserRuleCall_2_1_0() { return cTypeElementDefParserRuleCall_2_1_0; }
+		public RuleCall getElementDefParserRuleCall_0() { return cElementDefParserRuleCall_0; }
+		
+		//EnumDef
+		public RuleCall getEnumDefParserRuleCall_1() { return cEnumDefParserRuleCall_1; }
 	}
 	public class ElementDefElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.ElementDef");
@@ -1249,16 +1269,14 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cRefDefinitionIDTerminalRuleCall_1_0_1 = (RuleCall)cRefDefinitionCrossReference_1_0.eContents().get(1);
 		private final RuleCall cListDefParserRuleCall_2 = (RuleCall)cAlternatives.eContents().get(2);
 		private final RuleCall cMapDefParserRuleCall_3 = (RuleCall)cAlternatives.eContents().get(3);
-		private final RuleCall cEnumDefParserRuleCall_4 = (RuleCall)cAlternatives.eContents().get(4);
 		
 		//ElementDef:
 		//	native=NativeDef
 		//	| ref=[Definition] | ListDef
-		//	| MapDef
-		//	| EnumDef;
+		//	| MapDef;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//native=NativeDef | ref=[Definition] | ListDef | MapDef | EnumDef
+		//native=NativeDef | ref=[Definition] | ListDef | MapDef
 		public Alternatives getAlternatives() { return cAlternatives; }
 		
 		//native=NativeDef
@@ -1281,9 +1299,6 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		
 		//MapDef
 		public RuleCall getMapDefParserRuleCall_3() { return cMapDefParserRuleCall_3; }
-		
-		//EnumDef
-		public RuleCall getEnumDefParserRuleCall_4() { return cEnumDefParserRuleCall_4; }
 	}
 	public class MapDefElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.MapDef");
@@ -2195,6 +2210,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	private final MemberCallElements pMemberCall;
 	private final DefinitionElements pDefinition;
 	private final TypeDefElements pTypeDef;
+	private final TopDefElements pTopDef;
 	private final ElementDefElements pElementDef;
 	private final MapDefElements pMapDef;
 	private final MapEntryDefElements pMapEntryDef;
@@ -2262,6 +2278,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		this.pMemberCall = new MemberCallElements();
 		this.pDefinition = new DefinitionElements();
 		this.pTypeDef = new TypeDefElements();
+		this.pTopDef = new TopDefElements();
 		this.pElementDef = new ElementDefElements();
 		this.pMapDef = new MapDefElements();
 		this.pMapEntryDef = new MapEntryDefElements();
@@ -2451,7 +2468,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//Var:
-	//	(let?='let' | var?='var') name=ID (typeExplicit?=':' type=ElementDef)? '=' result=ValueExpression;
+	//	(let?='let' | 'var') name=ID (typeExplicit?=':' type=ElementDef)? '=' result=ValueExpression;
 	public VarElements getVarAccess() {
 		return pVar;
 	}
@@ -2555,7 +2572,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//Primary:
-	//	(value=Literal | type=[ElementDef] | => ref=ID) calls+=MemberCall*;
+	//	('«' type=ElementDef '»')? (value=Literal | => ref=ID) calls+=MemberCall*;
 	public PrimaryElements getPrimaryAccess() {
 		return pPrimary;
 	}
@@ -2598,7 +2615,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//TypeDef:
-	//	'typedef' name=ID (parser=('match' | 'mask') code=TEXT | type=ElementDef);
+	//	'typedef' name=ID (parser=('match' | 'mask') code=TEXT | type=TopDef);
 	public TypeDefElements getTypeDefAccess() {
 		return pTypeDef;
 	}
@@ -2607,11 +2624,20 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		return getTypeDefAccess().getRule();
 	}
 	
+	//TopDef:
+	//	ElementDef | EnumDef;
+	public TopDefElements getTopDefAccess() {
+		return pTopDef;
+	}
+	
+	public ParserRule getTopDefRule() {
+		return getTopDefAccess().getRule();
+	}
+	
 	//ElementDef:
 	//	native=NativeDef
 	//	| ref=[Definition] | ListDef
-	//	| MapDef
-	//	| EnumDef;
+	//	| MapDef;
 	public ElementDefElements getElementDefAccess() {
 		return pElementDef;
 	}

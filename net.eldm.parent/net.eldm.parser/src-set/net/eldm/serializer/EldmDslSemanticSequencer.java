@@ -270,6 +270,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	
 	/**
 	 * Contexts:
+	 *     TopDef returns ElementDef
 	 *     ElementDef returns ElementDef
 	 *
 	 * Constraint:
@@ -282,7 +283,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	
 	/**
 	 * Contexts:
-	 *     ElementDef returns EnumDef
+	 *     TopDef returns EnumDef
 	 *     EnumDef returns EnumDef
 	 *
 	 * Constraint:
@@ -432,6 +433,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	
 	/**
 	 * Contexts:
+	 *     TopDef returns ListDef
 	 *     ElementDef returns ListDef
 	 *     ListDef returns ListDef
 	 *
@@ -464,6 +466,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	
 	/**
 	 * Contexts:
+	 *     TopDef returns MapDef
 	 *     ElementDef returns MapDef
 	 *     MapDef returns MapDef
 	 *
@@ -627,7 +630,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     Primary returns Primary
 	 *
 	 * Constraint:
-	 *     ((value=Literal | type=[ElementDef|ID] | ref=ID) calls+=MemberCall*)
+	 *     (type=ElementDef? (value=Literal | ref=ID) calls+=MemberCall*)
 	 */
 	protected void sequence_Primary(ISerializationContext context, Primary semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -729,7 +732,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     TypeDef returns TypeDef
 	 *
 	 * Constraint:
-	 *     (name=ID (((parser='match' | parser='mask') code=TEXT) | type=ElementDef))
+	 *     (name=ID (((parser='match' | parser='mask') code=TEXT) | type=TopDef))
 	 */
 	protected void sequence_TypeDef(ISerializationContext context, TypeDef semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -779,7 +782,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     Var returns Var
 	 *
 	 * Constraint:
-	 *     ((let?='let' | var?='var') name=ID (typeExplicit?=':' type=ElementDef)? result=ValueExpression)
+	 *     (let?='let'? name=ID (typeExplicit?=':' type=ElementDef)? result=ValueExpression)
 	 */
 	protected void sequence_Var(ISerializationContext context, Var semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);

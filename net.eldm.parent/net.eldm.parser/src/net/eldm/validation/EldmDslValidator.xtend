@@ -11,7 +11,6 @@ import net.eldm.eldmDsl.EldmDslPackage
 import net.eldm.eldmDsl.ElementDef
 import net.eldm.eldmDsl.EnumDef
 import net.eldm.eldmDsl.FuncDecl
-import net.eldm.eldmDsl.Function
 import net.eldm.eldmDsl.MapDef
 import net.eldm.eldmDsl.MapEntryDef
 import net.eldm.eldmDsl.MapLiteral
@@ -25,7 +24,6 @@ import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.validation.Check
 
 import static extension net.eldm.util.ValidationStack.*
-import net.eldm.eldmDsl.Primary
 
 /**
  * This class contains custom validation rules. 
@@ -42,10 +40,10 @@ class EldmDslValidator extends AbstractEldmDslValidator {
         tryFunc.apply
       pop
     } catch (ValidationError err) {
-      //err.printStackTrace
       println("COMPILER-ERROR: " + err.message)
       this.error(err.message, err.obj, null)
     } catch (Throwable ex) {
+      this.error("Internal compiler error. Please report this bug.", obj, null)
       ex.printStackTrace
     }
   }
@@ -67,7 +65,7 @@ class EldmDslValidator extends AbstractEldmDslValidator {
     
     val tRef = param.ref 
     if (tRef instanceof TypeDef)
-      if (tRef.type !== null)
+      if (tRef.type instanceof ElementDef)
         return (tRef.type as ElementDef).isMapDef
     
     //TODO: if (param.ref instanceof ExternalDef)
@@ -76,13 +74,14 @@ class EldmDslValidator extends AbstractEldmDslValidator {
   }
   
   /*TODO: required validations
+   * variables are only available in Function body
    * Verify the use of reserved keywords in map and enum entries
   */
   
   @Check
-  def void checkUnique(Module it) {
+  def void checkModule(Module it) {
+    // check unique definitions
     val uniques = new HashSet<String>
-    
     imports.filter[defs !== null].flatMap[defs].forEach[
       if(uniques.contains(name))
         error('''Multiple definitions with the same name.''', it, EldmDslPackage.Literals.EXTERNAL_DEF__REF)
@@ -93,6 +92,12 @@ class EldmDslValidator extends AbstractEldmDslValidator {
       if(uniques.contains(name))
         error('''Multiple definitions with the same name.''', it, EldmDslPackage.Literals.DEFINITION__NAME)
       uniques.add(name)
+    ]
+    
+    // variable defs are only available in Functions
+    eAllContents.filter(Var).forEach[
+      if (!let)
+        error('''Variables are only available in function bodies.''', it, EldmDslPackage.Literals.VAR__LET)
     ]
   }
   
@@ -105,24 +110,6 @@ class EldmDslValidator extends AbstractEldmDslValidator {
     
     if (result !== null && !result.isMapDef)
       error('''The result can only be a map definition.''', it, EldmDslPackage.Literals.FUNC_DECL__RESULT)
-  }
-  
-  @Check
-  def void checkFuncBody(Function func) {
-    val fParam = func.decl.param as MapDef
-    func.eAllContents.filter(Primary).forEach[
-      if (ref !== null) {
-        if (fParam !== null) {
-          val entry = fParam.getMapEntryDef(ref)
-          if (entry !== null) {
-            type = entry.entryType
-            return;
-          }
-        }
-        
-        error('''Couldn't resolve reference to parameter '«ref»'.''', it, EldmDslPackage.Literals.PRIMARY__REF)
-      }
-    ]
   }
   
   @Check
@@ -165,9 +152,7 @@ class EldmDslValidator extends AbstractEldmDslValidator {
       error('''Multiple keys with the same name [«keys.join(", ")»]''', it, EldmDslPackage.Literals.MAP_LITERAL__ENTRIES)
   }
   
-  // expensive checks ------------------------------------------------------------------------------------------------------
-  
-  @Check(NORMAL)
+  @Check
   def void checkEnumDef(EnumDef ed) {
     if (ed.type === null) {
       ed.defs.forEach[
@@ -183,7 +168,7 @@ class EldmDslValidator extends AbstractEldmDslValidator {
     ]
   }
   
-  @Check(NORMAL)
+  @Check
   def void checkVar(Var it) {
     tryValidation[
       val rType = result.inferType

@@ -71,7 +71,7 @@ BlockExpression: {BlockExpression}
   ;
   
     Var:
-      (let?='let' | var?='var') name=ID (typeExplicit?=':' type=ElementDef)? '=' result=ValueExpression
+      (let?='let' | 'var') name=ID (typeExplicit?=':' type=ElementDef)? '=' result=ValueExpression
     ;
   
 // the result expression must be equivalent to an immutable Literal
@@ -116,10 +116,7 @@ ValueExpression:
   ;
   
   Primary:
-    //value=Literal
-    //|=> (ref=[Identifier] |=> param=ID) (calls+=MemberCall)*
-    
-    (value=Literal | type=[ElementDef] |=> ref=ID) (calls+=MemberCall)*
+    ('«' type=ElementDef '»')?  (value=Literal |=> ref=ID) (calls+=MemberCall)*
   ;
    
     MemberCall: ('.'|nullSafe?='?.') member=ID;
@@ -149,17 +146,20 @@ Definition:
   TypeDef:
     'typedef' name=ID (
       (parser=('match' | 'mask') code=TEXT)
-      | type=ElementDef
+      | type=TopDef
     )
   ;
 
-ElementDef:
-  native=NativeDef
-  | ref=[Definition]
-  | ListDef
-  | MapDef
-  | EnumDef
+TopDef:
+  ElementDef | EnumDef
 ;
+
+  ElementDef:
+    native=NativeDef
+    | ref=[Definition]
+    | ListDef
+    | MapDef
+  ;
 
   MapDef:
     => ({MapDef} '{' (defs+=MapEntryDef (',' defs+=MapEntryDef)*)? (',' ext?='*')? '}')

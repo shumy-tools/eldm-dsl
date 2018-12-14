@@ -232,4 +232,25 @@ class TestDefinition {
         
     ''')
   }
+  
+  @Test
+  def void testFunction() {
+    ph.test('''
+      module /main/test
+      
+      definitions:
+        typedef Id { id: int }
+        
+        typedef Subject {
+          id: int
+          name?: str
+        }
+        
+        let id = 'text' // this is shadowed by internal scope
+        
+      def get /subject Id -> Subject:
+        let y = id is int
+        
+    ''')
+  }
 }

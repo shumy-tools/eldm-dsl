@@ -139,6 +139,10 @@ LeftCurlyBracket : '{';
 
 RightCurlyBracket : '}';
 
+LeftPointingDoubleAngleQuotationMark : '\u00AB';
+
+RightPointingDoubleAngleQuotationMark : '\u00BB';
+
 fragment RULE_BEGIN : ;
 
 fragment RULE_END : ;
