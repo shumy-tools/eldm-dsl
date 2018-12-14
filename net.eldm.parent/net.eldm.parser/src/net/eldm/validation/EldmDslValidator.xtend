@@ -8,7 +8,9 @@ import java.util.ArrayList
 import java.util.HashSet
 import java.util.List
 import net.eldm.eldmDsl.EldmDslPackage
+import net.eldm.eldmDsl.ElementDef
 import net.eldm.eldmDsl.EnumDef
+import net.eldm.eldmDsl.FuncDecl
 import net.eldm.eldmDsl.Function
 import net.eldm.eldmDsl.MapDef
 import net.eldm.eldmDsl.MapEntryDef
@@ -23,7 +25,7 @@ import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.validation.Check
 
 import static extension net.eldm.util.ValidationStack.*
-import net.eldm.eldmDsl.ElementDef
+import net.eldm.eldmDsl.Primary
 
 /**
  * This class contains custom validation rules. 
@@ -95,14 +97,33 @@ class EldmDslValidator extends AbstractEldmDslValidator {
   }
   
   @Check
-  def void checkFunction(Function it) {
-    if (decl.param !== null && !decl.param.isMapDef)
-      error('''The parameter can only be a map definition.''', it, EldmDslPackage.Literals.FUNCTION__DECL)
+  def void checkFuncDecl(FuncDecl it) {
+    //TODO: check unique name in the sub-path
     
-    if (decl.result !== null && !decl.result.isMapDef)
-      error('''The result can only be a map definition.''', it, EldmDslPackage.Literals.FUNCTION__DECL)
+    if (param !== null && !param.isMapDef)
+      error('''The parameter can only be a map definition.''', it, EldmDslPackage.Literals.FUNC_DECL__PARAM)
+    
+    if (result !== null && !result.isMapDef)
+      error('''The result can only be a map definition.''', it, EldmDslPackage.Literals.FUNC_DECL__RESULT)
   }
   
+  @Check
+  def void checkFuncBody(Function func) {
+    val fParam = func.decl.param as MapDef
+    func.eAllContents.filter(Primary).forEach[
+      if (ref !== null) {
+        if (fParam !== null) {
+          val entry = fParam.getMapEntryDef(ref)
+          if (entry !== null) {
+            type = entry.entryType
+            return;
+          }
+        }
+        
+        error('''Couldn't resolve reference to parameter '«ref»'.''', it, EldmDslPackage.Literals.PRIMARY__REF)
+      }
+    ]
+  }
   
   @Check
   def void checkVarCase(Var it) {
@@ -144,7 +165,9 @@ class EldmDslValidator extends AbstractEldmDslValidator {
       error('''Multiple keys with the same name [«keys.join(", ")»]''', it, EldmDslPackage.Literals.MAP_LITERAL__ENTRIES)
   }
   
-  @Check
+  // expensive checks ------------------------------------------------------------------------------------------------------
+  
+  @Check(NORMAL)
   def void checkEnumDef(EnumDef ed) {
     if (ed.type === null) {
       ed.defs.forEach[
@@ -160,7 +183,7 @@ class EldmDslValidator extends AbstractEldmDslValidator {
     ]
   }
   
-  @Check
+  @Check(NORMAL)
   def void checkVar(Var it) {
     tryValidation[
       val rType = result.inferType

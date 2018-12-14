@@ -116,8 +116,10 @@ ValueExpression:
   ;
   
   Primary:
-    value=Literal
-    |=> ref=[Identifier] (calls+=MemberCall)*
+    //value=Literal
+    //|=> (ref=[Identifier] |=> param=ID) (calls+=MemberCall)*
+    
+    (value=Literal | type=[ElementDef] |=> ref=ID) (calls+=MemberCall)*
   ;
    
     MemberCall: ('.'|nullSafe?='?.') member=ID;

@@ -1895,30 +1895,26 @@ rulePrimary returns [EObject current=null]
 	(
 		(
 			(
-				{
-					newCompositeNode(grammarAccess.getPrimaryAccess().getValueLiteralParserRuleCall_0_0());
-				}
-				lv_value_0_0=ruleLiteral
-				{
-					if ($current==null) {
-						$current = createModelElementForParent(grammarAccess.getPrimaryRule());
+				(
+					{
+						newCompositeNode(grammarAccess.getPrimaryAccess().getValueLiteralParserRuleCall_0_0_0());
 					}
-					set(
-						$current,
-						"value",
-						lv_value_0_0,
-						"net.eldm.EldmDsl.Literal");
-					afterParserOrEnumRuleCall();
-				}
-			)
-		)
-		    |
-		(
-			(
-				((
-					RULE_ID
+					lv_value_0_0=ruleLiteral
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getPrimaryRule());
+						}
+						set(
+							$current,
+							"value",
+							lv_value_0_0,
+							"net.eldm.EldmDsl.Literal");
+						afterParserOrEnumRuleCall();
+					}
 				)
-				)=>
+			)
+			    |
+			(
 				(
 					{
 						if ($current==null) {
@@ -1927,30 +1923,53 @@ rulePrimary returns [EObject current=null]
 					}
 					otherlv_1=RULE_ID
 					{
-						newLeafNode(otherlv_1, grammarAccess.getPrimaryAccess().getRefIdentifierCrossReference_1_0_0());
+						newLeafNode(otherlv_1, grammarAccess.getPrimaryAccess().getTypeElementDefCrossReference_0_1_0());
 					}
 				)
 			)
+			    |
 			(
+				((
+					RULE_ID
+				)
+				)=>
 				(
+					lv_ref_2_0=RULE_ID
 					{
-						newCompositeNode(grammarAccess.getPrimaryAccess().getCallsMemberCallParserRuleCall_1_1_0());
+						newLeafNode(lv_ref_2_0, grammarAccess.getPrimaryAccess().getRefIDTerminalRuleCall_0_2_0());
 					}
-					lv_calls_2_0=ruleMemberCall
 					{
 						if ($current==null) {
-							$current = createModelElementForParent(grammarAccess.getPrimaryRule());
+							$current = createModelElement(grammarAccess.getPrimaryRule());
 						}
-						add(
+						setWithLastConsumed(
 							$current,
-							"calls",
-							lv_calls_2_0,
-							"net.eldm.EldmDsl.MemberCall");
-						afterParserOrEnumRuleCall();
+							"ref",
+							lv_ref_2_0,
+							"net.eldm.EldmDsl.ID");
 					}
 				)
-			)*
+			)
 		)
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getPrimaryAccess().getCallsMemberCallParserRuleCall_1_0());
+				}
+				lv_calls_3_0=ruleMemberCall
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getPrimaryRule());
+					}
+					add(
+						$current,
+						"calls",
+						lv_calls_3_0,
+						"net.eldm.EldmDsl.MemberCall");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)*
 	)
 ;
 

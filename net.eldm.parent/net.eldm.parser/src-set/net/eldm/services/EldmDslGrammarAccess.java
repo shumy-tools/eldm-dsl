@@ -431,7 +431,6 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cFuncsFunctionParserRuleCall_3_0 = (RuleCall)cFuncsAssignment_3.eContents().get(0);
 		private final RuleCall cENDTerminalRuleCall_4 = (RuleCall)cGroup.eContents().get(4);
 		
-		////TODO: support error handling -> catch param=ParamDef? ':' body=BlockExpression
 		//SubPath:
 		//	'def' path=PathLiteral
 		//	BEGIN
@@ -1058,47 +1057,57 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	public class PrimaryElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.Primary");
-		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
-		private final Assignment cValueAssignment_0 = (Assignment)cAlternatives.eContents().get(0);
-		private final RuleCall cValueLiteralParserRuleCall_0_0 = (RuleCall)cValueAssignment_0.eContents().get(0);
-		private final Group cGroup_1 = (Group)cAlternatives.eContents().get(1);
-		private final Assignment cRefAssignment_1_0 = (Assignment)cGroup_1.eContents().get(0);
-		private final CrossReference cRefIdentifierCrossReference_1_0_0 = (CrossReference)cRefAssignment_1_0.eContents().get(0);
-		private final RuleCall cRefIdentifierIDTerminalRuleCall_1_0_0_1 = (RuleCall)cRefIdentifierCrossReference_1_0_0.eContents().get(1);
-		private final Assignment cCallsAssignment_1_1 = (Assignment)cGroup_1.eContents().get(1);
-		private final RuleCall cCallsMemberCallParserRuleCall_1_1_0 = (RuleCall)cCallsAssignment_1_1.eContents().get(0);
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Alternatives cAlternatives_0 = (Alternatives)cGroup.eContents().get(0);
+		private final Assignment cValueAssignment_0_0 = (Assignment)cAlternatives_0.eContents().get(0);
+		private final RuleCall cValueLiteralParserRuleCall_0_0_0 = (RuleCall)cValueAssignment_0_0.eContents().get(0);
+		private final Assignment cTypeAssignment_0_1 = (Assignment)cAlternatives_0.eContents().get(1);
+		private final CrossReference cTypeElementDefCrossReference_0_1_0 = (CrossReference)cTypeAssignment_0_1.eContents().get(0);
+		private final RuleCall cTypeElementDefIDTerminalRuleCall_0_1_0_1 = (RuleCall)cTypeElementDefCrossReference_0_1_0.eContents().get(1);
+		private final Assignment cRefAssignment_0_2 = (Assignment)cAlternatives_0.eContents().get(2);
+		private final RuleCall cRefIDTerminalRuleCall_0_2_0 = (RuleCall)cRefAssignment_0_2.eContents().get(0);
+		private final Assignment cCallsAssignment_1 = (Assignment)cGroup.eContents().get(1);
+		private final RuleCall cCallsMemberCallParserRuleCall_1_0 = (RuleCall)cCallsAssignment_1.eContents().get(0);
 		
 		//Primary:
-		//	value=Literal
-		//	| => ref=[Identifier] calls+=MemberCall*;
+		//	(value=Literal | type=[ElementDef] | => ref=ID) calls+=MemberCall*;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//value=Literal | => ref=[Identifier] calls+=MemberCall*
-		public Alternatives getAlternatives() { return cAlternatives; }
+		//(value=Literal | type=[ElementDef] | => ref=ID) calls+=MemberCall*
+		public Group getGroup() { return cGroup; }
+		
+		////value=Literal
+		////|=> (ref=[Identifier] |=> param=ID) (calls+=MemberCall)*
+		//// better -> (value=Literal | ref=ID) type=[ElementDef]? (calls+=MemberCall)*
+		//value=Literal | type=[ElementDef] | => ref=ID
+		public Alternatives getAlternatives_0() { return cAlternatives_0; }
 		
 		//value=Literal
-		public Assignment getValueAssignment_0() { return cValueAssignment_0; }
+		public Assignment getValueAssignment_0_0() { return cValueAssignment_0_0; }
 		
 		//Literal
-		public RuleCall getValueLiteralParserRuleCall_0_0() { return cValueLiteralParserRuleCall_0_0; }
+		public RuleCall getValueLiteralParserRuleCall_0_0_0() { return cValueLiteralParserRuleCall_0_0_0; }
 		
-		//=> ref=[Identifier] calls+=MemberCall*
-		public Group getGroup_1() { return cGroup_1; }
+		//type=[ElementDef]
+		public Assignment getTypeAssignment_0_1() { return cTypeAssignment_0_1; }
 		
-		//=> ref=[Identifier]
-		public Assignment getRefAssignment_1_0() { return cRefAssignment_1_0; }
-		
-		//[Identifier]
-		public CrossReference getRefIdentifierCrossReference_1_0_0() { return cRefIdentifierCrossReference_1_0_0; }
+		//[ElementDef]
+		public CrossReference getTypeElementDefCrossReference_0_1_0() { return cTypeElementDefCrossReference_0_1_0; }
 		
 		//ID
-		public RuleCall getRefIdentifierIDTerminalRuleCall_1_0_0_1() { return cRefIdentifierIDTerminalRuleCall_1_0_0_1; }
+		public RuleCall getTypeElementDefIDTerminalRuleCall_0_1_0_1() { return cTypeElementDefIDTerminalRuleCall_0_1_0_1; }
+		
+		//=> ref=ID
+		public Assignment getRefAssignment_0_2() { return cRefAssignment_0_2; }
+		
+		//ID
+		public RuleCall getRefIDTerminalRuleCall_0_2_0() { return cRefIDTerminalRuleCall_0_2_0; }
 		
 		//calls+=MemberCall*
-		public Assignment getCallsAssignment_1_1() { return cCallsAssignment_1_1; }
+		public Assignment getCallsAssignment_1() { return cCallsAssignment_1; }
 		
 		//MemberCall
-		public RuleCall getCallsMemberCallParserRuleCall_1_1_0() { return cCallsMemberCallParserRuleCall_1_1_0; }
+		public RuleCall getCallsMemberCallParserRuleCall_1_0() { return cCallsMemberCallParserRuleCall_1_0; }
 	}
 	public class MemberCallElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.MemberCall");
@@ -2392,7 +2401,6 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		return getFuncDeclAccess().getRule();
 	}
 	
-	////TODO: support error handling -> catch param=ParamDef? ':' body=BlockExpression
 	//SubPath:
 	//	'def' path=PathLiteral
 	//	BEGIN
@@ -2547,8 +2555,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//Primary:
-	//	value=Literal
-	//	| => ref=[Identifier] calls+=MemberCall*;
+	//	(value=Literal | type=[ElementDef] | => ref=ID) calls+=MemberCall*;
 	public PrimaryElements getPrimaryAccess() {
 		return pPrimary;
 	}

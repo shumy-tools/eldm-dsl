@@ -121,14 +121,14 @@ class TypeValidator {
   }
   
   
-  private def contains(MapDef type, String id) {
+  def contains(MapDef type, String id) {
     for (entry : type.defs)
       if (entry.name == id)
         return true
     return false
   }
   
-  private def getMapEntryDef(MapDef type, String id) {
+  def getMapEntryDef(MapDef type, String id) {
     for (it : type.defs)
       if (name == id)
         return it

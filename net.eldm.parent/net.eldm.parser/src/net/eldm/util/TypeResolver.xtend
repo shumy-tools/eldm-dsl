@@ -46,7 +46,9 @@ class TypeResolver {
         val inferred = if (exp.value !== null) {
           exp.value.inferType
         } else if (exp.ref !== null) {
-          switch exp.ref {
+          //TODO: search for identifier | parameter ? Rewrite checkFuncBody on EldmDslValidator
+          
+          /*switch exp.ref {
             Var: {
               val lType = (exp.ref as Var).varType
               if (exp.calls.empty)
@@ -55,11 +57,9 @@ class TypeResolver {
                 error("Calls not yet supported") //TODO: infer target type
             }
             
-            //TODO: infer parameter!
-            
             default:
               error('''Failed to infer. Non recognized Identifier: «exp.ref.class.simpleName»! Please report this bug.''')
-          }
+          }*/
         } else
           error('''Failed to infer ValueExpression! Path not recognized. Please report this bug.''')
         
