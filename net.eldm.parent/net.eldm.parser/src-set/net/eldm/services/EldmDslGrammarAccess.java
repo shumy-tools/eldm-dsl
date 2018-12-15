@@ -532,8 +532,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final Assignment cNameAssignment_1 = (Assignment)cGroup.eContents().get(1);
 		private final RuleCall cNameIDTerminalRuleCall_1_0 = (RuleCall)cNameAssignment_1.eContents().get(0);
 		private final Group cGroup_2 = (Group)cGroup.eContents().get(2);
-		private final Assignment cTypeExplicitAssignment_2_0 = (Assignment)cGroup_2.eContents().get(0);
-		private final Keyword cTypeExplicitColonKeyword_2_0_0 = (Keyword)cTypeExplicitAssignment_2_0.eContents().get(0);
+		private final Keyword cColonKeyword_2_0 = (Keyword)cGroup_2.eContents().get(0);
 		private final Assignment cTypeAssignment_2_1 = (Assignment)cGroup_2.eContents().get(1);
 		private final RuleCall cTypeElementDefParserRuleCall_2_1_0 = (RuleCall)cTypeAssignment_2_1.eContents().get(0);
 		private final Keyword cEqualsSignKeyword_3 = (Keyword)cGroup.eContents().get(3);
@@ -541,10 +540,10 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cResultValueExpressionParserRuleCall_4_0 = (RuleCall)cResultAssignment_4.eContents().get(0);
 		
 		//Var:
-		//	(let?='let' | 'var') name=ID (typeExplicit?=':' type=ElementDef)? '=' result=ValueExpression;
+		//	(let?='let' | 'var') name=ID (':' type=ElementDef)? '=' result=ValueExpression;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//(let?='let' | 'var') name=ID (typeExplicit?=':' type=ElementDef)? '=' result=ValueExpression
+		//(let?='let' | 'var') name=ID (':' type=ElementDef)? '=' result=ValueExpression
 		public Group getGroup() { return cGroup; }
 		
 		//let?='let' | 'var'
@@ -565,14 +564,11 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//ID
 		public RuleCall getNameIDTerminalRuleCall_1_0() { return cNameIDTerminalRuleCall_1_0; }
 		
-		//(typeExplicit?=':' type=ElementDef)?
+		//(':' type=ElementDef)?
 		public Group getGroup_2() { return cGroup_2; }
 		
-		//typeExplicit?=':'
-		public Assignment getTypeExplicitAssignment_2_0() { return cTypeExplicitAssignment_2_0; }
-		
 		//':'
-		public Keyword getTypeExplicitColonKeyword_2_0_0() { return cTypeExplicitColonKeyword_2_0_0; }
+		public Keyword getColonKeyword_2_0() { return cColonKeyword_2_0; }
 		
 		//type=ElementDef
 		public Assignment getTypeAssignment_2_1() { return cTypeAssignment_2_1; }
@@ -1068,10 +1064,10 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cCallsMemberCallParserRuleCall_2_0 = (RuleCall)cCallsAssignment_2.eContents().get(0);
 		
 		//Primary:
-		//	('«' type=ElementDef '»')? (value=Literal | => ref=ID) calls+=MemberCall*;
+		//	('«' type=ElementDef '»')? (value=Literal | ref=ID) calls+=MemberCall*;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//('«' type=ElementDef '»')? (value=Literal | => ref=ID) calls+=MemberCall*
+		//('«' type=ElementDef '»')? (value=Literal | ref=ID) calls+=MemberCall*
 		public Group getGroup() { return cGroup; }
 		
 		//('«' type=ElementDef '»')?
@@ -1089,7 +1085,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//'»'
 		public Keyword getRightPointingDoubleAngleQuotationMarkKeyword_0_2() { return cRightPointingDoubleAngleQuotationMarkKeyword_0_2; }
 		
-		//value=Literal | => ref=ID
+		//value=Literal | ref=ID
 		public Alternatives getAlternatives_1() { return cAlternatives_1; }
 		
 		//value=Literal
@@ -1098,7 +1094,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//Literal
 		public RuleCall getValueLiteralParserRuleCall_1_0_0() { return cValueLiteralParserRuleCall_1_0_0; }
 		
-		//=> ref=ID
+		//ref=ID
 		public Assignment getRefAssignment_1_1() { return cRefAssignment_1_1; }
 		
 		//ID
@@ -2468,7 +2464,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//Var:
-	//	(let?='let' | 'var') name=ID (typeExplicit?=':' type=ElementDef)? '=' result=ValueExpression;
+	//	(let?='let' | 'var') name=ID (':' type=ElementDef)? '=' result=ValueExpression;
 	public VarElements getVarAccess() {
 		return pVar;
 	}
@@ -2572,7 +2568,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//Primary:
-	//	('«' type=ElementDef '»')? (value=Literal | => ref=ID) calls+=MemberCall*;
+	//	('«' type=ElementDef '»')? (value=Literal | ref=ID) calls+=MemberCall*;
 	public PrimaryElements getPrimaryAccess() {
 		return pPrimary;
 	}

@@ -252,6 +252,7 @@ class TestDefinition {
         let y = id is int
         let a = { id: 10 }
         let b = a set { name: 'Alex' }
+        let c: int = a.id + 10
         
     ''')
   }

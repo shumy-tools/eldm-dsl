@@ -18,14 +18,41 @@ import static net.eldm.util.ValidationStack.*
 class IdentifierResolver {
   @Inject extension TypeResolver tResolver
   
-  def ElementDef resolveIdentifier(Primary pr) {
+  def ElementDef resolve(Primary pr) {
+    var type = if (pr.value !== null)
+      pr.value.inferType
+    else if (pr.ref !== null)
+      pr.resolve(pr.ref)
+    else
+      error('''Failed to infer Primary type! Please report this bug.''')
+    
+    // resolve member calls
+    var mDef = type.mapDef
+    for (it : pr.calls) {
+      if (mDef === null)
+        error('''Couldn't resolve reference '«member»'.''')
+      
+      val entry = mDef.getMapEntry(member)
+      if (entry === null)
+        error('''Couldn't resolve reference '«member»'.''')
+      
+      //TODO: optional entry and nullSafe call!
+      
+      type = entry.type
+      mDef = type.mapDef
+    }
+    
+    return type
+  }
+  
+  def ElementDef resolve(EObject item, String id) {
     // search in recursive function blocks
-    var EObject block = pr
+    var EObject block = item
     do {
       block = block.findContainer(BlockExpression)
       if (block !== null) {
         // try search in expression block
-        val type = block.resolveVar(pr.ref)
+        val type = block.resolveVar(id)
         if (type !== null)
           return type
         
@@ -34,24 +61,23 @@ class IdentifierResolver {
         if (func instanceof Function) {
           val fParam = func.decl.param.mapDef
           if (fParam !== null) {
-              val entry = fParam.getMapEntryDef(pr.ref)
-              if (entry !== null)
-                return entry.entryType
+            val entry = fParam.getMapEntry(id)
+            if (entry !== null)
+              return entry.entryType 
           }
         }
       } else {
         // try search in module
-        val mod = pr.findContainer(Module)
+        val mod = item.findContainer(Module)
         if (mod !== null) {
-          val type = mod.resolveVar(pr.ref)
+          val type = mod.resolveVar(id)
           if (type !== null)
             return type
         }
       }
     } while (block !== null)
     
-    error('''Couldn't resolve reference '«pr.ref»'.''')
-    return null;
+    error('''Couldn't resolve reference '«id»'.''')
   }
   
   def ElementDef resolveVar(EObject obj, String id) {
@@ -61,6 +87,8 @@ class IdentifierResolver {
     
     if (ident !== null)
       return ident.varType
+    
+    return null
   }
   
   def <T extends EObject> T findContainer(EObject leaf, Class<T> type) {
@@ -84,11 +112,10 @@ class IdentifierResolver {
         return (tRef.type as ElementDef).mapDef
     
     //TODO: if (param.ref instanceof ExternalDef)
-    error('''Couldn't resolve MapDef! Please report this bug.''')
     return null
   }
   
-  def getMapEntryDef(MapDef type, String id) {
+  def getMapEntry(MapDef type, String id) {
     for (it : type.defs)
       if (name == id)
         return it

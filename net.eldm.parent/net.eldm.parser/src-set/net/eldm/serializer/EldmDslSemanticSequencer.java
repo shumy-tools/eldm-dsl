@@ -782,7 +782,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     Var returns Var
 	 *
 	 * Constraint:
-	 *     (let?='let'? name=ID (typeExplicit?=':' type=ElementDef)? result=ValueExpression)
+	 *     (let?='let'? name=ID type=ElementDef? result=ValueExpression)
 	 */
 	protected void sequence_Var(ISerializationContext context, Var semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);

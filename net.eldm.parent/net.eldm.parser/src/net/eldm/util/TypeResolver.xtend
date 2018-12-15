@@ -39,16 +39,7 @@ class TypeResolver {
   }
   
   def getPrimaryType(Primary pr) {
-    return pr.type ?: {
-      if (pr.value !== null) {
-        pr.type = pr.value.inferType
-        pr.type
-      } else if (pr.ref !== null) {
-        pr.type = pr.resolveIdentifier
-        pr.type
-      } else
-        error('''Failed to infer Primary type! Please report this bug.''')
-    }
+    return pr.type ?: { pr.type = pr.resolve; pr.type }
   }
   
   def ElementDef inferType(ValueExpression exp) {

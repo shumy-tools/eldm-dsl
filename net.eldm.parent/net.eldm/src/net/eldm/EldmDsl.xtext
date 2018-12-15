@@ -71,7 +71,7 @@ BlockExpression: {BlockExpression}
   ;
   
     Var:
-      (let?='let' | 'var') name=ID (typeExplicit?=':' type=ElementDef)? '=' result=ValueExpression
+      (let?='let' | 'var') name=ID (':' type=ElementDef)? '=' result=ValueExpression
     ;
   
 // the result expression must be equivalent to an immutable Literal
@@ -116,7 +116,7 @@ ValueExpression:
   ;
   
   Primary:
-    ('«' type=ElementDef '»')?  (value=Literal |=> ref=ID) (calls+=MemberCall)*
+    ('«' type=ElementDef '»')?  (value=Literal | ref=ID) (calls+=MemberCall)*
   ;
    
     MemberCall: ('.'|nullSafe?='?.') member=ID;

@@ -67,7 +67,7 @@ class TypeValidator {
   def void inMap(MapDef inferred, MapDef superDef) {
     // invalid KeyDef sets!
     for(entry : inferred.defs) {
-      val kd = superDef.getMapEntryDef(entry.name)
+      val kd = superDef.getMapEntry(entry.name)
       if (kd === null) {
         if (!superDef.ext) 
           error('''Key '«entry.name»' does not exist.''')
@@ -123,6 +123,6 @@ class TypeValidator {
   }
   
   def contains(MapDef type, String id) {
-    return type.getMapEntryDef(id) !== null
+    return type.getMapEntry(id) !== null
   }
 }

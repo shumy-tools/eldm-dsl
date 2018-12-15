@@ -963,20 +963,10 @@ ruleVar returns [EObject current=null]
 			)
 		)
 		(
-			(
-				(
-					lv_typeExplicit_3_0=Colon
-					{
-						newLeafNode(lv_typeExplicit_3_0, grammarAccess.getVarAccess().getTypeExplicitColonKeyword_2_0_0());
-					}
-					{
-						if ($current==null) {
-							$current = createModelElement(grammarAccess.getVarRule());
-						}
-						setWithLastConsumed($current, "typeExplicit", true, ":");
-					}
-				)
-			)
+			otherlv_3=Colon
+			{
+				newLeafNode(otherlv_3, grammarAccess.getVarAccess().getColonKeyword_2_0());
+			}
 			(
 				(
 					{
@@ -1934,10 +1924,6 @@ rulePrimary returns [EObject current=null]
 			)
 			    |
 			(
-				((
-					RULE_ID
-				)
-				)=>
 				(
 					lv_ref_4_0=RULE_ID
 					{
