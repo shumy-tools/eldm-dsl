@@ -4,6 +4,10 @@ generate eldmDsl "http://www.eldm.net/EldmDsl"
 
 import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
+//TODO: other nice features
+// 1. add ways to control the generation output, similar to xtend Active Annotations
+// 2. add debug code (only generated in debug build), i.e: #[debug] println("Debug!")
+
 // ------------------------------------------------------------------------------------------------------------------------------
 // Module Header
 // ------------------------------------------------------------------------------------------------------------------------------
@@ -43,8 +47,9 @@ Function:
 ;
 
   FuncDecl:
-    type='catch' param=ElementDef? ':'
-    | type='def' srv?='service'? (get?='get' | 'set') path=PathLiteral? param=ElementDef? ('->' result=ElementDef)? ':'
+    //TODO: add pre-conditions/post-conditions
+    (type='catch' param=ElementDef?
+    | type='def' srv?='service'? (get?='get' | 'set') path=PathLiteral? param=ElementDef? ('->' result=ElementDef)?) ':'
   ;
 
 SubPath:
@@ -116,10 +121,10 @@ ValueExpression:
   ;
   
   Primary:
-    ('«' type=ElementDef '»')?  (value=Literal | ref=ID) (calls+=MemberCall)*
+    (value=Literal | ('«' type=ElementDef '»')? ref=ID) (calls+=MemberCall)*
   ;
    
-    MemberCall: ('.'|nullSafe?='?.') member=ID;
+    MemberCall: ('.'|unknown?='*.') member=ID;
 
 /*
 OperationCall:

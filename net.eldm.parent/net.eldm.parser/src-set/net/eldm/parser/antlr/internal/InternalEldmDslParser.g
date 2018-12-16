@@ -1874,41 +1874,12 @@ rulePrimary returns [EObject current=null]
 }:
 	(
 		(
-			otherlv_0=LeftPointingDoubleAngleQuotationMark
-			{
-				newLeafNode(otherlv_0, grammarAccess.getPrimaryAccess().getLeftPointingDoubleAngleQuotationMarkKeyword_0_0());
-			}
 			(
 				(
 					{
-						newCompositeNode(grammarAccess.getPrimaryAccess().getTypeElementDefParserRuleCall_0_1_0());
+						newCompositeNode(grammarAccess.getPrimaryAccess().getValueLiteralParserRuleCall_0_0_0());
 					}
-					lv_type_1_0=ruleElementDef
-					{
-						if ($current==null) {
-							$current = createModelElementForParent(grammarAccess.getPrimaryRule());
-						}
-						set(
-							$current,
-							"type",
-							lv_type_1_0,
-							"net.eldm.EldmDsl.ElementDef");
-						afterParserOrEnumRuleCall();
-					}
-				)
-			)
-			otherlv_2=RightPointingDoubleAngleQuotationMark
-			{
-				newLeafNode(otherlv_2, grammarAccess.getPrimaryAccess().getRightPointingDoubleAngleQuotationMarkKeyword_0_2());
-			}
-		)?
-		(
-			(
-				(
-					{
-						newCompositeNode(grammarAccess.getPrimaryAccess().getValueLiteralParserRuleCall_1_0_0());
-					}
-					lv_value_3_0=ruleLiteral
+					lv_value_0_0=ruleLiteral
 					{
 						if ($current==null) {
 							$current = createModelElementForParent(grammarAccess.getPrimaryRule());
@@ -1916,7 +1887,7 @@ rulePrimary returns [EObject current=null]
 						set(
 							$current,
 							"value",
-							lv_value_3_0,
+							lv_value_0_0,
 							"net.eldm.EldmDsl.Literal");
 						afterParserOrEnumRuleCall();
 					}
@@ -1925,27 +1896,58 @@ rulePrimary returns [EObject current=null]
 			    |
 			(
 				(
-					lv_ref_4_0=RULE_ID
+					otherlv_1=LeftPointingDoubleAngleQuotationMark
 					{
-						newLeafNode(lv_ref_4_0, grammarAccess.getPrimaryAccess().getRefIDTerminalRuleCall_1_1_0());
+						newLeafNode(otherlv_1, grammarAccess.getPrimaryAccess().getLeftPointingDoubleAngleQuotationMarkKeyword_0_1_0_0());
 					}
+					(
+						(
+							{
+								newCompositeNode(grammarAccess.getPrimaryAccess().getTypeElementDefParserRuleCall_0_1_0_1_0());
+							}
+							lv_type_2_0=ruleElementDef
+							{
+								if ($current==null) {
+									$current = createModelElementForParent(grammarAccess.getPrimaryRule());
+								}
+								set(
+									$current,
+									"type",
+									lv_type_2_0,
+									"net.eldm.EldmDsl.ElementDef");
+								afterParserOrEnumRuleCall();
+							}
+						)
+					)
+					otherlv_3=RightPointingDoubleAngleQuotationMark
 					{
-						if ($current==null) {
-							$current = createModelElement(grammarAccess.getPrimaryRule());
+						newLeafNode(otherlv_3, grammarAccess.getPrimaryAccess().getRightPointingDoubleAngleQuotationMarkKeyword_0_1_0_2());
+					}
+				)?
+				(
+					(
+						lv_ref_4_0=RULE_ID
+						{
+							newLeafNode(lv_ref_4_0, grammarAccess.getPrimaryAccess().getRefIDTerminalRuleCall_0_1_1_0());
 						}
-						setWithLastConsumed(
-							$current,
-							"ref",
-							lv_ref_4_0,
-							"net.eldm.EldmDsl.ID");
-					}
+						{
+							if ($current==null) {
+								$current = createModelElement(grammarAccess.getPrimaryRule());
+							}
+							setWithLastConsumed(
+								$current,
+								"ref",
+								lv_ref_4_0,
+								"net.eldm.EldmDsl.ID");
+						}
+					)
 				)
 			)
 		)
 		(
 			(
 				{
-					newCompositeNode(grammarAccess.getPrimaryAccess().getCallsMemberCallParserRuleCall_2_0());
+					newCompositeNode(grammarAccess.getPrimaryAccess().getCallsMemberCallParserRuleCall_1_0());
 				}
 				lv_calls_5_0=ruleMemberCall
 				{
@@ -1988,15 +1990,15 @@ ruleMemberCall returns [EObject current=null]
 			    |
 			(
 				(
-					lv_nullSafe_1_0=QuestionMarkFullStop
+					lv_unknown_1_0=AsteriskFullStop
 					{
-						newLeafNode(lv_nullSafe_1_0, grammarAccess.getMemberCallAccess().getNullSafeQuestionMarkFullStopKeyword_0_1_0());
+						newLeafNode(lv_unknown_1_0, grammarAccess.getMemberCallAccess().getUnknownAsteriskFullStopKeyword_0_1_0());
 					}
 					{
 						if ($current==null) {
 							$current = createModelElement(grammarAccess.getMemberCallRule());
 						}
-						setWithLastConsumed($current, "nullSafe", true, "?.");
+						setWithLastConsumed($current, "unknown", true, "*.");
 					}
 				)
 			)

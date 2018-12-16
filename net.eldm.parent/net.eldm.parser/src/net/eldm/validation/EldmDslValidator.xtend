@@ -170,9 +170,10 @@ class EldmDslValidator extends AbstractEldmDslValidator {
   
   @Check
   def void checkVar(Var it) {
+    val x = it
     tryValidation[
-      val rType = result.inferType
-      rType.inElement(type)
+      val rType = x.result.inferType
+      rType.inElement(x.type)
     ]
   }
 }

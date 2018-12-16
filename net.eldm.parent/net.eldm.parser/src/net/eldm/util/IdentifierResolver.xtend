@@ -3,6 +3,7 @@ package net.eldm.util
 import com.google.inject.Inject
 import com.google.inject.Singleton
 import net.eldm.eldmDsl.BlockExpression
+import net.eldm.eldmDsl.EldmDslFactory
 import net.eldm.eldmDsl.ElementDef
 import net.eldm.eldmDsl.Function
 import net.eldm.eldmDsl.MapDef
@@ -14,11 +15,13 @@ import org.eclipse.emf.ecore.EObject
 
 import static net.eldm.util.ValidationStack.*
 
+import static extension net.eldm.spi.Natives.*
+
 @Singleton
 class IdentifierResolver {
   @Inject extension TypeResolver tResolver
   
-  def ElementDef resolve(Primary pr) {
+  def void resolve(Primary pr) {
     var type = if (pr.value !== null)
       pr.value.inferType
     else if (pr.ref !== null)
@@ -29,6 +32,15 @@ class IdentifierResolver {
     // resolve member calls
     var mDef = type.mapDef
     for (it : pr.calls) {
+      if (unknown && type.nativeType == MAP) {
+        pr.type = pr.type ?: { // use cast if exists
+          val eFact = EldmDslFactory.eINSTANCE
+          eFact.createElementDef => [ native = ANY ]
+        }
+        
+        return;
+      }
+      
       if (mDef === null)
         error('''Couldn't resolve reference '«member»'.''')
       
@@ -36,23 +48,24 @@ class IdentifierResolver {
       if (entry === null)
         error('''Couldn't resolve reference '«member»'.''')
       
-      //TODO: optional entry and nullSafe call!
-      
-      type = entry.type
+      type = entry.entryType
       mDef = type.mapDef
     }
     
-    return type
+    pr.type = pr.type ?: type // use cast if exists
   }
   
-  def ElementDef resolve(EObject item, String id) {
+  def ElementDef resolve(EObject leaf, String id) {
+    // TODO: or any other identifier container that can be referenced!
+    val leafCont = leaf.findContainer(Var)
+    
     // search in recursive function blocks
-    var EObject block = item
+    var EObject block = leaf
     do {
       block = block.findContainer(BlockExpression)
       if (block !== null) {
         // try search in expression block
-        val type = block.resolveVar(id)
+        val type = block.resolveIdentifier(leafCont, id)
         if (type !== null)
           return type
         
@@ -63,14 +76,14 @@ class IdentifierResolver {
           if (fParam !== null) {
             val entry = fParam.getMapEntry(id)
             if (entry !== null)
-              return entry.entryType 
+              return entry.entryType
           }
         }
       } else {
-        // try search in module
-        val mod = item.findContainer(Module)
+        // try search in module block
+        val mod = leaf.findContainer(Module)
         if (mod !== null) {
-          val type = mod.resolveVar(id)
+          val type = mod.resolveIdentifier(leafCont, id)
           if (type !== null)
             return type
         }
@@ -80,11 +93,20 @@ class IdentifierResolver {
     error('''Couldn't resolve reference '«id»'.''')
   }
   
-  def ElementDef resolveVar(EObject obj, String id) {
-    val ident = obj.eContents.filter(Var).findFirst[
-      name == id
-    ]
+  def ElementDef resolveIdentifier(EObject block, Var leaf, String id) {
+    //search in (block or module) upstream
+    val blockIdents = block.eContents.filter(Var)
+//    print('''
+//    (block: «block.class.simpleName», leaf: «leaf.name», find: «id»)
+//      VARS [«FOR it: blockIdents SEPARATOR ', '»(«name»:«type.nativeType»)«ENDFOR»]
+//    ''')
     
+    // if leaf is in the same block -> ignore all downstream items
+    val validIdents = blockIdents.takeWhile[it !== leaf].toList
+    
+    // search in reverse order from the valid identifiers
+//    println('''  VALID [«FOR it: validIdents SEPARATOR ','»(«name»: «type.nativeType»)«ENDFOR»]''')
+    val ident = validIdents.reverse.findFirst[name == id]
     if (ident !== null)
       return ident.varType
     

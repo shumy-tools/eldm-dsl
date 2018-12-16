@@ -176,7 +176,7 @@ class TestDefinition {
   // TEST with let values-----------------------------------------------------------------------------------------------------------------
   
   @Test
-  def void testLetSelfReference() {
+  def void testCyclicReference() {
     ph.testExpectedErrors('''
       module /main/test
       
@@ -184,7 +184,7 @@ class TestDefinition {
         let b = b is { id: int, name: str }
         
     ''',
-      "Identifier expression cannot reference itself!"
+      "Couldn't resolve reference 'b'."
     )
   }
   
@@ -253,6 +253,24 @@ class TestDefinition {
         let a = { id: 10 }
         let b = a set { name: 'Alex' }
         let c: int = a.id + 10
+        
+        let a1: { id: int, user?: Subject } = { id: 10, user: { id: 5, name: 'Alex' } }
+        let a2 = a1.user.name + 'Martins'
+        
+    ''')
+  }
+  
+  @Test
+  def void testUnknowKeys() {
+    val let1 = "let y = «str»x*.name + 'Martins'" // may reference downstream x, because of the search function
+    val let2 = "let x = «{ name: str }»x"
+    ph.test('''
+      module /main/test
+      
+      def service get { id: int, x: map }:
+        «let1»
+        «let2» // x parameter shadowed by redefinition
+        //let z = x.name + 'Martins'
         
     ''')
   }

@@ -32,14 +32,12 @@ class TypeResolver {
   }
   
   def ElementDef getVarType(Var id) {
-    if (id.present)
-      error("Identifier expression cannot reference itself!")
-    
     return id.type ?: { id.type = id.result.inferType; id.type }
   }
   
   def getPrimaryType(Primary pr) {
-    return pr.type ?: { pr.type = pr.resolve; pr.type }
+    pr.resolve
+    return pr.type
   }
   
   def ElementDef inferType(ValueExpression exp) {

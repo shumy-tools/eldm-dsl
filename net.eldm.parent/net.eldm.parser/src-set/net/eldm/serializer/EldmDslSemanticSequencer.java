@@ -529,7 +529,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     MemberCall returns MemberCall
 	 *
 	 * Constraint:
-	 *     (nullSafe?='?.'? member=ID)
+	 *     (unknown?='*.'? member=ID)
 	 */
 	protected void sequence_MemberCall(ISerializationContext context, MemberCall semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -630,7 +630,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     Primary returns Primary
 	 *
 	 * Constraint:
-	 *     (type=ElementDef? (value=Literal | ref=ID) calls+=MemberCall*)
+	 *     ((value=Literal | (type=ElementDef? ref=ID)) calls+=MemberCall*)
 	 */
 	protected void sequence_Primary(ISerializationContext context, Primary semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);

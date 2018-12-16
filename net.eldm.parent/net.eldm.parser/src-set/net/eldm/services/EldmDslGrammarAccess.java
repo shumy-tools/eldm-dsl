@@ -1050,90 +1050,94 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	public class PrimaryElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.Primary");
 		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final Group cGroup_0 = (Group)cGroup.eContents().get(0);
-		private final Keyword cLeftPointingDoubleAngleQuotationMarkKeyword_0_0 = (Keyword)cGroup_0.eContents().get(0);
-		private final Assignment cTypeAssignment_0_1 = (Assignment)cGroup_0.eContents().get(1);
-		private final RuleCall cTypeElementDefParserRuleCall_0_1_0 = (RuleCall)cTypeAssignment_0_1.eContents().get(0);
-		private final Keyword cRightPointingDoubleAngleQuotationMarkKeyword_0_2 = (Keyword)cGroup_0.eContents().get(2);
-		private final Alternatives cAlternatives_1 = (Alternatives)cGroup.eContents().get(1);
-		private final Assignment cValueAssignment_1_0 = (Assignment)cAlternatives_1.eContents().get(0);
-		private final RuleCall cValueLiteralParserRuleCall_1_0_0 = (RuleCall)cValueAssignment_1_0.eContents().get(0);
-		private final Assignment cRefAssignment_1_1 = (Assignment)cAlternatives_1.eContents().get(1);
-		private final RuleCall cRefIDTerminalRuleCall_1_1_0 = (RuleCall)cRefAssignment_1_1.eContents().get(0);
-		private final Assignment cCallsAssignment_2 = (Assignment)cGroup.eContents().get(2);
-		private final RuleCall cCallsMemberCallParserRuleCall_2_0 = (RuleCall)cCallsAssignment_2.eContents().get(0);
+		private final Alternatives cAlternatives_0 = (Alternatives)cGroup.eContents().get(0);
+		private final Assignment cValueAssignment_0_0 = (Assignment)cAlternatives_0.eContents().get(0);
+		private final RuleCall cValueLiteralParserRuleCall_0_0_0 = (RuleCall)cValueAssignment_0_0.eContents().get(0);
+		private final Group cGroup_0_1 = (Group)cAlternatives_0.eContents().get(1);
+		private final Group cGroup_0_1_0 = (Group)cGroup_0_1.eContents().get(0);
+		private final Keyword cLeftPointingDoubleAngleQuotationMarkKeyword_0_1_0_0 = (Keyword)cGroup_0_1_0.eContents().get(0);
+		private final Assignment cTypeAssignment_0_1_0_1 = (Assignment)cGroup_0_1_0.eContents().get(1);
+		private final RuleCall cTypeElementDefParserRuleCall_0_1_0_1_0 = (RuleCall)cTypeAssignment_0_1_0_1.eContents().get(0);
+		private final Keyword cRightPointingDoubleAngleQuotationMarkKeyword_0_1_0_2 = (Keyword)cGroup_0_1_0.eContents().get(2);
+		private final Assignment cRefAssignment_0_1_1 = (Assignment)cGroup_0_1.eContents().get(1);
+		private final RuleCall cRefIDTerminalRuleCall_0_1_1_0 = (RuleCall)cRefAssignment_0_1_1.eContents().get(0);
+		private final Assignment cCallsAssignment_1 = (Assignment)cGroup.eContents().get(1);
+		private final RuleCall cCallsMemberCallParserRuleCall_1_0 = (RuleCall)cCallsAssignment_1.eContents().get(0);
 		
 		//Primary:
-		//	('«' type=ElementDef '»')? (value=Literal | ref=ID) calls+=MemberCall*;
+		//	(value=Literal | ('«' type=ElementDef '»')? ref=ID) calls+=MemberCall*;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//('«' type=ElementDef '»')? (value=Literal | ref=ID) calls+=MemberCall*
+		//(value=Literal | ('«' type=ElementDef '»')? ref=ID) calls+=MemberCall*
 		public Group getGroup() { return cGroup; }
 		
-		//('«' type=ElementDef '»')?
-		public Group getGroup_0() { return cGroup_0; }
-		
-		//'«'
-		public Keyword getLeftPointingDoubleAngleQuotationMarkKeyword_0_0() { return cLeftPointingDoubleAngleQuotationMarkKeyword_0_0; }
-		
-		//type=ElementDef
-		public Assignment getTypeAssignment_0_1() { return cTypeAssignment_0_1; }
-		
-		//ElementDef
-		public RuleCall getTypeElementDefParserRuleCall_0_1_0() { return cTypeElementDefParserRuleCall_0_1_0; }
-		
-		//'»'
-		public Keyword getRightPointingDoubleAngleQuotationMarkKeyword_0_2() { return cRightPointingDoubleAngleQuotationMarkKeyword_0_2; }
-		
-		//value=Literal | ref=ID
-		public Alternatives getAlternatives_1() { return cAlternatives_1; }
+		//value=Literal | ('«' type=ElementDef '»')? ref=ID
+		public Alternatives getAlternatives_0() { return cAlternatives_0; }
 		
 		//value=Literal
-		public Assignment getValueAssignment_1_0() { return cValueAssignment_1_0; }
+		public Assignment getValueAssignment_0_0() { return cValueAssignment_0_0; }
 		
 		//Literal
-		public RuleCall getValueLiteralParserRuleCall_1_0_0() { return cValueLiteralParserRuleCall_1_0_0; }
+		public RuleCall getValueLiteralParserRuleCall_0_0_0() { return cValueLiteralParserRuleCall_0_0_0; }
+		
+		//('«' type=ElementDef '»')? ref=ID
+		public Group getGroup_0_1() { return cGroup_0_1; }
+		
+		//('«' type=ElementDef '»')?
+		public Group getGroup_0_1_0() { return cGroup_0_1_0; }
+		
+		//'«'
+		public Keyword getLeftPointingDoubleAngleQuotationMarkKeyword_0_1_0_0() { return cLeftPointingDoubleAngleQuotationMarkKeyword_0_1_0_0; }
+		
+		//type=ElementDef
+		public Assignment getTypeAssignment_0_1_0_1() { return cTypeAssignment_0_1_0_1; }
+		
+		//ElementDef
+		public RuleCall getTypeElementDefParserRuleCall_0_1_0_1_0() { return cTypeElementDefParserRuleCall_0_1_0_1_0; }
+		
+		//'»'
+		public Keyword getRightPointingDoubleAngleQuotationMarkKeyword_0_1_0_2() { return cRightPointingDoubleAngleQuotationMarkKeyword_0_1_0_2; }
 		
 		//ref=ID
-		public Assignment getRefAssignment_1_1() { return cRefAssignment_1_1; }
+		public Assignment getRefAssignment_0_1_1() { return cRefAssignment_0_1_1; }
 		
 		//ID
-		public RuleCall getRefIDTerminalRuleCall_1_1_0() { return cRefIDTerminalRuleCall_1_1_0; }
+		public RuleCall getRefIDTerminalRuleCall_0_1_1_0() { return cRefIDTerminalRuleCall_0_1_1_0; }
 		
 		//calls+=MemberCall*
-		public Assignment getCallsAssignment_2() { return cCallsAssignment_2; }
+		public Assignment getCallsAssignment_1() { return cCallsAssignment_1; }
 		
 		//MemberCall
-		public RuleCall getCallsMemberCallParserRuleCall_2_0() { return cCallsMemberCallParserRuleCall_2_0; }
+		public RuleCall getCallsMemberCallParserRuleCall_1_0() { return cCallsMemberCallParserRuleCall_1_0; }
 	}
 	public class MemberCallElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "net.eldm.EldmDsl.MemberCall");
 		private final Group cGroup = (Group)rule.eContents().get(1);
 		private final Alternatives cAlternatives_0 = (Alternatives)cGroup.eContents().get(0);
 		private final Keyword cFullStopKeyword_0_0 = (Keyword)cAlternatives_0.eContents().get(0);
-		private final Assignment cNullSafeAssignment_0_1 = (Assignment)cAlternatives_0.eContents().get(1);
-		private final Keyword cNullSafeQuestionMarkFullStopKeyword_0_1_0 = (Keyword)cNullSafeAssignment_0_1.eContents().get(0);
+		private final Assignment cUnknownAssignment_0_1 = (Assignment)cAlternatives_0.eContents().get(1);
+		private final Keyword cUnknownAsteriskFullStopKeyword_0_1_0 = (Keyword)cUnknownAssignment_0_1.eContents().get(0);
 		private final Assignment cMemberAssignment_1 = (Assignment)cGroup.eContents().get(1);
 		private final RuleCall cMemberIDTerminalRuleCall_1_0 = (RuleCall)cMemberAssignment_1.eContents().get(0);
 		
 		//MemberCall:
-		//	('.' | nullSafe?='?.') member=ID;
+		//	('.' | unknown?='*.') member=ID;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//('.' | nullSafe?='?.') member=ID
+		//('.' | unknown?='*.') member=ID
 		public Group getGroup() { return cGroup; }
 		
-		//'.' | nullSafe?='?.'
+		//'.' | unknown?='*.'
 		public Alternatives getAlternatives_0() { return cAlternatives_0; }
 		
 		//'.'
 		public Keyword getFullStopKeyword_0_0() { return cFullStopKeyword_0_0; }
 		
-		//nullSafe?='?.'
-		public Assignment getNullSafeAssignment_0_1() { return cNullSafeAssignment_0_1; }
+		//unknown?='*.'
+		public Assignment getUnknownAssignment_0_1() { return cUnknownAssignment_0_1; }
 		
-		//'?.'
-		public Keyword getNullSafeQuestionMarkFullStopKeyword_0_1_0() { return cNullSafeQuestionMarkFullStopKeyword_0_1_0; }
+		//'*.'
+		public Keyword getUnknownAsteriskFullStopKeyword_0_1_0() { return cUnknownAsteriskFullStopKeyword_0_1_0; }
 		
 		//member=ID
 		public Assignment getMemberAssignment_1() { return cMemberAssignment_1; }
@@ -2568,7 +2572,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//Primary:
-	//	('«' type=ElementDef '»')? (value=Literal | ref=ID) calls+=MemberCall*;
+	//	(value=Literal | ('«' type=ElementDef '»')? ref=ID) calls+=MemberCall*;
 	public PrimaryElements getPrimaryAccess() {
 		return pPrimary;
 	}
@@ -2578,7 +2582,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//MemberCall:
-	//	('.' | nullSafe?='?.') member=ID;
+	//	('.' | unknown?='*.') member=ID;
 	public MemberCallElements getMemberCallAccess() {
 		return pMemberCall;
 	}

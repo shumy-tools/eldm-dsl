@@ -30,16 +30,18 @@ class TypeValidator {
     if (superDef === null || superDef.native == ANY)
       return;
     
+    // inferred.ref is always null (inference calculation do not generate cross-references)
+    if (inferred.ref !== null)
+      error("A cross-reference in inferred type! Please report this bug.")
+    
+    //BEGIN: analysing natives------------------------------------------
     if (superDef.native !== null) {
       if (inferred.nativeType == superDef.native)
         return;
-      
-      // inferred.ref is always null (inference calculation do not generate cross-references)
-      if (inferred.ref !== null)
-        error("A cross-reference in inferred type! Please report this bug.")
-      
       error('''Inferred type not assignable to native '«superDef.native»'.''')
-    }
+    } else //if (inferred.native !== null)
+      //error('''Inferred native '«inferred.native»' not assignable to type.''')
+    //END: analysing natives--------------------------------------------
     
     if (superDef.ref !== null) {
       inferred.inDefinition(superDef.ref)

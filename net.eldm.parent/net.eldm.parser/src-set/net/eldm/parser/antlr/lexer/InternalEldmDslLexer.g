@@ -77,6 +77,8 @@ ExclamationMarkEqualsSign : '!=';
 
 AsteriskAsterisk : '**';
 
+AsteriskFullStop : '*.';
+
 HyphenMinusGreaterThanSign : '->';
 
 FullStopFullStop : '..';
@@ -86,8 +88,6 @@ LessThanSignEqualsSign : '<=';
 EqualsSignEqualsSign : '==';
 
 GreaterThanSignEqualsSign : '>=';
-
-QuestionMarkFullStop : '?.';
 
 As : 'as';
 
