@@ -3,57 +3,19 @@ package net.eldm.util
 import com.google.inject.Inject
 import com.google.inject.Singleton
 import net.eldm.eldmDsl.BlockExpression
-import net.eldm.eldmDsl.EldmDslFactory
 import net.eldm.eldmDsl.ElementDef
 import net.eldm.eldmDsl.Function
 import net.eldm.eldmDsl.MapDef
 import net.eldm.eldmDsl.Module
-import net.eldm.eldmDsl.Primary
 import net.eldm.eldmDsl.TypeDef
 import net.eldm.eldmDsl.Var
 import org.eclipse.emf.ecore.EObject
 
 import static net.eldm.util.ValidationStack.*
 
-import static extension net.eldm.spi.Natives.*
-
 @Singleton
 class IdentifierResolver {
   @Inject extension TypeResolver tResolver
-  
-  def void resolve(Primary pr) {
-    var type = if (pr.value !== null)
-      pr.value.inferType
-    else if (pr.ref !== null)
-      pr.resolve(pr.ref)
-    else
-      error('''Failed to infer Primary type! Please report this bug.''')
-    
-    // resolve member calls
-    var mDef = type.mapDef
-    for (it : pr.calls) {
-      if (unknown && type.nativeType == MAP) {
-        pr.type = pr.type ?: { // use cast if exists
-          val eFact = EldmDslFactory.eINSTANCE
-          eFact.createElementDef => [ native = ANY ]
-        }
-        
-        return;
-      }
-      
-      if (mDef === null)
-        error('''Couldn't resolve reference '«member»'.''')
-      
-      val entry = mDef.getMapEntry(member)
-      if (entry === null)
-        error('''Couldn't resolve reference '«member»'.''')
-      
-      type = entry.entryType
-      mDef = type.mapDef
-    }
-    
-    pr.type = pr.type ?: type // use cast if exists
-  }
   
   def ElementDef resolve(EObject leaf, String id) {
     // TODO: or any other identifier container that can be referenced!

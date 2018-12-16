@@ -4,6 +4,10 @@ import java.util.Stack
 import org.eclipse.emf.ecore.EObject
 
 class ValidationStack {
+  static val localdp = new ThreadLocal<Boolean> {
+    override protected initialValue() { false }
+  }
+  
   static val local = new ThreadLocal<Stack<EObject>> {
     override protected initialValue() { new Stack<EObject> }
   }
@@ -18,19 +22,21 @@ class ValidationStack {
   
   static def <T> T error(String msg) {
     val stack = local.get
-     
-    var EObject obj = null
-    do obj = stack.pop while (obj.eResource === null)
+    val dp = localdp.get
     
-    stack.clear
+    var EObject obj = null
+    if (!dp) {
+      do obj = stack.pop while (obj.eResource === null)
+      stack.clear
+    } else {
+      obj = stack.peek
+    }
+    
     throw new ValidationError(obj, msg)
   }
   
-  static def isPresent(EObject obj) {
-    val stack = local.get
-    for (elm : stack)
-      if (obj === elm) return true
-    return false
+  static def dontPop(boolean dp) {
+    localdp.set(dp)
   }
 }
 

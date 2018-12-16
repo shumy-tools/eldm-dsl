@@ -26,18 +26,37 @@ import static extension net.eldm.util.ValidationStack.*
 class TypeResolver {
   @Inject extension PatternParser iParser
   @Inject extension IdentifierResolver iResolver
+  @Inject extension TypeValidator tValidator
   
   def ElementDef getEntryType(MapEntryDef kd) {
     return kd.type ?: { kd.type = kd.value.inferType; kd.type }
   }
   
-  def ElementDef getVarType(Var id) {
-    return id.type ?: { id.type = id.result.inferType; id.type }
+  def ElementDef getVarType(Var vr) {
+    return vr.type ?: { vr.type = vr.result.inferType; vr.type }
   }
   
-  def getPrimaryType(Primary pr) {
-    pr.resolve
-    return pr.type
+  def ElementDef getPrimaryType(Primary pr) {
+    val type = pr.inferType
+    if (pr.cast) {
+      try {
+        dontPop = true
+        type.inElement(pr.type)
+      } catch (ValidationError ve1) {
+        try {
+          pr.type.inElement(type)
+        } catch (ValidationError ve2) {
+          dontPop = false
+          error('''Couldn't cast type.''')
+        }
+      }
+      
+      dontPop = false
+      return pr.type
+    }
+    
+    pr.type =  type
+    return type
   }
   
   def ElementDef inferType(ValueExpression exp) {
@@ -116,6 +135,42 @@ class TypeResolver {
       
     pop
     return inferred
+  }
+  
+  def ElementDef inferType(Primary pr) {
+    pr.push
+      var type = if (pr.value !== null)
+        pr.value.inferType
+      else if (pr.ref !== null)
+        pr.resolve(pr.ref)
+      else if (pr.exp !== null)
+        pr.exp.inferType
+      else
+        error('''Failed to infer Primary type! Please report this bug.''')
+      
+      // resolve member calls
+      var mDef = type.mapDef
+      for (it : pr.calls) {
+        if (unknown && type.nativeType == MAP) {
+          val eFact = EldmDslFactory.eINSTANCE
+          
+          pop
+          return eFact.createElementDef => [ native = ANY ]
+        }
+        
+        if (mDef === null)
+          error('''Couldn't resolve reference '«member»'.''')
+        
+        val entry = mDef.getMapEntry(member)
+        if (entry === null)
+          error('''Couldn't resolve reference '«member»'.''')
+        
+        type = entry.entryType
+        mDef = type.mapDef
+      }
+    
+    pop
+    return type
   }
   
   def ElementDef inferType(Literal value) {

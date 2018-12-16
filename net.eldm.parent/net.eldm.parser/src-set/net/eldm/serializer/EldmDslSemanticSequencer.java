@@ -161,8 +161,39 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 				sequence_UnaryOperation(context, (UnaryOperation) semanticObject); 
 				return; 
 			case EldmDslPackage.VALUE_EXPRESSION:
-				sequence_AdditiveExpression_AndExpression_EqualityExpression_MultiplicativeExpression_OrExpression_RelationalExpression(context, (ValueExpression) semanticObject); 
-				return; 
+				if (rule == grammarAccess.getValueExpressionRule()
+						|| rule == grammarAccess.getOrExpressionRule()
+						|| action == grammarAccess.getOrExpressionAccess().getValueExpressionLeftAction_1_0_0_0()) {
+					sequence_AdditiveExpression_AndExpression_EqualityExpression_MultiplicativeExpression_OrExpression_RelationalExpression(context, (ValueExpression) semanticObject); 
+					return; 
+				}
+				else if (rule == grammarAccess.getAndExpressionRule()
+						|| action == grammarAccess.getAndExpressionAccess().getValueExpressionLeftAction_1_0_0_0()) {
+					sequence_AdditiveExpression_AndExpression_EqualityExpression_MultiplicativeExpression_RelationalExpression(context, (ValueExpression) semanticObject); 
+					return; 
+				}
+				else if (rule == grammarAccess.getEqualityExpressionRule()
+						|| action == grammarAccess.getEqualityExpressionAccess().getValueExpressionLeftAction_1_0_0_0()) {
+					sequence_AdditiveExpression_EqualityExpression_MultiplicativeExpression_RelationalExpression(context, (ValueExpression) semanticObject); 
+					return; 
+				}
+				else if (rule == grammarAccess.getRelationalExpressionRule()
+						|| action == grammarAccess.getRelationalExpressionAccess().getIsExpressionLeftAction_1_0_0_0_0()
+						|| action == grammarAccess.getRelationalExpressionAccess().getValueExpressionLeftAction_1_1_0_0_0()) {
+					sequence_AdditiveExpression_MultiplicativeExpression_RelationalExpression(context, (ValueExpression) semanticObject); 
+					return; 
+				}
+				else if (rule == grammarAccess.getAdditiveExpressionRule()
+						|| action == grammarAccess.getAdditiveExpressionAccess().getValueExpressionLeftAction_1_0_0_0()) {
+					sequence_AdditiveExpression_MultiplicativeExpression(context, (ValueExpression) semanticObject); 
+					return; 
+				}
+				else if (rule == grammarAccess.getMultiplicativeExpressionRule()
+						|| action == grammarAccess.getMultiplicativeExpressionAccess().getValueExpressionLeftAction_1_0_0_0()) {
+					sequence_MultiplicativeExpression(context, (ValueExpression) semanticObject); 
+					return; 
+				}
+				else break;
 			case EldmDslPackage.VAR:
 				sequence_Var(context, (Var) semanticObject); 
 				return; 
@@ -176,19 +207,6 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     ValueExpression returns ValueExpression
 	 *     OrExpression returns ValueExpression
 	 *     OrExpression.ValueExpression_1_0_0_0 returns ValueExpression
-	 *     AndExpression returns ValueExpression
-	 *     AndExpression.ValueExpression_1_0_0_0 returns ValueExpression
-	 *     EqualityExpression returns ValueExpression
-	 *     EqualityExpression.ValueExpression_1_0_0_0 returns ValueExpression
-	 *     RelationalExpression returns ValueExpression
-	 *     RelationalExpression.IsExpression_1_0_0_0_0 returns ValueExpression
-	 *     RelationalExpression.ValueExpression_1_1_0_0_0 returns ValueExpression
-	 *     AdditiveExpression returns ValueExpression
-	 *     AdditiveExpression.ValueExpression_1_0_0_0 returns ValueExpression
-	 *     MultiplicativeExpression returns ValueExpression
-	 *     MultiplicativeExpression.ValueExpression_1_0_0_0 returns ValueExpression
-	 *     UnaryOperation returns ValueExpression
-	 *     BaseExpression returns ValueExpression
 	 *
 	 * Constraint:
 	 *     (
@@ -201,6 +219,77 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     )
 	 */
 	protected void sequence_AdditiveExpression_AndExpression_EqualityExpression_MultiplicativeExpression_OrExpression_RelationalExpression(ISerializationContext context, ValueExpression semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
+	 *     AndExpression returns ValueExpression
+	 *     AndExpression.ValueExpression_1_0_0_0 returns ValueExpression
+	 *
+	 * Constraint:
+	 *     (
+	 *         (left=AndExpression_ValueExpression_1_0_0_0 feature='and' right=EqualityExpression) | 
+	 *         (left=EqualityExpression_ValueExpression_1_0_0_0 (feature='==' | feature='!=') right=RelationalExpression) | 
+	 *         (left=RelationalExpression_ValueExpression_1_1_0_0_0 (feature='>=' | feature='<=' | feature='>' | feature='<') right=AdditiveExpression) | 
+	 *         (left=AdditiveExpression_ValueExpression_1_0_0_0 (feature='+' | feature='-' | feature='set' | feature='del') right=MultiplicativeExpression) | 
+	 *         (left=MultiplicativeExpression_ValueExpression_1_0_0_0 (feature='*' | feature='**' | feature='/' | feature='%') right=UnaryOperation)
+	 *     )
+	 */
+	protected void sequence_AdditiveExpression_AndExpression_EqualityExpression_MultiplicativeExpression_RelationalExpression(ISerializationContext context, ValueExpression semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
+	 *     EqualityExpression returns ValueExpression
+	 *     EqualityExpression.ValueExpression_1_0_0_0 returns ValueExpression
+	 *
+	 * Constraint:
+	 *     (
+	 *         (left=EqualityExpression_ValueExpression_1_0_0_0 (feature='==' | feature='!=') right=RelationalExpression) | 
+	 *         (left=RelationalExpression_ValueExpression_1_1_0_0_0 (feature='>=' | feature='<=' | feature='>' | feature='<') right=AdditiveExpression) | 
+	 *         (left=AdditiveExpression_ValueExpression_1_0_0_0 (feature='+' | feature='-' | feature='set' | feature='del') right=MultiplicativeExpression) | 
+	 *         (left=MultiplicativeExpression_ValueExpression_1_0_0_0 (feature='*' | feature='**' | feature='/' | feature='%') right=UnaryOperation)
+	 *     )
+	 */
+	protected void sequence_AdditiveExpression_EqualityExpression_MultiplicativeExpression_RelationalExpression(ISerializationContext context, ValueExpression semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
+	 *     RelationalExpression returns ValueExpression
+	 *     RelationalExpression.IsExpression_1_0_0_0_0 returns ValueExpression
+	 *     RelationalExpression.ValueExpression_1_1_0_0_0 returns ValueExpression
+	 *
+	 * Constraint:
+	 *     (
+	 *         (left=RelationalExpression_ValueExpression_1_1_0_0_0 (feature='>=' | feature='<=' | feature='>' | feature='<') right=AdditiveExpression) | 
+	 *         (left=AdditiveExpression_ValueExpression_1_0_0_0 (feature='+' | feature='-' | feature='set' | feature='del') right=MultiplicativeExpression) | 
+	 *         (left=MultiplicativeExpression_ValueExpression_1_0_0_0 (feature='*' | feature='**' | feature='/' | feature='%') right=UnaryOperation)
+	 *     )
+	 */
+	protected void sequence_AdditiveExpression_MultiplicativeExpression_RelationalExpression(ISerializationContext context, ValueExpression semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
+	 *     AdditiveExpression returns ValueExpression
+	 *     AdditiveExpression.ValueExpression_1_0_0_0 returns ValueExpression
+	 *
+	 * Constraint:
+	 *     (
+	 *         (left=AdditiveExpression_ValueExpression_1_0_0_0 (feature='+' | feature='-' | feature='set' | feature='del') right=MultiplicativeExpression) | 
+	 *         (left=MultiplicativeExpression_ValueExpression_1_0_0_0 (feature='*' | feature='**' | feature='/' | feature='%') right=UnaryOperation)
+	 *     )
+	 */
+	protected void sequence_AdditiveExpression_MultiplicativeExpression(ISerializationContext context, ValueExpression semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
 	}
 	
@@ -558,6 +647,19 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	
 	/**
 	 * Contexts:
+	 *     MultiplicativeExpression returns ValueExpression
+	 *     MultiplicativeExpression.ValueExpression_1_0_0_0 returns ValueExpression
+	 *
+	 * Constraint:
+	 *     (left=MultiplicativeExpression_ValueExpression_1_0_0_0 (feature='*' | feature='**' | feature='/' | feature='%') right=UnaryOperation)
+	 */
+	protected void sequence_MultiplicativeExpression(ISerializationContext context, ValueExpression semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
 	 *     Literal returns PathLiteral
 	 *     PathLiteral returns PathLiteral
 	 *
@@ -626,11 +728,10 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     MultiplicativeExpression returns Primary
 	 *     MultiplicativeExpression.ValueExpression_1_0_0_0 returns Primary
 	 *     UnaryOperation returns Primary
-	 *     BaseExpression returns Primary
 	 *     Primary returns Primary
 	 *
 	 * Constraint:
-	 *     ((value=Literal | (type=ElementDef? ref=ID)) calls+=MemberCall*)
+	 *     (value=Literal | ((cast?='«' type=ElementDef)? (ref=ID | exp=ValueExpression) calls+=MemberCall*))
 	 */
 	protected void sequence_Primary(ISerializationContext context, Primary semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -649,12 +750,6 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     RelationalExpression returns IsExpression
 	 *     RelationalExpression.IsExpression_1_0_0_0_0 returns IsExpression
 	 *     RelationalExpression.ValueExpression_1_1_0_0_0 returns IsExpression
-	 *     AdditiveExpression returns IsExpression
-	 *     AdditiveExpression.ValueExpression_1_0_0_0 returns IsExpression
-	 *     MultiplicativeExpression returns IsExpression
-	 *     MultiplicativeExpression.ValueExpression_1_0_0_0 returns IsExpression
-	 *     UnaryOperation returns IsExpression
-	 *     BaseExpression returns IsExpression
 	 *
 	 * Constraint:
 	 *     (left=RelationalExpression_IsExpression_1_0_0_0_0 feature='is' type=ElementDef)
@@ -756,7 +851,6 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     MultiplicativeExpression returns UnaryOperation
 	 *     MultiplicativeExpression.ValueExpression_1_0_0_0 returns UnaryOperation
 	 *     UnaryOperation returns UnaryOperation
-	 *     BaseExpression returns UnaryOperation
 	 *
 	 * Constraint:
 	 *     (feature='!' operand=UnaryOperation)

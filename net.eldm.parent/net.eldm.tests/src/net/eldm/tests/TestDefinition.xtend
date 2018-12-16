@@ -250,9 +250,11 @@ class TestDefinition {
         
       def get /subject Id -> Subject:
         let y = id is int
+        
         let a = { id: 10 }
         let b = a set { name: 'Alex' }
         let c: int = a.id + 10
+        let d: str = b.name + 'Martins'
         
         let a1: { id: int, user?: Subject } = { id: 10, user: { id: 5, name: 'Alex' } }
         let a2 = a1.user.name + 'Martins'
