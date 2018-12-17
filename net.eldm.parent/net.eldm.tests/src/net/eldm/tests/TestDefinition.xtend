@@ -264,7 +264,7 @@ class TestDefinition {
   
   @Test
   def void testUnknowKeys() {
-    val let1 = "let y = «str»x*.name + 'Martins'" // may reference downstream x, because of the search function
+    val let1 = "let y = «str»x*.name + 'Martins'"
     val let2 = "let x = «{ name: str }»x"
     ph.test('''
       module /main/test
@@ -272,8 +272,22 @@ class TestDefinition {
       def service get { id: int, x: map }:
         «let1»
         «let2» // x parameter shadowed by redefinition
-        //let z = x.name + 'Martins'
+        let z = x.name + 'Martins'
         
     ''')
+  }
+  
+  @Test
+  def void testCastError() {
+    val let = "let y = «{ name: str }»(x set { id: 10 })"
+    ph.testExpectedErrors('''
+      module /main/test
+      
+      def service get { id: int, x: map }:
+        «let»
+        
+    ''',
+      "Couldn't cast type."
+    )
   }
 }

@@ -116,15 +116,9 @@ ValueExpression:
     | Primary
   ;
   
-  /*BaseExpression returns ValueExpression:
-    Primary | '(' ValueExpression ')'
-  ;*/
-  
   Primary:
     value=Literal
     | (cast?='«' type=ElementDef '»')? (ref=ID | '(' exp=ValueExpression ')') calls+=MemberCall*
-    
-    //(value=Literal | ('«' type=ElementDef '»')? ref=ID) (calls+=MemberCall)*
   ;
    
     MemberCall: ('.'|unknown?='*.') member=ID;

@@ -140,11 +140,11 @@ class TypeResolver {
   def ElementDef inferType(Primary pr) {
     pr.push
       var type = if (pr.value !== null)
-        pr.value.inferType
-      else if (pr.ref !== null)
-        pr.resolve(pr.ref)
+        pr.value.inferType 
       else if (pr.exp !== null)
         pr.exp.inferType
+      else if (pr.ref !== null)
+        pr.resolve(pr.ref)
       else
         error('''Failed to infer Primary type! Please report this bug.''')
       
