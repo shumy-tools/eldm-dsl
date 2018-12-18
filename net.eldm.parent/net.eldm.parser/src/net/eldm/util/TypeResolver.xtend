@@ -5,7 +5,8 @@ import com.google.inject.Singleton
 import net.eldm.eldmDsl.EldmDslFactory
 import net.eldm.eldmDsl.ElementDef
 import net.eldm.eldmDsl.EnumDef
-import net.eldm.eldmDsl.EnumLiteral
+import net.eldm.eldmDsl.ExternalDef
+import net.eldm.eldmDsl.InferredDef
 import net.eldm.eldmDsl.IsExpression
 import net.eldm.eldmDsl.ListDef
 import net.eldm.eldmDsl.ListLiteral
@@ -15,6 +16,7 @@ import net.eldm.eldmDsl.MapEntryDef
 import net.eldm.eldmDsl.MapLiteral
 import net.eldm.eldmDsl.PatternLiteral
 import net.eldm.eldmDsl.Primary
+import net.eldm.eldmDsl.TopDef
 import net.eldm.eldmDsl.TypeDef
 import net.eldm.eldmDsl.ValueExpression
 import net.eldm.eldmDsl.Var
@@ -28,23 +30,35 @@ class TypeResolver {
   @Inject extension IdentifierResolver iResolver
   @Inject extension TypeValidator tValidator
   
-  def ElementDef getEntryType(MapEntryDef kd) {
-    return kd.type ?: { kd.type = kd.value.inferType; kd.type }
+  def InferredDef getEntryType(MapEntryDef kd) {
+    if (kd.type !== null)
+      kd.type.inferType
+    else {
+      kd.type = kd.value.inferType
+      kd.type as InferredDef
+    }
   }
   
-  def ElementDef getVarType(Var vr) {
-    return vr.type ?: { vr.type = vr.result.inferType; vr.type }
+  def InferredDef getVarType(Var vr) {
+    if (vr.type !== null)
+      vr.type.inferType
+    else {
+      vr.type = vr.result.inferType
+      vr.type as InferredDef
+    }
   }
   
-  def ElementDef getPrimaryType(Primary pr) {
+  def InferredDef getPrimaryType(Primary pr) {
     val type = pr.inferType
+    val castType = pr.type.inferType
+    
     if (pr.cast) {
       try {
         dontPop = true
-        type.inElement(pr.type)
+        type.inElement(castType)
       } catch (ValidationError ve1) {
         try {
-          pr.type.inElement(type)
+          castType.inElement(type)
         } catch (ValidationError ve2) {
           dontPop = false
           error('''Couldn't cast type.''')
@@ -52,17 +66,17 @@ class TypeResolver {
       }
       
       dontPop = false
-      return pr.type
+      return castType
     }
     
     pr.type =  type
     return type
   }
   
-  def ElementDef inferType(ValueExpression exp) {
+  def InferredDef inferType(ValueExpression exp) {
     val eFact = EldmDslFactory.eINSTANCE
     if (exp === null)
-      return eFact.createElementDef => [ native = ANY ]
+      return eFact.createInferredDef => [ native = ANY ]
       
     exp.push
       if (exp instanceof Primary) {
@@ -78,29 +92,29 @@ class TypeResolver {
       val inferred = switch exp.feature {
         case 'is': {
           if (exp instanceof IsExpression) {
-            rType = exp.type // override to output the correct error message in the end
+            rType = exp.type.inferType // override to output the correct error message in the end
             val min = lType.minType(rType)
             if (min.nativeType == lType.nativeType)
-              eFact.createElementDef => [ native = BOOL ]
+              eFact.createInferredDef => [ native = BOOL ]
           }
         }
         
         case 'and', case 'or': {
           val min = lType.minType(rType)
           if (min.isOneOf(BOOL))
-            eFact.createElementDef => [ native = BOOL ]
+            eFact.createInferredDef => [ native = BOOL ]
         }
         
         case '>=', case '<=', case '>', case '<':  {
           val min = lType.minType(rType)
           if (min.isOneOf(INT, FLT, LDA, LTM, LDT))
-            eFact.createElementDef => [ native = BOOL ]
+            eFact.createInferredDef => [ native = BOOL ]
         }
         
         case '==', case '!=': {
           val min = lType.minType(rType)
           if (min.isOneOf(BOOL, INT, FLT, LDA, LTM, LDT))
-            eFact.createElementDef => [ native = BOOL ]
+            eFact.createInferredDef => [ native = BOOL ]
         }
         
         case 'del', case 'set': {
@@ -137,7 +151,7 @@ class TypeResolver {
     return inferred
   }
   
-  def ElementDef inferType(Primary pr) {
+  def InferredDef inferType(Primary pr) {
     pr.push
       var type = if (pr.value !== null)
         pr.value.inferType 
@@ -149,39 +163,42 @@ class TypeResolver {
         error('''Failed to infer Primary type! Please report this bug.''')
       
       // resolve member calls
-      var mDef = type.mapDef
+      var tDef = type.inferType
       for (it : pr.calls) {
-        if (unknown && type.nativeType == MAP) {
-          val eFact = EldmDslFactory.eINSTANCE
-          
-          pop
-          return eFact.createElementDef => [ native = ANY ]
+        if (type.nativeType == MAP) {
+          if (unknown) {
+            pop
+            return EldmDslFactory.eINSTANCE.createInferredDef => [ native = ANY ]
+          }
+        
+          if (tDef instanceof MapDef) {
+            val entry = tDef.getMapEntry(member)
+            if (entry === null)
+              error('''Couldn't resolve reference '«member»'.''')
+            
+            type = entry.entryType
+            tDef = type.inferType
+          } else
+            error('''Couldn't resolve reference '«member»'.''')
+        } else {
+          error("calls from non-map types not supported yet")
+          //TODO: de-reference other types, i.e list
         }
-        
-        if (mDef === null)
-          error('''Couldn't resolve reference '«member»'.''')
-        
-        val entry = mDef.getMapEntry(member)
-        if (entry === null)
-          error('''Couldn't resolve reference '«member»'.''')
-        
-        type = entry.entryType
-        mDef = type.mapDef
       }
     
     pop
     return type
   }
   
-  def ElementDef inferType(Literal value) {
+  def InferredDef inferType(Literal value) {
     val eFact = EldmDslFactory.eINSTANCE
     if (value === null)
-      return eFact.createElementDef => [ native = ANY ]
+      return eFact.createInferredDef => [ native = ANY ]
     
     value.push
       if (value.isOneOf(BOOL, STR, INT, FLT, LDA, LTM, LDT, PATH)) {
         pop
-        return eFact.createElementDef => [ native = value.nativeType ]
+        return eFact.createInferredDef => [ native = value.nativeType ]
       }
       
       val inferred = switch value {
@@ -198,24 +215,29 @@ class TypeResolver {
         ]
         
         ListLiteral: eFact.createListDef => [
+          var InferredDef inferred = null
+          
           val head = value.vals.head
           if (head === null) {
-            type = eFact.createElementDef => [ native = ANY ]
+            type = eFact.createInferredDef => [ native = ANY ]
             return
           }
           
-          type = head.inferType
+          inferred = head.inferType
           for (elm: value.vals.tail) {
             val elmDef = elm.inferType
             elm.push
-              type = type.minType(elmDef)
+              inferred = inferred.minType(elmDef)
             pop
-            if (type.native == ANY) return
+            
+            if (inferred.native == ANY) {
+              type = inferred
+              return
+            }
           }
+          
+          type = inferred
         ]
-        
-        EnumLiteral:
-          value.ref.value.inferType
         
         PatternLiteral:
           value.parse.inferType // error already reported if PatternParser
@@ -230,11 +252,57 @@ class TypeResolver {
     return inferred
   }
   
-  private def ElementDef minType(ElementDef current, ElementDef next) {
+  def InferredDef inferType(TopDef tDef) {
+    switch tDef {
+      ElementDef: tDef.inferType
+      EnumDef: {
+        /* typedef Sex enum { name: str }
+             M { name: 'Male' }
+             F { name: 'Female' }
+           returns { M: Sex.type, F: Sex.type }
+        */
+        val eFact = EldmDslFactory.eINSTANCE
+        return eFact.createMapDef => [
+          for (item: tDef.defs) {
+            defs += eFact.createMapEntryDef => [
+              name = item.name
+              type = tDef.type ?: eFact.createInferredDef => [ native = LST ]
+            ]
+          }
+        ]
+      }
+    }
+  }
+  
+  def InferredDef inferType(ElementDef tDef) {
+    if (tDef === null)
+      return EldmDslFactory.eINSTANCE.createInferredDef => [ native = ANY ]
+    
+    if (tDef instanceof InferredDef)
+      return tDef
+    
+    val tRef = tDef.ref
+    if (tRef !== null)
+      return switch tRef {
+        TypeDef: tRef.inferType
+        ExternalDef: error("getMapDef - ExternalDef not supported yet") //TODO: if (param.ref instanceof ExternalDef)
+      }
+  }
+  
+  def InferredDef inferType(TypeDef tDef) {
+    if (tDef.type !== null)
+      return tDef.type.inferType
+    
+    //TODO: should I return something different than STR?
+    if (tDef.parser !== null)
+      return EldmDslFactory.eINSTANCE.createInferredDef => [ native = STR ]
+  }
+  
+  private def InferredDef minType(InferredDef current, InferredDef next) {
     val eFact = EldmDslFactory.eINSTANCE
     
     if (current === null || next === null)
-      return eFact.createElementDef => [ native = ANY ]
+      return eFact.createInferredDef => [ native = ANY ]
     
     //BEGIN: analysing Definition references----------------------------
       if (current.ref instanceof TypeDef)
@@ -248,7 +316,7 @@ class TypeResolver {
       val cNative = current.nativeType
       val nNative = next.nativeType
       if (cNative != nNative)
-        return eFact.createElementDef => [ native = ANY ]
+        return eFact.createInferredDef => [ native = ANY ]
     //END: analysing collection types -----------------------------------
     
     //BEGIN: analysing natives------------------------------------------
@@ -257,7 +325,7 @@ class TypeResolver {
         return current
       
       if (cNative == next.native || current.native == nNative)
-        return eFact.createElementDef => [ native = cNative ]
+        return eFact.createInferredDef => [ native = cNative ]
     //END: analysing natives--------------------------------------------
     
     
@@ -277,7 +345,7 @@ class TypeResolver {
           eFact.createMapEntryDef => [
             name = tuple.key.name
             opt = tuple.key.opt || tuple.value.opt
-            type = minType(tuple.key.type, tuple.value.type)
+            type = minType(tuple.key.type.inferType, tuple.value.type.inferType)
           ]
         ]
         
@@ -299,7 +367,7 @@ class TypeResolver {
       ]
       
       ListDef: eFact.createListDef => [
-        type = minType(current.type, (next as ListDef).type)
+        type = minType(current.type.inferType, (next as ListDef).type.inferType)
       ]
       
       default:
@@ -307,11 +375,11 @@ class TypeResolver {
     }
   }
   
-  private def ElementDef maxType(ElementDef current, ElementDef next) {
+  private def InferredDef maxType(InferredDef current, InferredDef next) {
     val eFact = EldmDslFactory.eINSTANCE
     
     if (current === null || next === null)
-      return eFact.createElementDef => [ native = ANY ]
+      return eFact.createInferredDef => [ native = ANY ]
     
     //BEGIN: analysing Definition references----------------------------
       if (current.ref instanceof TypeDef)
@@ -323,7 +391,7 @@ class TypeResolver {
     
     //BEGIN: analysing collection types --------------------------------
       if (current.nativeType != next.nativeType)
-        return eFact.createElementDef => [ native = ANY ]
+        return eFact.createInferredDef => [ native = ANY ]
     //END: analysing collection types -----------------------------------
     
     //BEGIN: analysing natives------------------------------------------
@@ -363,7 +431,7 @@ class TypeResolver {
             eFact.createMapEntryDef => [
               name = tuple.key.name
               opt = tuple.key.opt && tuple.value.opt
-              type = maxType(tuple.key.type, tuple.value.type)
+              type = maxType(tuple.key.type.inferType, tuple.value.type.inferType)
             ]
           ]
           
@@ -387,9 +455,9 @@ class TypeResolver {
       
       ListDef: eFact.createListDef => [
         if (right.native !== null)
-          type = eFact.createElementDef => [ native = LST ]
+          type = eFact.createInferredDef => [ native = LST ]
         else
-          type = maxType(left.type, (right as ListDef).type)
+          type = maxType(left.type.inferType, (right as ListDef).type.inferType)
       ]
       
       default:
@@ -397,27 +465,13 @@ class TypeResolver {
     }
   }
   
-  def ElementDef minTypeDef(ElementDef left, TypeDef right) {
-    val sType = right.type
-    if (sType !== null)
-      return switch sType {
-        ElementDef: left.minType(sType)
-        EnumDef: error("minTypeDef - EnumDef not supported")
-      }
-    else
-      error("minTypeDef for ExternalDef - Not supported yet!")
-      //TODO: support ExternalDef
+  def InferredDef minTypeDef(InferredDef left, TypeDef right) {
+    val rType = right.type.inferType
+    return left.minType(rType)
   }
   
-  def ElementDef maxTypeDef(ElementDef left, TypeDef right) {
-    val sType = right.type
-    if (sType !== null)
-      return switch sType {
-        ElementDef: left.maxType(sType)
-        EnumDef: error("maxTypeDef - EnumDef not supported")
-      }
-    else
-      error("maxTypeDef for ExternalDef - Not supported yet!")
-      //TODO: support ExternalDef
+  def InferredDef maxTypeDef(InferredDef left, TypeDef right) {
+    val rType = right.type.inferType
+    left.maxType(rType)
   }
 }

@@ -67,6 +67,8 @@ Ltm : 'ltm';
 
 Map : 'map';
 
+Out : 'out';
+
 Set : 'set';
 
 Str : 'str';
@@ -90,6 +92,8 @@ EqualsSignEqualsSign : '==';
 GreaterThanSignEqualsSign : '>=';
 
 As : 'as';
+
+In : 'in';
 
 Is : 'is';
 

@@ -7,18 +7,19 @@ import com.google.inject.Inject;
 import java.util.Set;
 import net.eldm.eldmDsl.BlockExpression;
 import net.eldm.eldmDsl.BoolLiteral;
+import net.eldm.eldmDsl.Contract;
 import net.eldm.eldmDsl.DateLiteral;
 import net.eldm.eldmDsl.DateTimeLiteral;
 import net.eldm.eldmDsl.EldmDslPackage;
 import net.eldm.eldmDsl.ElementDef;
 import net.eldm.eldmDsl.EnumDef;
 import net.eldm.eldmDsl.EnumItemDef;
-import net.eldm.eldmDsl.EnumLiteral;
 import net.eldm.eldmDsl.ExternalDef;
 import net.eldm.eldmDsl.FltLiteral;
 import net.eldm.eldmDsl.FuncDecl;
 import net.eldm.eldmDsl.Function;
 import net.eldm.eldmDsl.Import;
+import net.eldm.eldmDsl.InferredDef;
 import net.eldm.eldmDsl.IntLiteral;
 import net.eldm.eldmDsl.IsExpression;
 import net.eldm.eldmDsl.ListDef;
@@ -70,6 +71,9 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 			case EldmDslPackage.BOOL_LITERAL:
 				sequence_BoolLiteral(context, (BoolLiteral) semanticObject); 
 				return; 
+			case EldmDslPackage.CONTRACT:
+				sequence_Contract(context, (Contract) semanticObject); 
+				return; 
 			case EldmDslPackage.DATE_LITERAL:
 				sequence_DateLiteral(context, (DateLiteral) semanticObject); 
 				return; 
@@ -85,9 +89,6 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 			case EldmDslPackage.ENUM_ITEM_DEF:
 				sequence_EnumItemDef(context, (EnumItemDef) semanticObject); 
 				return; 
-			case EldmDslPackage.ENUM_LITERAL:
-				sequence_EnumLiteral(context, (EnumLiteral) semanticObject); 
-				return; 
 			case EldmDslPackage.EXTERNAL_DEF:
 				sequence_ExternalDef(context, (ExternalDef) semanticObject); 
 				return; 
@@ -102,6 +103,9 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 				return; 
 			case EldmDslPackage.IMPORT:
 				sequence_Import(context, (Import) semanticObject); 
+				return; 
+			case EldmDslPackage.INFERRED_DEF:
+				sequence_InferredDef(context, (InferredDef) semanticObject); 
 				return; 
 			case EldmDslPackage.INT_LITERAL:
 				sequence_IntLiteral(context, (IntLiteral) semanticObject); 
@@ -321,6 +325,18 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	
 	/**
 	 * Contexts:
+	 *     Contract returns Contract
+	 *
+	 * Constraint:
+	 *     ((flow='in' | flow='out') cond+=ValueExpression msg=TEXT?)
+	 */
+	protected void sequence_Contract(ISerializationContext context, Contract semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
 	 *     Literal returns DateLiteral
 	 *     DateLiteral returns DateLiteral
 	 *
@@ -363,10 +379,16 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     ElementDef returns ElementDef
 	 *
 	 * Constraint:
-	 *     (native=NativeDef | ref=[Definition|ID])
+	 *     ref=[Definition|ID]
 	 */
 	protected void sequence_ElementDef(ISerializationContext context, ElementDef semanticObject) {
-		genericSequencer.createSequence(context, semanticObject);
+		if (errorAcceptor != null) {
+			if (transientValues.isValueTransient(semanticObject, EldmDslPackage.Literals.ELEMENT_DEF__REF) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, EldmDslPackage.Literals.ELEMENT_DEF__REF));
+		}
+		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
+		feeder.accept(grammarAccess.getElementDefAccess().getRefDefinitionIDTerminalRuleCall_0_0_1(), semanticObject.eGet(EldmDslPackage.Literals.ELEMENT_DEF__REF, false));
+		feeder.finish();
 	}
 	
 	
@@ -392,25 +414,6 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 */
 	protected void sequence_EnumItemDef(ISerializationContext context, EnumItemDef semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
-	}
-	
-	
-	/**
-	 * Contexts:
-	 *     Literal returns EnumLiteral
-	 *     EnumLiteral returns EnumLiteral
-	 *
-	 * Constraint:
-	 *     ref=[EnumItemDef|ID]
-	 */
-	protected void sequence_EnumLiteral(ISerializationContext context, EnumLiteral semanticObject) {
-		if (errorAcceptor != null) {
-			if (transientValues.isValueTransient(semanticObject, EldmDslPackage.Literals.ENUM_LITERAL__REF) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, EldmDslPackage.Literals.ENUM_LITERAL__REF));
-		}
-		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
-		feeder.accept(grammarAccess.getEnumLiteralAccess().getRefEnumItemDefIDTerminalRuleCall_2_0_1(), semanticObject.eGet(EldmDslPackage.Literals.ENUM_LITERAL__REF, false));
-		feeder.finish();
 	}
 	
 	
@@ -454,6 +457,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     (
 	 *         (type='catch' param=ElementDef?) | 
 	 *         (
+	 *             contracts+=Contract* 
 	 *             type='def' 
 	 *             srv?='service'? 
 	 *             get?='get'? 
@@ -503,6 +507,26 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	
 	/**
 	 * Contexts:
+	 *     TopDef returns InferredDef
+	 *     ElementDef returns InferredDef
+	 *     InferredDef returns InferredDef
+	 *
+	 * Constraint:
+	 *     native=NativeDef
+	 */
+	protected void sequence_InferredDef(ISerializationContext context, InferredDef semanticObject) {
+		if (errorAcceptor != null) {
+			if (transientValues.isValueTransient(semanticObject, EldmDslPackage.Literals.INFERRED_DEF__NATIVE) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, EldmDslPackage.Literals.INFERRED_DEF__NATIVE));
+		}
+		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
+		feeder.accept(grammarAccess.getInferredDefAccess().getNativeNativeDefParserRuleCall_0_0(), semanticObject.getNative());
+		feeder.finish();
+	}
+	
+	
+	/**
+	 * Contexts:
 	 *     Literal returns IntLiteral
 	 *     IntLiteral returns IntLiteral
 	 *
@@ -524,6 +548,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 * Contexts:
 	 *     TopDef returns ListDef
 	 *     ElementDef returns ListDef
+	 *     InferredDef returns ListDef
 	 *     ListDef returns ListDef
 	 *
 	 * Constraint:
@@ -557,6 +582,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 * Contexts:
 	 *     TopDef returns MapDef
 	 *     ElementDef returns MapDef
+	 *     InferredDef returns MapDef
 	 *     MapDef returns MapDef
 	 *
 	 * Constraint:

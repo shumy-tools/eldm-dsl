@@ -3,22 +3,22 @@ package net.eldm.util
 import com.google.inject.Inject
 import com.google.inject.Singleton
 import net.eldm.eldmDsl.Definition
-import net.eldm.eldmDsl.ElementDef
-import net.eldm.eldmDsl.EnumDef
 import net.eldm.eldmDsl.ExternalDef
+import net.eldm.eldmDsl.InferredDef
 import net.eldm.eldmDsl.ListDef
 import net.eldm.eldmDsl.MapDef
 import net.eldm.eldmDsl.TypeDef
 
+import static net.eldm.util.ValidationStack.*
+
 import static extension net.eldm.spi.Natives.*
-import static extension net.eldm.util.ValidationStack.*
 
 @Singleton
 class TypeValidator {
   @Inject extension TypeResolver tResolver
   @Inject extension IdentifierResolver iResolver
   
-  def void inDefinition(ElementDef inferred, Definition superDef) {
+  def void inDefinition(InferredDef inferred, Definition superDef) {
     switch superDef {
       TypeDef: inferred.inType(superDef)
       ExternalDef: inferred.inExternal(superDef)
@@ -26,7 +26,7 @@ class TypeValidator {
     }
   }
   
-  def void inElement(ElementDef inferred, ElementDef superDef) {
+  def void inElement(InferredDef inferred, InferredDef superDef) {
     if (superDef === null || superDef.native == ANY)
       return;
     
@@ -58,11 +58,6 @@ class TypeValidator {
       return;
     }
     
-    if (superDef instanceof EnumDef && inferred instanceof MapDef) {
-      (inferred as MapDef).inEnum(superDef as EnumDef)
-      return;
-    }
-    
     error('''Non compatible elements («inferred.class.simpleName», «superDef.class.simpleName»). Please report this bug.''')
   }
   
@@ -79,7 +74,7 @@ class TypeValidator {
         if (entry.opt && !kd.opt)
           error('''Inferred type not assignable to map with required key '«kd.name»'.''')
         
-        entry.type.inElement(kd.entryType)  
+        entry.type.inferType.inElement(kd.entryType)
       }
     }
     
@@ -97,20 +92,19 @@ class TypeValidator {
   }
   
   def void inList(ListDef inferred, ListDef superDef) {
-    inferred.type.inElement(superDef.type)
+    inferred.type.inferType.inElement(superDef.type.inferType)
   }
   
-  def void inEnum(MapDef inferred, EnumDef superDef) {
+  /*def void inEnum(MapDef inferred, EnumDef superDef) {
     inferred.inMap(superDef.type)
-  }
+  }*/
   
-  def void inType(ElementDef inferred, TypeDef superDef) {
-    val sType = superDef.type
-    if (sType !== null)
-      switch sType {
-        ElementDef: { inferred.inElement(sType); return; }
-        EnumDef: { error("inType - EnumDef not supported"); return; }
-      }
+  def void inType(InferredDef inferred, TypeDef superDef) {
+    val sType = superDef.type.inferType
+    if (sType !== null) {
+      inferred.inElement(sType)
+      return
+    }
     
     // the parser already verified the content string
     if (superDef.parser !== null && inferred.native == STR)
@@ -119,7 +113,7 @@ class TypeValidator {
     error('''Literal value not assignable to '«superDef.name»'.''')
   }
   
-  def void inExternal(ElementDef inferred, ExternalDef extDef) {
+  def void inExternal(InferredDef inferred, ExternalDef extDef) {
     //TODO: support external defs
     error("inExternal - Not supported yet!")
   }

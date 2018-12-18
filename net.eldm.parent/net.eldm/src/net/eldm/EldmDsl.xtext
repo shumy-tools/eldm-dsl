@@ -39,18 +39,26 @@ PlugDsl:
 ;
 
 // ------------------------------------------------------------------------------------------------------------------------------
-// Operations
+// Operation Functions
 // ------------------------------------------------------------------------------------------------------------------------------
 Function:
   decl=FuncDecl
     body=BlockExpression
 ;
-
+  
   FuncDecl:
-    //TODO: add pre-conditions/post-conditions
-    (type='catch' param=ElementDef?
-    | type='def' srv?='service'? (get?='get' | 'set') path=PathLiteral? param=ElementDef? ('->' result=ElementDef)?) ':'
+    (
+      type='catch' param=ElementDef?
+      |
+      (contracts+=Contract)*
+      type='def' srv?='service'? (get?='get' | 'set') path=PathLiteral? param=ElementDef? ('->' result=ElementDef)?
+    )
+    ':'
   ;
+    
+    Contract:
+      flow=('in' | 'out') '(' cond+=ValueExpression ')' ('->' msg=TEXT)? BREAK
+    ;
 
 SubPath:
   'def' path=PathLiteral
@@ -157,12 +165,16 @@ TopDef:
 ;
 
   ElementDef:
+    ref=[Definition]
+    | InferredDef
+  ;
+  
+  InferredDef:
     native=NativeDef
-    | ref=[Definition]
     | ListDef
     | MapDef
   ;
-
+  
   MapDef:
     => ({MapDef} '{' (defs+=MapEntryDef (',' defs+=MapEntryDef)*)? (',' ext?='*')? '}')
     | ({MapDef} '{'
@@ -215,7 +227,6 @@ Literal:
   
   | ListLiteral
   | MapLiteral
-  | EnumLiteral
   | PatternLiteral
 ;
   
@@ -245,10 +256,6 @@ Literal:
     MapEntryLiteral:
       name=ID ':' value=Literal
     ;
-    
-  EnumLiteral: {EnumLiteral}
-    '@' ref=[EnumItemDef]
-  ;
   
   PatternLiteral: {PatternLiteral}
     (native=NativeDef | ref=[Definition]) '@' text=TEXT

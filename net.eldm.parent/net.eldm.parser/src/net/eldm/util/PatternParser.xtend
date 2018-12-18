@@ -10,7 +10,8 @@ import net.eldm.eldmDsl.TypeDef
 import net.eldm.parser.antlr.EldmDslParser
 import net.eldm.services.EldmDslGrammarAccess
 
-import static extension net.eldm.spi.Natives.*
+import static net.eldm.spi.Natives.*
+
 import static extension net.eldm.util.ValidationStack.*
 
 @Singleton
@@ -57,7 +58,7 @@ class PatternParser {
       
       //validate if it's assignable to value.native ?
       if (value.native !== null) {
-        val superDef = eFact.createElementDef => [ native = value.native ]
+        val superDef = eFact.createInferredDef => [ native = value.native ]
         elmDef.inElement(superDef)
         pop
         return res

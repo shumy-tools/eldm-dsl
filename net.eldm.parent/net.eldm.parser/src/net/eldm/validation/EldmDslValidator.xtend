@@ -110,6 +110,15 @@ class EldmDslValidator extends AbstractEldmDslValidator {
     
     if (result !== null && !result.isMapDef)
       error('''The result can only be a map definition.''', it, EldmDslPackage.Literals.FUNC_DECL__RESULT)
+    
+    //TODO: validate contract
+    /*contract.
+    
+    .tryValidation[
+      val rType = vr.result.inferType
+      rType.inElement(vr.type)
+      if (vr.type === null) vr.type = rType
+    ]*/
   }
   
   @Check
@@ -172,8 +181,9 @@ class EldmDslValidator extends AbstractEldmDslValidator {
   def void checkVar(Var vr) {
     vr.tryValidation[
       val rType = vr.result.inferType
-      rType.inElement(vr.type)
-      if (vr.type === null) vr.type = rType
+      rType.inElement(vr.type.inferType)
+      if (vr.type === null)
+        vr.type = rType
     ]
   }
 }

@@ -3,19 +3,17 @@ package net.eldm.spi
 import net.eldm.eldmDsl.BoolLiteral
 import net.eldm.eldmDsl.DateLiteral
 import net.eldm.eldmDsl.DateTimeLiteral
-import net.eldm.eldmDsl.ElementDef
-import net.eldm.eldmDsl.EnumDef
 import net.eldm.eldmDsl.FltLiteral
+import net.eldm.eldmDsl.InferredDef
 import net.eldm.eldmDsl.IntLiteral
 import net.eldm.eldmDsl.ListDef
+import net.eldm.eldmDsl.ListLiteral
 import net.eldm.eldmDsl.Literal
 import net.eldm.eldmDsl.MapDef
+import net.eldm.eldmDsl.MapLiteral
 import net.eldm.eldmDsl.PathLiteral
 import net.eldm.eldmDsl.StrLiteral
 import net.eldm.eldmDsl.TimeLiteral
-import net.eldm.eldmDsl.MapLiteral
-import net.eldm.eldmDsl.ListLiteral
-import net.eldm.eldmDsl.EnumLiteral
 
 class Natives {
   public static String ANY = 'any'
@@ -32,10 +30,9 @@ class Natives {
   
   public static String MAP = 'map'
   public static String LST = 'lst'
-  public static String ENUM = 'enum'
   
-  static def isOneOf(ElementDef elmDef, String ...types) {
-    val nat = elmDef.nativeType
+  static def isOneOf(InferredDef inferred, String ...types) {
+    val nat = inferred.nativeType
     return types.exists[it == nat]
   }
   
@@ -45,19 +42,18 @@ class Natives {
   }
   
   
-  static def getNativeType(ElementDef elmDef) {
-    if (elmDef === null) return ANY
+  static def getNativeType(InferredDef inferred) {
+    if (inferred === null) return ANY
     
-    if (elmDef.native !== null)
-      return elmDef.native
+    if (inferred.native !== null)
+      return inferred.native
     
-    if (elmDef.ref !== null)
-      return elmDef.ref.name
+    if (inferred.ref !== null)
+      return inferred.ref.name
           
-    return switch elmDef {
+    return switch inferred {
       MapDef: MAP
       ListDef: LST
-      EnumDef: ENUM
     }
   }
   
@@ -77,7 +73,6 @@ class Natives {
       
       MapLiteral: MAP
       ListLiteral: LST
-      EnumLiteral: ENUM
     }
   }
 }
