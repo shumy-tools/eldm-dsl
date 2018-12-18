@@ -809,7 +809,7 @@ ruleContract returns [EObject current=null]
 					if ($current==null) {
 						$current = createModelElementForParent(grammarAccess.getContractRule());
 					}
-					add(
+					set(
 						$current,
 						"cond",
 						lv_cond_2_0,

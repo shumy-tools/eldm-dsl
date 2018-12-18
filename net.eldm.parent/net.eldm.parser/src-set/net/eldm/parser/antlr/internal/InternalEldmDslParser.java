@@ -2263,7 +2263,7 @@ public class InternalEldmDslParser extends AbstractInternalAntlrParser {
               					if (current==null) {
               						current = createModelElementForParent(grammarAccess.getContractRule());
               					}
-              					add(
+              					set(
               						current,
               						"cond",
               						lv_cond_2_0,

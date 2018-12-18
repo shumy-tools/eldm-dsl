@@ -328,7 +328,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     Contract returns Contract
 	 *
 	 * Constraint:
-	 *     ((flow='in' | flow='out') cond+=ValueExpression msg=TEXT?)
+	 *     ((flow='in' | flow='out') cond=ValueExpression msg=TEXT?)
 	 */
 	protected void sequence_Contract(ISerializationContext context, Contract semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);

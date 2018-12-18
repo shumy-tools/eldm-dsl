@@ -263,6 +263,28 @@ class TestDefinition {
   }
   
   @Test
+  def void testContract() {
+    ph.test('''
+      module /main/test
+      
+      definitions:
+        typedef Id { id: int }
+        
+        typedef Subject {
+          id: int
+          name?: str
+        }
+        
+        let const = 10
+      
+      in (id > 10) -> 'error message'
+      def get /subject Id -> Subject:
+        let y = id is int
+        
+    ''')
+  }
+  
+  @Test
   def void testUnknowKeys() {
     val let1 = "let y = «str»x*.name + 'Martins'"
     val let2 = "let x = «{ name: str }»x"
@@ -275,6 +297,21 @@ class TestDefinition {
         let z = x.name + 'Martins'
         
     ''')
+  }
+  
+  @Test
+  def void testIsError() {
+    ph.testExpectedErrors('''
+      module /main/test
+      
+      def service get { id: int, x: map }:
+        let x = { name: 'Alex' }
+        let z = x.name + 'Martins: '
+        let w = x.name is map
+        
+    ''',
+      "No supported feature 'is' between types (str, map)"
+    )
   }
   
   @Test

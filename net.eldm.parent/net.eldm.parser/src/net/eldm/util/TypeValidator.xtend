@@ -95,10 +95,6 @@ class TypeValidator {
     inferred.type.inferType.inElement(superDef.type.inferType)
   }
   
-  /*def void inEnum(MapDef inferred, EnumDef superDef) {
-    inferred.inMap(superDef.type)
-  }*/
-  
   def void inType(InferredDef inferred, TypeDef superDef) {
     val sType = superDef.type.inferType
     if (sType !== null) {

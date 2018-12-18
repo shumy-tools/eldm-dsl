@@ -57,7 +57,7 @@ Function:
   ;
     
     Contract:
-      flow=('in' | 'out') '(' cond+=ValueExpression ')' ('->' msg=TEXT)? BREAK
+      flow=('in' | 'out') '(' cond=ValueExpression ')' ('->' msg=TEXT)? BREAK
     ;
 
 SubPath:

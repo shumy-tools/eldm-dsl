@@ -453,10 +453,10 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cBREAKParserRuleCall_5 = (RuleCall)cGroup.eContents().get(5);
 		
 		//Contract:
-		//	flow=('in' | 'out') '(' cond+=ValueExpression ')' ('->' msg=TEXT)? BREAK;
+		//	flow=('in' | 'out') '(' cond=ValueExpression ')' ('->' msg=TEXT)? BREAK;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//flow=('in' | 'out') '(' cond+=ValueExpression ')' ('->' msg=TEXT)? BREAK
+		//flow=('in' | 'out') '(' cond=ValueExpression ')' ('->' msg=TEXT)? BREAK
 		public Group getGroup() { return cGroup; }
 		
 		//flow=('in' | 'out')
@@ -474,7 +474,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 		//'('
 		public Keyword getLeftParenthesisKeyword_1() { return cLeftParenthesisKeyword_1; }
 		
-		//cond+=ValueExpression
+		//cond=ValueExpression
 		public Assignment getCondAssignment_2() { return cCondAssignment_2; }
 		
 		//ValueExpression
@@ -2474,7 +2474,7 @@ public class EldmDslGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//Contract:
-	//	flow=('in' | 'out') '(' cond+=ValueExpression ')' ('->' msg=TEXT)? BREAK;
+	//	flow=('in' | 'out') '(' cond=ValueExpression ')' ('->' msg=TEXT)? BREAK;
 	public ContractElements getContractAccess() {
 		return pContract;
 	}

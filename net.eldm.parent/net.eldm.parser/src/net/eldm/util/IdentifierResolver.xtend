@@ -12,53 +12,83 @@ import net.eldm.eldmDsl.Var
 import org.eclipse.emf.ecore.EObject
 
 import static net.eldm.util.ValidationStack.*
+import net.eldm.eldmDsl.Contract
 
 @Singleton
 class IdentifierResolver {
   @Inject extension TypeResolver tResolver
   
   def InferredDef resolve(EObject leaf, String id) {
-    val leafCont = leaf.findContainer(Var)
+    val contract = leaf.findContainer(Contract)
+    if (contract !== null) {
+      if (contract.flow == 'in') {
+        val func = contract.findContainer(Function)
+        var type = func.resolve(id)
+        if (type !== null)
+          return type
+      } else {
+        error('''No support for post-condictions yet.''')
+      }
+      
+      val mod = contract.findContainer(Module)
+      return mod.resolve(contract, id)
+    }
     
     // search in recursive function blocks
+    val leafCont = leaf.findContainer(Var)
     var EObject block = leaf
     do {
       block = block.findContainer(BlockExpression)
       if (block !== null) {
         // try search in expression block
-        val type = block.resolveIdentifier(leafCont, id)
+        var type = block.resolveIdentifier(leafCont, id)
         if (type !== null)
           return type
         
         // try search in function parameter
-        val func = block.eContainer
-        if (func instanceof Function) {
-          val fParam = func.decl.param.inferType
-          if (fParam instanceof MapDef) {
-            val entry = fParam.getMapEntry(id)
-            if (entry !== null)
-              return entry.entryType
-          }
+        val pBlock = block.eContainer
+        type = switch pBlock {
+          Function: pBlock.resolve(id)
+          
+          //TODO: search in other blocks, if, for, while, etc
+          default: error('''Identifier resolution not supported for: '«pBlock.class.simpleName»'.''')
         }
+        
+        if (type !== null)
+          return type
+        
       } else {
         // try search in module block
         val mod = leaf.findContainer(Module)
-        if (mod !== null) {
-          val type = mod.resolveIdentifier(leafCont, id)
-          if (type !== null)
-            return type
-            
-          val tDef = mod.eContents.filter(TypeDef).findFirst[name == id]
-          if (tDef !== null)
-            return tDef.inferType
-        }
+        var type = mod.resolve(leafCont, id)
+        if (type !== null)
+          return type
       }
     } while (block !== null)
     
     error('''Couldn't resolve reference '«id»'.''')
   }
   
-  def InferredDef resolveIdentifier(EObject block, Var leaf, String id) {
+  def InferredDef resolve(Function func, String id) {
+    val fParam = func.decl.param.inferType as MapDef
+    val entry = fParam.getMapEntry(id)
+    if (entry !== null)
+      return entry.entryType
+  }
+  
+  def InferredDef resolve(Module mod, EObject leaf, String id) {
+    if (mod !== null) {
+      val type = mod.resolveIdentifier(leaf, id)
+      if (type !== null)
+        return type
+        
+      val tDef = mod.eContents.filter(TypeDef).findFirst[name == id]
+      if (tDef !== null)
+        return tDef.inferType
+    }
+  }
+  
+  def InferredDef resolveIdentifier(EObject block, EObject leaf, String id) {
     //search in (block or module) upstream
     val blockIdents = block.eContents.filter(Var)
 //    print('''

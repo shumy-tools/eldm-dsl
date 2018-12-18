@@ -36,6 +36,7 @@ class TypeResolver {
     else {
       kd.type = kd.value.inferType
       kd.type as InferredDef
+      //kd.value.inferType
     }
   }
   
@@ -43,16 +44,17 @@ class TypeResolver {
     if (vr.type !== null)
       vr.type.inferType
     else {
-      vr.type = vr.result.inferType
-      vr.type as InferredDef
+      // why is this creating a bug?
+      //vr.type = vr.result.inferType
+      //vr.type as InferredDef
+      vr.result.inferType
     }
   }
   
   def InferredDef getPrimaryType(Primary pr) {
     val type = pr.inferType
-    val castType = pr.type.inferType
-    
     if (pr.cast) {
+      val castType = pr.type.inferType
       try {
         dontPop = true
         type.inElement(castType)
@@ -66,10 +68,11 @@ class TypeResolver {
       }
       
       dontPop = false
+      //pr.type = castType
       return castType
     }
     
-    pr.type =  type
+    pr.type = type
     return type
   }
   
@@ -154,7 +157,7 @@ class TypeResolver {
   def InferredDef inferType(Primary pr) {
     pr.push
       var type = if (pr.value !== null)
-        pr.value.inferType 
+        pr.value.inferType
       else if (pr.exp !== null)
         pr.exp.inferType
       else if (pr.ref !== null)
@@ -170,7 +173,7 @@ class TypeResolver {
             pop
             return EldmDslFactory.eINSTANCE.createInferredDef => [ native = ANY ]
           }
-        
+          
           if (tDef instanceof MapDef) {
             val entry = tDef.getMapEntry(member)
             if (entry === null)
@@ -266,7 +269,7 @@ class TypeResolver {
           for (item: tDef.defs) {
             defs += eFact.createMapEntryDef => [
               name = item.name
-              type = tDef.type ?: eFact.createInferredDef => [ native = LST ]
+              type = tDef.type ?: eFact.createInferredDef => [ native = MAP ]
             ]
           }
         ]
@@ -279,7 +282,7 @@ class TypeResolver {
       return EldmDslFactory.eINSTANCE.createInferredDef => [ native = ANY ]
     
     if (tDef instanceof InferredDef)
-      return tDef
+      return tDef //TODO: do I need to infer MapDef and ListDef?
     
     val tRef = tDef.ref
     if (tRef !== null)

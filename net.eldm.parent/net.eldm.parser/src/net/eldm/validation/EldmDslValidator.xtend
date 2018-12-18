@@ -23,6 +23,7 @@ import net.eldm.util.ValidationError
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.validation.Check
 
+import static extension net.eldm.spi.Natives.*
 import static extension net.eldm.util.ValidationStack.*
 
 /**
@@ -111,20 +112,13 @@ class EldmDslValidator extends AbstractEldmDslValidator {
     if (result !== null && !result.isMapDef)
       error('''The result can only be a map definition.''', it, EldmDslPackage.Literals.FUNC_DECL__RESULT)
     
-    //TODO: validate contract
-    /*contract.
-    
-    .tryValidation[
-      val rType = vr.result.inferType
-      rType.inElement(vr.type)
-      if (vr.type === null) vr.type = rType
-    ]*/
-  }
-  
-  @Check
-  def void checkVarCase(Var it) {
-    if (name != name.toLowerCase)
-      warning("Incorrect name for let-value! Set all chars to lower-case.", it, EldmDslPackage.Literals.VAR__NAME)
+    tryValidation[
+      for (io : contracts) {
+        val inferred = io.cond.inferType
+        if (inferred.nativeType !== BOOL)
+          error("Contract should be a bool expression.", io, EldmDslPackage.Literals.CONTRACT__COND)
+      }
+    ]
   }
   
   @Check
@@ -179,11 +173,14 @@ class EldmDslValidator extends AbstractEldmDslValidator {
   
   @Check
   def void checkVar(Var vr) {
+    if (vr.name != vr.name.toLowerCase)
+      warning("Incorrect name for let-value! Set all chars to lower-case.", vr, EldmDslPackage.Literals.VAR__NAME)
+    
     vr.tryValidation[
-      val rType = vr.result.inferType
-      rType.inElement(vr.type.inferType)
-      if (vr.type === null)
-        vr.type = rType
+      val inferred = vr.result.inferType
+      inferred.inElement(vr.type.inferType)
+      //if (vr.type === null) // why is this creating a bug?
+      //  vr.type = inferred
     ]
   }
 }
