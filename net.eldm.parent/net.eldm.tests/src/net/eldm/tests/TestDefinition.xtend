@@ -197,7 +197,7 @@ class TestDefinition {
         typedef Map { id: int, name?: str }
         
         let x: map = { id: 10 }
-        let y: Map = { id: 10 } set x // { id: int } + map -> { id: int, * }
+        let y: Map = { id: 10 } + x // { id: int } + map -> { id: int, * }
         
     ''',
       "Inferred type with extendable fields not assignable to defined map."
@@ -220,7 +220,7 @@ class TestDefinition {
         let ex: Extended = { id: 10, other: 'field' }
         
         let x = { name: 'Alex' }
-        let y: Subject = x set { id: 10 }
+        let y: Subject = x + { id: 10 }
         let z = 10 + 30 * 2 is int and true == 2016-01-23 < 2017-05-12
         
         let a: map = { id: 20, name: 'Alex' }
@@ -252,7 +252,7 @@ class TestDefinition {
         let y = id is int
         
         let a = { id: 10 }
-        let b = a set { name: 'Alex' }
+        let b = a + { name: 'Alex' }
         let c: int = a.id + 10
         let d: str = b.name + 'Martins'
         
@@ -317,7 +317,7 @@ class TestDefinition {
   
   @Test
   def void testCastError() {
-    val let = "let y = «{ name: str }»(x set { id: 10 })"
+    val let = "let y = «{ name: str }»(x + { id: 10 })"
     ph.testExpectedErrors('''
       module /main/test
       

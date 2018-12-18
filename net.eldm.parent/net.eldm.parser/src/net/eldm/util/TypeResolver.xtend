@@ -23,6 +23,7 @@ import net.eldm.eldmDsl.Var
 
 import static extension net.eldm.spi.Natives.*
 import static extension net.eldm.util.ValidationStack.*
+import net.eldm.eldmDsl.UnaryOperation
 
 @Singleton
 class TypeResolver {
@@ -116,31 +117,40 @@ class TypeResolver {
         
         case '==', case '!=': {
           val min = lType.minType(rType)
-          if (min.isOneOf(BOOL, INT, FLT, LDA, LTM, LDT))
+          if (min.isOneOf(BOOL, STR, INT, FLT, LDA, LTM, LDT))
             eFact.createInferredDef => [ native = BOOL ]
         }
         
-        case 'del', case 'set': {
+        case '+': {
           val max = lType.maxType(rType)
-          if (max.isOneOf(MAP))
+          if (max.isOneOf(STR, INT, FLT, LST, MAP))
             max
         }
         
-        case '+', case '-': {
-          //TODO: this is more complex, i.e: MapLiteral - MapDef 
-          val min = lType.minType(rType)
-          if (min.isOneOf(STR, INT, FLT, LST))
-            min
+        case '-': {
+          if (lType.isOneOf(STR, INT, FLT)) {
+            val max = lType.maxType(rType)
+            if (max.isOneOf(STR, INT, FLT))
+              max
+          } else if (lType.isOneOf(LDA, LTM, LDT, LST, MAP)) {
+            //TODO: LST, MAP subtraction is different
+            // { id: 10, name: 'Alex' } - { id } -> remove id field
+            // ['Alex', 'Bruno', ...] - [0, 1] -> remove 0 and 1 index  
+          }
         }
         
         case '*', case '**', case '/', case '%': {
-          val min = lType.minType(rType)
-          if (min.isOneOf(INT, FLT))
-            min
+          val max = lType.maxType(rType)
+          if (max.isOneOf(INT, FLT))
+            max
         }
         
         case '!': {
-          error('''Not yet supported!''')
+          if (exp instanceof UnaryOperation) {
+            rType = exp.operand.inferType
+            if (rType.isOneOf(BOOL))
+              eFact.createInferredDef => [ native = BOOL ]
+          }
         }
         
         default:
