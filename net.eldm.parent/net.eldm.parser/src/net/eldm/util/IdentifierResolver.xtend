@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.EObject
 
 import static net.eldm.util.ValidationStack.*
 import net.eldm.eldmDsl.Contract
+import net.eldm.eldmDsl.FuncDecl
 
 @Singleton
 class IdentifierResolver {
@@ -21,14 +22,15 @@ class IdentifierResolver {
   def InferredDef resolve(EObject leaf, String id) {
     val contract = leaf.findContainer(Contract)
     if (contract !== null) {
-      if (contract.flow == 'in') {
-        val func = contract.findContainer(Function)
-        var type = func.resolve(id)
-        if (type !== null)
-          return type
-      } else {
-        error('''No support for post-condictions yet.''')
+      val funcDecl = contract.findContainer(FuncDecl)
+      val mDef = switch contract.flow {
+        case 'in': funcDecl.param.inferType as MapDef
+        case 'out': funcDecl.result.inferType as MapDef
       }
+      
+      val type = mDef.resolve(id)
+      if (type !== null)
+        return type
       
       val mod = contract.findContainer(Module)
       return mod.resolve(contract, id)
@@ -48,7 +50,10 @@ class IdentifierResolver {
         // try search in function parameter
         val pBlock = block.eContainer
         type = switch pBlock {
-          Function: pBlock.resolve(id)
+          Function: {
+            val mDef = pBlock.decl.param.inferType as MapDef 
+            mDef.resolve(id)
+          }
           
           //TODO: search in other blocks, if, for, while, etc
           default: error('''Identifier resolution not supported for: '«pBlock.class.simpleName»'.''')
@@ -69,9 +74,11 @@ class IdentifierResolver {
     error('''Couldn't resolve reference '«id»'.''')
   }
   
-  def InferredDef resolve(Function func, String id) {
-    val fParam = func.decl.param.inferType as MapDef
-    val entry = fParam.getMapEntry(id)
+  def InferredDef resolve(MapDef mDef, String id) {
+    if (mDef === null)
+      return null
+    
+    val entry = mDef.getMapEntry(id)
     if (entry !== null)
       return entry.entryType
   }

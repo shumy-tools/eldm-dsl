@@ -278,6 +278,7 @@ class TestDefinition {
         let const = 10
       
       in (id > 10) -> 'error message'
+      out (name is str) -> 'error message'
       def get /subject Id -> Subject:
         let y = id is int
         
