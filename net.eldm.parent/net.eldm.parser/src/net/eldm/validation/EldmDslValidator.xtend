@@ -10,11 +10,11 @@ import java.util.List
 import net.eldm.eldmDsl.EldmDslPackage
 import net.eldm.eldmDsl.ElementDef
 import net.eldm.eldmDsl.EnumDef
-import net.eldm.eldmDsl.FuncDecl
 import net.eldm.eldmDsl.MapDef
 import net.eldm.eldmDsl.MapEntryDef
 import net.eldm.eldmDsl.MapLiteral
 import net.eldm.eldmDsl.Module
+import net.eldm.eldmDsl.OperationDecl
 import net.eldm.eldmDsl.TypeDef
 import net.eldm.eldmDsl.Var
 import net.eldm.util.TypeResolver
@@ -25,6 +25,7 @@ import org.eclipse.xtext.validation.Check
 
 import static extension net.eldm.spi.Natives.*
 import static extension net.eldm.util.ValidationStack.*
+import org.eclipse.emf.ecore.util.EcoreUtil
 
 /**
  * This class contains custom validation rules. 
@@ -103,14 +104,14 @@ class EldmDslValidator extends AbstractEldmDslValidator {
   }
   
   @Check
-  def void checkFuncDecl(FuncDecl it) {
+  def void checkFuncDecl(OperationDecl it) {
     //TODO: check unique name in the sub-path
     
     if (param !== null && !param.isMapDef)
-      error('''The parameter can only be a map definition.''', it, EldmDslPackage.Literals.FUNC_DECL__PARAM)
+      error('''The parameter can only be a map definition.''', it, EldmDslPackage.Literals.OPERATION_DECL__PARAM)
     
     if (result !== null && !result.isMapDef)
-      error('''The result can only be a map definition.''', it, EldmDslPackage.Literals.FUNC_DECL__RESULT)
+      error('''The result can only be a map definition.''', it, EldmDslPackage.Literals.OPERATION_DECL__RESULT)
     
     tryValidation[
       for (io : contracts) {
@@ -179,8 +180,9 @@ class EldmDslValidator extends AbstractEldmDslValidator {
     vr.tryValidation[
       val inferred = vr.result.inferType
       inferred.inElement(vr.type.inferType)
-      //if (vr.type === null) // why is this creating a bug?
-      //  vr.type = inferred
+      
+      if (vr.type === null)
+        vr.type = EcoreUtil.copy(inferred)
     ]
   }
 }

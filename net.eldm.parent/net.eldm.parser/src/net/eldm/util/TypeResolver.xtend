@@ -18,26 +18,27 @@ import net.eldm.eldmDsl.PatternLiteral
 import net.eldm.eldmDsl.Primary
 import net.eldm.eldmDsl.TopDef
 import net.eldm.eldmDsl.TypeDef
+import net.eldm.eldmDsl.UnaryOperation
 import net.eldm.eldmDsl.ValueExpression
 import net.eldm.eldmDsl.Var
 
 import static extension net.eldm.spi.Natives.*
 import static extension net.eldm.util.ValidationStack.*
-import net.eldm.eldmDsl.UnaryOperation
+import org.eclipse.emf.ecore.util.EcoreUtil
 
 @Singleton
 class TypeResolver {
   @Inject extension PatternParser iParser
-  @Inject extension IdentifierResolver iResolver
   @Inject extension TypeValidator tValidator
+  @Inject extension IdentifierResolver iResolver
+  @Inject extension CallResolver cResolver
   
   def InferredDef getEntryType(MapEntryDef kd) {
     if (kd.type !== null)
       kd.type.inferType
     else {
-      kd.type = kd.value.inferType
+      kd.type = EcoreUtil.copy(kd.value.inferType)
       kd.type as InferredDef
-      //kd.value.inferType
     }
   }
   
@@ -45,10 +46,8 @@ class TypeResolver {
     if (vr.type !== null)
       vr.type.inferType
     else {
-      // why is this creating a bug?
-      //vr.type = vr.result.inferType
-      //vr.type as InferredDef
-      vr.result.inferType
+      vr.type = EcoreUtil.copy(vr.result.inferType)
+      vr.type as InferredDef
     }
   }
   
@@ -69,11 +68,9 @@ class TypeResolver {
       }
       
       dontPop = false
-      //pr.type = castType
       return castType
     }
     
-    pr.type = type
     return type
   }
   
@@ -175,30 +172,8 @@ class TypeResolver {
       else
         error('''Failed to infer Primary type! Please report this bug.''')
       
-      // resolve member calls
-      var tDef = type.inferType
-      for (it : pr.calls) {
-        if (type.nativeType == MAP) {
-          if (unknown) {
-            pop
-            return EldmDslFactory.eINSTANCE.createInferredDef => [ native = ANY ]
-          }
-          
-          if (tDef instanceof MapDef) {
-            val entry = tDef.getMapEntry(member)
-            if (entry === null)
-              error('''Couldn't resolve reference '«member»'.''')
-            
-            type = entry.entryType
-            tDef = type.inferType
-          } else
-            error('''Couldn't resolve reference '«member»'.''')
-        } else {
-          error("calls from non-map types not supported yet")
-          //TODO: de-reference other types, i.e list
-        }
-      }
-    
+      type = type.call(pr.calls)
+      
     pop
     return type
   }
@@ -244,12 +219,12 @@ class TypeResolver {
             pop
             
             if (inferred.native == ANY) {
-              type = inferred
+              type = EcoreUtil.copy(inferred)
               return
             }
           }
           
-          type = inferred
+          type = EcoreUtil.copy(inferred)
         ]
         
         PatternLiteral:
@@ -279,7 +254,7 @@ class TypeResolver {
           for (item: tDef.defs) {
             defs += eFact.createMapEntryDef => [
               name = item.name
-              type = tDef.type ?: eFact.createInferredDef => [ native = MAP ]
+              type = EcoreUtil.copy(tDef.type) ?: (eFact.createInferredDef => [ native = MAP ])
             ]
           }
         ]
@@ -369,10 +344,10 @@ class TypeResolver {
         // set other optional fields
         defs += unique.map[ entry |
           eFact.createMapEntryDef => [
-              opt = true
-              name = entry.name
-              type = entry.type
-            ]
+            opt = true
+            name = entry.name
+            type = EcoreUtil.copy(entry.type)
+          ]
         ]
         
         // are there any extendable fields?
@@ -425,7 +400,7 @@ class TypeResolver {
             eFact.createMapEntryDef => [
                 opt = entry.opt
                 name = entry.name
-                type = entry.type
+                type = EcoreUtil.copy(entry.type)
               ]
           ]
           
@@ -455,10 +430,10 @@ class TypeResolver {
           // set other unique fields
           defs += unique.map[ entry | // copy is needed to avoid ConcurrentModificationException
             eFact.createMapEntryDef => [
-                opt = entry.opt
-                name = entry.name
-                type = entry.type
-              ]
+              opt = entry.opt
+              name = entry.name
+              type = EcoreUtil.copy(entry.type)
+            ]
           ]
           
           // are there any extendable fields?

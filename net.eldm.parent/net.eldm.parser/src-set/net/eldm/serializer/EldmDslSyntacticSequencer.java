@@ -125,13 +125,13 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *
 	 * This ambiguous syntax occurs at:
 	 *     imports+=Import (ambiguity) (rule end)
-	 *     imports+=Import (ambiguity) funcs+=Function
+	 *     imports+=Import (ambiguity) opers+=Operation
 	 *     imports+=Import (ambiguity) paths+=SubPath
 	 *     name=PathLiteral (ambiguity) (rule end)
-	 *     name=PathLiteral (ambiguity) funcs+=Function
+	 *     name=PathLiteral (ambiguity) opers+=Operation
 	 *     name=PathLiteral (ambiguity) paths+=SubPath
 	 *     plugs+=PlugDsl (ambiguity) (rule end)
-	 *     plugs+=PlugDsl (ambiguity) funcs+=Function
+	 *     plugs+=PlugDsl (ambiguity) opers+=Operation
 	 *     plugs+=PlugDsl (ambiguity) paths+=SubPath
 	 */
 	protected void emit_Module___DefinitionsKeyword_4_0_BEGINTerminalRuleCall_4_1_ENDTerminalRuleCall_4_4__q(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {

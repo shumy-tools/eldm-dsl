@@ -6,6 +6,7 @@ package net.eldm.core
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import com.google.inject.Injector
+import net.eldm.util.CallResolver
 import net.eldm.util.IdentifierResolver
 import net.eldm.util.PatternParser
 import net.eldm.util.TypeResolver
@@ -22,6 +23,7 @@ class EldmDslStandaloneSetup extends EldmDslStandaloneSetupGenerated {
       
       bind(TypeResolver).to(TypeResolver)
       bind(IdentifierResolver).to(IdentifierResolver)
+      bind(CallResolver).to(CallResolver)
     }
   }
   

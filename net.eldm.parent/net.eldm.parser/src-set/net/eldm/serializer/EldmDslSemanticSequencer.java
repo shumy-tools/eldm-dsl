@@ -16,8 +16,6 @@ import net.eldm.eldmDsl.EnumDef;
 import net.eldm.eldmDsl.EnumItemDef;
 import net.eldm.eldmDsl.ExternalDef;
 import net.eldm.eldmDsl.FltLiteral;
-import net.eldm.eldmDsl.FuncDecl;
-import net.eldm.eldmDsl.Function;
 import net.eldm.eldmDsl.Import;
 import net.eldm.eldmDsl.InferredDef;
 import net.eldm.eldmDsl.IntLiteral;
@@ -29,6 +27,8 @@ import net.eldm.eldmDsl.MapEntryDef;
 import net.eldm.eldmDsl.MapEntryLiteral;
 import net.eldm.eldmDsl.MapLiteral;
 import net.eldm.eldmDsl.MemberCall;
+import net.eldm.eldmDsl.Operation;
+import net.eldm.eldmDsl.OperationDecl;
 import net.eldm.eldmDsl.PathLiteral;
 import net.eldm.eldmDsl.PatternLiteral;
 import net.eldm.eldmDsl.PlugDsl;
@@ -95,12 +95,6 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 			case EldmDslPackage.FLT_LITERAL:
 				sequence_FltLiteral(context, (FltLiteral) semanticObject); 
 				return; 
-			case EldmDslPackage.FUNC_DECL:
-				sequence_FuncDecl(context, (FuncDecl) semanticObject); 
-				return; 
-			case EldmDslPackage.FUNCTION:
-				sequence_Function(context, (Function) semanticObject); 
-				return; 
 			case EldmDslPackage.IMPORT:
 				sequence_Import(context, (Import) semanticObject); 
 				return; 
@@ -136,6 +130,12 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 				return; 
 			case EldmDslPackage.MODULE:
 				sequence_Module(context, (net.eldm.eldmDsl.Module) semanticObject); 
+				return; 
+			case EldmDslPackage.OPERATION:
+				sequence_Operation(context, (Operation) semanticObject); 
+				return; 
+			case EldmDslPackage.OPERATION_DECL:
+				sequence_OperationDecl(context, (OperationDecl) semanticObject); 
 				return; 
 			case EldmDslPackage.PATH_LITERAL:
 				sequence_PathLiteral(context, (PathLiteral) semanticObject); 
@@ -451,50 +451,6 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	
 	/**
 	 * Contexts:
-	 *     FuncDecl returns FuncDecl
-	 *
-	 * Constraint:
-	 *     (
-	 *         (type='catch' param=ElementDef?) | 
-	 *         (
-	 *             contracts+=Contract* 
-	 *             type='def' 
-	 *             srv?='service'? 
-	 *             get?='get'? 
-	 *             path=PathLiteral? 
-	 *             param=ElementDef? 
-	 *             result=ElementDef?
-	 *         )
-	 *     )
-	 */
-	protected void sequence_FuncDecl(ISerializationContext context, FuncDecl semanticObject) {
-		genericSequencer.createSequence(context, semanticObject);
-	}
-	
-	
-	/**
-	 * Contexts:
-	 *     Function returns Function
-	 *
-	 * Constraint:
-	 *     (decl=FuncDecl body=BlockExpression)
-	 */
-	protected void sequence_Function(ISerializationContext context, Function semanticObject) {
-		if (errorAcceptor != null) {
-			if (transientValues.isValueTransient(semanticObject, EldmDslPackage.Literals.FUNCTION__DECL) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, EldmDslPackage.Literals.FUNCTION__DECL));
-			if (transientValues.isValueTransient(semanticObject, EldmDslPackage.Literals.FUNCTION__BODY) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, EldmDslPackage.Literals.FUNCTION__BODY));
-		}
-		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
-		feeder.accept(grammarAccess.getFunctionAccess().getDeclFuncDeclParserRuleCall_0_0(), semanticObject.getDecl());
-		feeder.accept(grammarAccess.getFunctionAccess().getBodyBlockExpressionParserRuleCall_1_0(), semanticObject.getBody());
-		feeder.finish();
-	}
-	
-	
-	/**
-	 * Contexts:
 	 *     Import returns Import
 	 *
 	 * Constraint:
@@ -586,7 +542,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     MapDef returns MapDef
 	 *
 	 * Constraint:
-	 *     (((defs+=MapEntryDef defs+=MapEntryDef*)? ext?='*'?) | ((defs+=MapEntryDef defs+=MapEntryDef*)? ext?='*'?))
+	 *     (((defs+=MapEntryDef defs+=MapEntryDef*)? ext?='?'?) | ((defs+=MapEntryDef defs+=MapEntryDef*)? ext?='?'?))
 	 */
 	protected void sequence_MapDef(ISerializationContext context, MapDef semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -644,7 +600,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     MemberCall returns MemberCall
 	 *
 	 * Constraint:
-	 *     (unknown?='*.'? member=ID)
+	 *     ((unknown?='?.'? member=ID (params+=ValueExpression params+=ValueExpression*)?) | key=ValueExpression)
 	 */
 	protected void sequence_MemberCall(ISerializationContext context, MemberCall semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -662,7 +618,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *         plugs+=PlugDsl* 
 	 *         defs+=Definition* 
 	 *         vars+=Var* 
-	 *         funcs+=Function* 
+	 *         opers+=Operation* 
 	 *         paths+=SubPath*
 	 *     )
 	 */
@@ -681,6 +637,50 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 */
 	protected void sequence_MultiplicativeExpression(ISerializationContext context, ValueExpression semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
+	 *     OperationDecl returns OperationDecl
+	 *
+	 * Constraint:
+	 *     (
+	 *         (type='catch' param=ElementDef?) | 
+	 *         (
+	 *             contracts+=Contract* 
+	 *             type='def' 
+	 *             srv?='service'? 
+	 *             get?='get'? 
+	 *             path=PathLiteral? 
+	 *             param=ElementDef? 
+	 *             result=ElementDef?
+	 *         )
+	 *     )
+	 */
+	protected void sequence_OperationDecl(ISerializationContext context, OperationDecl semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
+	 *     Operation returns Operation
+	 *
+	 * Constraint:
+	 *     (decl=OperationDecl body=BlockExpression)
+	 */
+	protected void sequence_Operation(ISerializationContext context, Operation semanticObject) {
+		if (errorAcceptor != null) {
+			if (transientValues.isValueTransient(semanticObject, EldmDslPackage.Literals.OPERATION__DECL) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, EldmDslPackage.Literals.OPERATION__DECL));
+			if (transientValues.isValueTransient(semanticObject, EldmDslPackage.Literals.OPERATION__BODY) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, EldmDslPackage.Literals.OPERATION__BODY));
+		}
+		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
+		feeder.accept(grammarAccess.getOperationAccess().getDeclOperationDeclParserRuleCall_0_0(), semanticObject.getDecl());
+		feeder.accept(grammarAccess.getOperationAccess().getBodyBlockExpressionParserRuleCall_1_0(), semanticObject.getBody());
+		feeder.finish();
 	}
 	
 	
@@ -821,7 +821,7 @@ public class EldmDslSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *     SubPath returns SubPath
 	 *
 	 * Constraint:
-	 *     (path=PathLiteral funcs+=Function+)
+	 *     (path=PathLiteral funcs+=Operation+)
 	 */
 	protected void sequence_SubPath(ISerializationContext context, SubPath semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);

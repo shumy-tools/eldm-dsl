@@ -22,7 +22,7 @@ Module:
     (vars+=Var)*
   END)?
   
-  (funcs+=Function)*
+  (opers+=Operation)*
   (paths+=SubPath)*
 ;
 
@@ -41,12 +41,12 @@ PlugDsl:
 // ------------------------------------------------------------------------------------------------------------------------------
 // Operation Functions
 // ------------------------------------------------------------------------------------------------------------------------------
-Function:
-  decl=FuncDecl
+Operation:
+  decl=OperationDecl
     body=BlockExpression
 ;
   
-  FuncDecl:
+  OperationDecl:
     (
       type='catch' param=ElementDef?
       |
@@ -63,7 +63,7 @@ Function:
 SubPath:
   'def' path=PathLiteral
   BEGIN
-    (funcs+=Function)+
+    (funcs+=Operation)+
   END
 ;
 
@@ -129,7 +129,10 @@ ValueExpression:
     | (cast?='«' type=ElementDef '»')? (ref=ID | '(' exp=ValueExpression ')') calls+=MemberCall*
   ;
    
-    MemberCall: ('.'|unknown?='*.') member=ID;
+    MemberCall:
+      ('.'|unknown?='?.') member=ID ('(' params+=ValueExpression (',' params+=ValueExpression)* ')')?
+      | '[' key=ValueExpression ']'
+    ;
 
 /*
 OperationCall:
@@ -176,11 +179,11 @@ TopDef:
   ;
   
   MapDef:
-    => ({MapDef} '{' (defs+=MapEntryDef (',' defs+=MapEntryDef)*)? (',' ext?='*')? '}')
+    => ({MapDef} '{' (defs+=MapEntryDef (',' defs+=MapEntryDef)*)? (',' ext?='?')? '}')
     | ({MapDef} '{'
     BEGIN
       (defs+=MapEntryDef (','? BREAK defs+=MapEntryDef)*)?
-      ext?='*'?
+      ext?='?'?
     END
     '}')
   ;

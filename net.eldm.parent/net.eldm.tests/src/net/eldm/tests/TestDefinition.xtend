@@ -170,6 +170,9 @@ class TestDefinition {
         typedef Ox enum:
           X Y
         
+      def get /subject {}:
+        let sex: str = Sex.M.desc
+        
     ''')
   }
   
@@ -197,7 +200,7 @@ class TestDefinition {
         typedef Map { id: int, name?: str }
         
         let x: map = { id: 10 }
-        let y: Map = { id: 10 } + x // { id: int } + map -> { id: int, * }
+        let y: Map = { id: 10 } + x // { id: int } + map -> { id: int, ? }
         
     ''',
       "Inferred type with extendable fields not assignable to defined map."
@@ -210,7 +213,7 @@ class TestDefinition {
       module /main/test
       
       definitions:
-        typedef Extended { id: int, * }
+        typedef Extended { id: int, ? }
               
         typedef Subject {
           id: int
@@ -259,6 +262,10 @@ class TestDefinition {
         let a1: { id: int, user?: Subject } = { id: 10, user: { id: 5, name: 'Alex' } }
         let a2 = a1.user.name + 'Martins'
         
+        let arr = [1, 2, 3]
+        let l1: int = arr.len + arr[0]
+        let keys: ..str = a.keys + ['Other']
+        
     ''')
   }
   
@@ -287,7 +294,7 @@ class TestDefinition {
   
   @Test
   def void testUnknowKeys() {
-    val let1 = "let y = «str»x*.name + 'Martins'"
+    val let1 = "let y = «str»x?.name + 'Martins'"
     val let2 = "let x = «{ name: str }»x"
     ph.test('''
       module /main/test

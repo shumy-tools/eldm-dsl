@@ -3,17 +3,17 @@ package net.eldm.util
 import com.google.inject.Inject
 import com.google.inject.Singleton
 import net.eldm.eldmDsl.BlockExpression
-import net.eldm.eldmDsl.Function
+import net.eldm.eldmDsl.Contract
 import net.eldm.eldmDsl.InferredDef
 import net.eldm.eldmDsl.MapDef
 import net.eldm.eldmDsl.Module
+import net.eldm.eldmDsl.Operation
+import net.eldm.eldmDsl.OperationDecl
 import net.eldm.eldmDsl.TypeDef
 import net.eldm.eldmDsl.Var
 import org.eclipse.emf.ecore.EObject
 
 import static net.eldm.util.ValidationStack.*
-import net.eldm.eldmDsl.Contract
-import net.eldm.eldmDsl.FuncDecl
 
 @Singleton
 class IdentifierResolver {
@@ -22,7 +22,7 @@ class IdentifierResolver {
   def InferredDef resolve(EObject leaf, String id) {
     val contract = leaf.findContainer(Contract)
     if (contract !== null) {
-      val funcDecl = contract.findContainer(FuncDecl)
+      val funcDecl = contract.findContainer(OperationDecl)
       val mDef = switch contract.flow {
         case 'in': funcDecl.param.inferType as MapDef
         case 'out': funcDecl.result.inferType as MapDef
@@ -50,7 +50,7 @@ class IdentifierResolver {
         // try search in function parameter
         val pBlock = block.eContainer
         type = switch pBlock {
-          Function: {
+          Operation: {
             val mDef = pBlock.decl.param.inferType as MapDef 
             mDef.resolve(id)
           }
