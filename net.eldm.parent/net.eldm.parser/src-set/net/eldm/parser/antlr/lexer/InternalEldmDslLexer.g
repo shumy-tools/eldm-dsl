@@ -31,13 +31,21 @@ Match : 'match';
 
 Bool : 'bool';
 
+Else : 'else';
+
 Enum : 'enum';
 
 From : 'from';
 
+Func : 'func';
+
 Mask : 'mask';
 
+None : 'none';
+
 Path : 'path';
+
+Then : 'then';
 
 True : 'true';
 
@@ -50,6 +58,8 @@ Def : 'def';
 Del : 'del';
 
 Flt : 'flt';
+
+For : 'for';
 
 Get : 'get';
 
@@ -73,6 +83,8 @@ Set : 'set';
 
 Str : 'str';
 
+Use : 'use';
+
 Var : 'var';
 
 ExclamationMarkEqualsSign : '!=';
@@ -92,6 +104,8 @@ GreaterThanSignEqualsSign : '>=';
 QuestionMarkFullStop : '?.';
 
 As : 'as';
+
+If : 'if';
 
 In : 'in';
 

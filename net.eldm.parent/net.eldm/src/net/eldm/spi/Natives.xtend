@@ -14,9 +14,15 @@ import net.eldm.eldmDsl.MapLiteral
 import net.eldm.eldmDsl.PathLiteral
 import net.eldm.eldmDsl.StrLiteral
 import net.eldm.eldmDsl.TimeLiteral
+import net.eldm.eldmDsl.TopDef
+import net.eldm.eldmDsl.EnumDef
+import net.eldm.eldmDsl.ElementDef
+import net.eldm.eldmDsl.LambdaDef
 
 class Natives {
+  public static String NONE = 'none'
   public static String ANY = 'any'
+  public static String OPEN = 'open'
   
   public static String BOOL = 'bool'
   public static String STR = 'str'
@@ -31,6 +37,9 @@ class Natives {
   public static String MAP = 'map'
   public static String LST = 'lst'
   
+  public static String ENUM = 'enum'
+  public static String LAMBDA = 'lamb'
+  
   static def isOneOf(InferredDef inferred, String ...types) {
     val nat = inferred.nativeType
     return types.exists[it == nat]
@@ -42,18 +51,26 @@ class Natives {
   }
   
   
-  static def getNativeType(InferredDef inferred) {
-    if (inferred === null) return ANY
+  static def getNativeType(TopDef type) {
+    if (type === null) return NONE
     
-    if (inferred.native !== null)
-      return inferred.native
-    
-    if (inferred.ref !== null)
-      return inferred.ref.name
+    return switch type {
+      EnumDef: ENUM
+      LambdaDef: LAMBDA
+      ElementDef: {
+        if (type.ref !== null)
+          return type.ref.name
+        
+        if (type instanceof InferredDef) {
+          if (type.native !== null)
+            return type.native
           
-    return switch inferred {
-      MapDef: MAP
-      ListDef: LST
+          return switch type {
+            MapDef: MAP
+            ListDef: LST
+          }
+        }
+      }
     }
   }
   

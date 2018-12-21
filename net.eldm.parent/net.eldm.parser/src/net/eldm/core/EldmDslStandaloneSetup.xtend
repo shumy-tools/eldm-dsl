@@ -9,6 +9,7 @@ import com.google.inject.Injector
 import net.eldm.util.CallResolver
 import net.eldm.util.IdentifierResolver
 import net.eldm.util.PatternParser
+import net.eldm.util.TypeParser
 import net.eldm.util.TypeResolver
 import net.eldm.util.TypeValidator
 
@@ -19,6 +20,8 @@ class EldmDslStandaloneSetup extends EldmDslStandaloneSetupGenerated {
   val module = new AbstractModule() {
     override protected configure() {
       bind(PatternParser).to(PatternParser)
+      bind(TypeParser).to(TypeParser)
+      
       bind(TypeValidator).to(TypeValidator)
       
       bind(TypeResolver).to(TypeResolver)

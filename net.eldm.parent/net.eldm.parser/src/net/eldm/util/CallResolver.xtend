@@ -2,61 +2,50 @@ package net.eldm.util
 
 import com.google.inject.Inject
 import com.google.inject.Singleton
-import java.util.Collections
 import java.util.HashMap
-import java.util.List
 import java.util.Map
-import net.eldm.eldmDsl.EldmDslFactory
 import net.eldm.eldmDsl.InferredDef
+import net.eldm.eldmDsl.LambdaDef
 import net.eldm.eldmDsl.ListDef
 import net.eldm.eldmDsl.MapDef
 import net.eldm.eldmDsl.MemberCall
 import org.eclipse.emf.common.util.EList
-import org.eclipse.emf.ecore.util.EcoreUtil
-import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 
 import static net.eldm.util.ValidationStack.*
 
 import static extension net.eldm.spi.Natives.*
 
-@FinalFieldsConstructor
-class FunctionDecl {
-  public val List<InferredDef> params //TODO: accept optional parameters!
-  public val InferredDef result
-  
-  new (InferredDef res) {
-    this.params = Collections.EMPTY_LIST
-    this.result = res
-  }
-  
-  // somehow xtext fuckup internal state of these objects when re-parsing!
-  def copy() {
-    val pars = params.map[EcoreUtil.copy(it)]
-    val res = EcoreUtil.copy(result)
-    new FunctionDecl(pars, res)
-  }
-}
-
 @Singleton
 class CallResolver {
+  val nativeFuncs = new HashMap<String, Map<String, FunctionDecl>>
+  val externalFuncs = new HashMap<String, Map<String, FunctionDecl>>
+  
   @Inject extension TypeValidator tValidator
   @Inject extension TypeResolver tResolver
   @Inject extension IdentifierResolver iResolver
+  @Inject extension TypeParser tParser
   
-  val eFact = EldmDslFactory.eINSTANCE
-  
-  val nativeFuncs = #{
-    MAP -> #{
-      'keys' -> new FunctionDecl(eFact.createListDef => [type = (eFact.createInferredDef => [ native = STR ])]),
-      'values' -> new FunctionDecl(eFact.createListDef => [type = (eFact.createInferredDef => [ native = ANY ])])
-    },
+  @Inject
+  def void init() {
+    nativeFuncs.put(STR, #{
+      'len' -> funcWith(NONE -> [INT.typeOf])
+    })
     
-    LST -> #{
-      'len' -> new FunctionDecl(eFact.createInferredDef => [ native = INT ])
-    }
+    nativeFuncs.put(MAP, #{
+      'keys' -> funcWith(NONE -> ["..str".typeOf]),
+      'values' -> funcWith(NONE -> [
+        if (it instanceof MapDef)
+          return defs.map[type.inferType].minType
+        "..any".typeOf
+      ])
+    })
+    
+    nativeFuncs.put(LST, #{
+      'len' -> funcWith(NONE -> [INT.typeOf]),
+      'filter' -> funcWith("(open -> any)" -> ["..any".typeOf])
+    })
   }
   
-  val Map<String, Map<String, FunctionDecl>> externalFuncs = new HashMap<String, Map<String, FunctionDecl>>
   
   def InferredDef call(InferredDef type, EList<MemberCall> calls) {
     // resolve member calls
@@ -78,19 +67,19 @@ class CallResolver {
         error('''The map key must be of type str.''')
       
       // must return any, because STR key cannot be resolved at compile time
-      return eFact.createInferredDef => [ native = ANY ]
+      return ANY.typeOf
     } else {
       if (tDef.native !== null) {
         if (!call.unknown)
-          return MAP.functionCall(call)
+          return tDef.functionCall(call)
           //error('''Couldn't resolve reference to '«call.member»' from a native map type. Use the unknown operator.''')
         
-        return eFact.createInferredDef => [ native = ANY ]
+        return ANY.typeOf
       } else {
         val mDef = tDef as MapDef
         val entry = mDef.getMapEntry(call.member)
         if (entry === null)
-          return MAP.functionCall(call)
+          return tDef.functionCall(call)
           //error('''Couldn't resolve reference to '«call.member»' from the map.''')
         
         return entry.entryType
@@ -100,41 +89,47 @@ class CallResolver {
   
   private def InferredDef lstCall(InferredDef tDef, MemberCall call) {
     if (call.member !== null) {
-      return LST.functionCall(call)
+      return tDef.functionCall(call)
     } else {
       val kType = call.key.inferType
       if (kType.native != INT)
         error('''The lst index must be of type int.''')
       
       if (tDef.native !== null)
-        return eFact.createInferredDef => [ native = ANY ]
+        return ANY.typeOf
       else
         return (tDef as ListDef).type.inferType
     }
   }
   
-  private def InferredDef functionCall(String type, MemberCall call) {
+  private def InferredDef functionCall(InferredDef tDef, MemberCall call) {
+    val type = tDef.nativeType
+    
     val func = type.getFunction(call.member)
     if (func === null)
       error('''The type '«type»' has no function/member '«call.member»'.''')
     
-    var int i = 0
-    for (expected: func.params) {
-      val exp = call.params.get(0)
-      if (exp === null)
-        error('''Expecting parameter '«i»' for function '«call.member»'.''')
-      
-      val cType = exp.inferType
-      cType.inElement(expected)
-      //error('''Invalid parameter '«i»' for function '«call.member»'.''')
-      i++
-    }
+    if (func.param.nativeType != NONE && call.lambda === null)
+      error('''The function '«call.member»' requires a parameter.''')
+    else
+      return func.result.apply(tDef)
     
-    return func.result
+    // it's a lambda call ?
+    val lCall = call.lambda
+    if (lCall.param !== null) {
+      if (!(func.param instanceof LambdaDef))
+        error('''The function '«call.member»' parameter is not a lambda.''')
+      
+      //TODO: process lambdas
+    } else {
+      val inferred = lCall.exp.inferType
+      inferred.inElement(func.param.inferType)
+      return func.result.apply(tDef)
+    }
   }
   
   private def getFunction(String type, String name) {
     val func = nativeFuncs.get(type)?.get(name) ?: externalFuncs.get(type)?.get(name)
-    return func.copy
+    return func?.copy
   }
 }

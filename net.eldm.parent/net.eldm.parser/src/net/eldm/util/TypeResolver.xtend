@@ -21,17 +21,22 @@ import net.eldm.eldmDsl.TypeDef
 import net.eldm.eldmDsl.UnaryOperation
 import net.eldm.eldmDsl.ValueExpression
 import net.eldm.eldmDsl.Var
+import org.eclipse.emf.ecore.util.EcoreUtil
 
 import static extension net.eldm.spi.Natives.*
 import static extension net.eldm.util.ValidationStack.*
-import org.eclipse.emf.ecore.util.EcoreUtil
+import net.eldm.eldmDsl.LambdaDef
+import java.util.List
 
 @Singleton
 class TypeResolver {
   @Inject extension PatternParser iParser
+  @Inject extension TypeParser tParser
   @Inject extension TypeValidator tValidator
   @Inject extension IdentifierResolver iResolver
   @Inject extension CallResolver cResolver
+  
+  val eFact = EldmDslFactory.eINSTANCE
   
   def InferredDef getEntryType(MapEntryDef kd) {
     if (kd.type !== null)
@@ -75,9 +80,8 @@ class TypeResolver {
   }
   
   def InferredDef inferType(ValueExpression exp) {
-    val eFact = EldmDslFactory.eINSTANCE
     if (exp === null)
-      return eFact.createInferredDef => [ native = ANY ]
+      return NONE.typeOf // eFact.createInferredDef => [ native = NONE ]
       
     exp.push
       if (exp instanceof Primary) {
@@ -96,26 +100,26 @@ class TypeResolver {
             rType = exp.type.inferType // override to output the correct error message in the end
             val min = lType.minType(rType)
             if (min.nativeType == lType.nativeType)
-              eFact.createInferredDef => [ native = BOOL ]
+              BOOL.typeOf // eFact.createInferredDef => [ native = BOOL ]
           }
         }
         
         case 'and', case 'or': {
           val min = lType.minType(rType)
           if (min.isOneOf(BOOL))
-            eFact.createInferredDef => [ native = BOOL ]
+            BOOL.typeOf //eFact.createInferredDef => [ native = BOOL ]
         }
         
         case '>=', case '<=', case '>', case '<':  {
           val min = lType.minType(rType)
           if (min.isOneOf(INT, FLT, LDA, LTM, LDT))
-            eFact.createInferredDef => [ native = BOOL ]
+            BOOL.typeOf //eFact.createInferredDef => [ native = BOOL ]
         }
         
         case '==', case '!=': {
           val min = lType.minType(rType)
           if (min.isOneOf(BOOL, STR, INT, FLT, LDA, LTM, LDT))
-            eFact.createInferredDef => [ native = BOOL ]
+            BOOL.typeOf //eFact.createInferredDef => [ native = BOOL ]
         }
         
         case '+': {
@@ -146,7 +150,7 @@ class TypeResolver {
           if (exp instanceof UnaryOperation) {
             rType = exp.operand.inferType
             if (rType.isOneOf(BOOL))
-              eFact.createInferredDef => [ native = BOOL ]
+              BOOL.typeOf //eFact.createInferredDef => [ native = BOOL ]
           }
         }
         
@@ -179,14 +183,13 @@ class TypeResolver {
   }
   
   def InferredDef inferType(Literal value) {
-    val eFact = EldmDslFactory.eINSTANCE
     if (value === null)
-      return eFact.createInferredDef => [ native = ANY ]
+      return NONE.typeOf //eFact.createInferredDef => [ native = NONE ]
     
     value.push
       if (value.isOneOf(BOOL, STR, INT, FLT, LDA, LTM, LDT, PATH)) {
         pop
-        return eFact.createInferredDef => [ native = value.nativeType ]
+        return value.nativeType.typeOf // eFact.createInferredDef => [ native = value.nativeType ]
       }
       
       val inferred = switch value {
@@ -203,28 +206,7 @@ class TypeResolver {
         ]
         
         ListLiteral: eFact.createListDef => [
-          var InferredDef inferred = null
-          
-          val head = value.vals.head
-          if (head === null) {
-            type = eFact.createInferredDef => [ native = ANY ]
-            return
-          }
-          
-          inferred = head.inferType
-          for (elm: value.vals.tail) {
-            val elmDef = elm.inferType
-            elm.push
-              inferred = inferred.minType(elmDef)
-            pop
-            
-            if (inferred.native == ANY) {
-              type = EcoreUtil.copy(inferred)
-              return
-            }
-          }
-          
-          type = EcoreUtil.copy(inferred)
+          type = value.vals.map[inferType].minType
         ]
         
         PatternLiteral:
@@ -241,30 +223,34 @@ class TypeResolver {
   }
   
   def InferredDef inferType(TopDef tDef) {
-    switch tDef {
+    return switch tDef {
       ElementDef: tDef.inferType
+      
       EnumDef: {
         /* typedef Sex enum { name: str }
              M { name: 'Male' }
              F { name: 'Female' }
            returns { M: Sex.type, F: Sex.type }
         */
-        val eFact = EldmDslFactory.eINSTANCE
-        return eFact.createMapDef => [
+        eFact.createMapDef => [
           for (item: tDef.defs) {
             defs += eFact.createMapEntryDef => [
               name = item.name
-              type = EcoreUtil.copy(tDef.type) ?: (eFact.createInferredDef => [ native = MAP ])
+              type = EcoreUtil.copy(tDef.type ?: MAP.typeOf) //eFact.createInferredDef => [ native = MAP ])
             ]
           }
         ]
+      }
+      
+      LambdaDef: {
+        error("inferType - LambdaDef not supported yet") //TODO: support LambdaDef
       }
     }
   }
   
   def InferredDef inferType(ElementDef tDef) {
     if (tDef === null)
-      return EldmDslFactory.eINSTANCE.createInferredDef => [ native = ANY ]
+      return NONE.typeOf //EldmDslFactory.eINSTANCE.createInferredDef => [ native = NONE ]
     
     if (tDef instanceof InferredDef)
       return tDef //TODO: do I need to infer MapDef and ListDef?
@@ -283,14 +269,32 @@ class TypeResolver {
     
     //TODO: should I return something different than STR?
     if (tDef.parser !== null)
-      return EldmDslFactory.eINSTANCE.createInferredDef => [ native = STR ]
+      return STR.typeOf //EldmDslFactory.eINSTANCE.createInferredDef => [ native = STR ]
   }
   
-  private def InferredDef minType(InferredDef current, InferredDef next) {
-    val eFact = EldmDslFactory.eINSTANCE
+  
+  def InferredDef minType(List<InferredDef> lst) {
+    var InferredDef inferred = null
     
+    val head = lst.head
+    if (head === null)
+      return ANY.typeOf
+    
+    inferred = head.inferType
+    for (elm: lst.tail) {
+      val elmDef = elm.inferType
+      inferred = inferred.minType(elmDef)
+      
+      if (inferred.native == ANY)
+        return EcoreUtil.copy(inferred)
+    }
+    
+    return EcoreUtil.copy(inferred)
+  }
+  
+  def InferredDef minType(InferredDef current, InferredDef next) {
     if (current === null || next === null)
-      return eFact.createInferredDef => [ native = ANY ]
+      return ANY.typeOf //eFact.createInferredDef => [ native = ANY ]
     
     //BEGIN: analysing Definition references----------------------------
       if (current.ref instanceof TypeDef)
@@ -304,7 +308,7 @@ class TypeResolver {
       val cNative = current.nativeType
       val nNative = next.nativeType
       if (cNative != nNative)
-        return eFact.createInferredDef => [ native = ANY ]
+        return ANY.typeOf //eFact.createInferredDef => [ native = ANY ]
     //END: analysing collection types -----------------------------------
     
     //BEGIN: analysing natives------------------------------------------
@@ -313,7 +317,7 @@ class TypeResolver {
         return current
       
       if (cNative == next.native || current.native == nNative)
-        return eFact.createInferredDef => [ native = cNative ]
+        return cNative.typeOf // eFact.createInferredDef => [ native = cNative ]
     //END: analysing natives--------------------------------------------
     
     
@@ -363,11 +367,9 @@ class TypeResolver {
     }
   }
   
-  private def InferredDef maxType(InferredDef current, InferredDef next) {
-    val eFact = EldmDslFactory.eINSTANCE
-    
+  def InferredDef maxType(InferredDef current, InferredDef next) {
     if (current === null || next === null)
-      return eFact.createInferredDef => [ native = ANY ]
+      return ANY.typeOf //eFact.createInferredDef => [ native = ANY ]
     
     //BEGIN: analysing Definition references----------------------------
       if (current.ref instanceof TypeDef)
@@ -379,7 +381,7 @@ class TypeResolver {
     
     //BEGIN: analysing collection types --------------------------------
       if (current.nativeType != next.nativeType)
-        return eFact.createInferredDef => [ native = ANY ]
+        return ANY.typeOf //eFact.createInferredDef => [ native = ANY ]
     //END: analysing collection types -----------------------------------
     
     //BEGIN: analysing natives------------------------------------------
@@ -443,7 +445,7 @@ class TypeResolver {
       
       ListDef: eFact.createListDef => [
         if (right.native !== null)
-          type = eFact.createInferredDef => [ native = LST ]
+          type = LST.typeOf //eFact.createInferredDef => [ native = LST ]
         else
           type = maxType(left.type.inferType, (right as ListDef).type.inferType)
       ]
@@ -455,11 +457,11 @@ class TypeResolver {
   
   def InferredDef minTypeDef(InferredDef left, TypeDef right) {
     val rType = right.type.inferType
-    return left.minType(rType)
+    return EcoreUtil.copy(left.minType(rType))
   }
   
   def InferredDef maxTypeDef(InferredDef left, TypeDef right) {
     val rType = right.type.inferType
-    left.maxType(rType)
+    return EcoreUtil.copy(left.maxType(rType))
   }
 }

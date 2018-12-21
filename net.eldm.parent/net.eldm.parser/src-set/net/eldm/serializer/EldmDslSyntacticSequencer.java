@@ -25,7 +25,7 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 	protected AbstractElementAlias match_MapDef_CommaKeyword_1_3_1_0_q;
 	protected AbstractElementAlias match_MapDef___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_4___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_5_RightCurlyBracketKeyword_1_6__;
 	protected AbstractElementAlias match_MapLiteral___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__;
-	protected AbstractElementAlias match_Module___DefinitionsKeyword_4_0_BEGINTerminalRuleCall_4_1_ENDTerminalRuleCall_4_4__q;
+	protected AbstractElementAlias match_Module___DefinitionsKeyword_4_0_BEGINTerminalRuleCall_4_1_ENDTerminalRuleCall_4_5__q;
 	
 	@Inject
 	protected void init(IGrammarAccess access) {
@@ -33,7 +33,7 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 		match_MapDef_CommaKeyword_1_3_1_0_q = new TokenAlias(false, true, grammarAccess.getMapDefAccess().getCommaKeyword_1_3_1_0());
 		match_MapDef___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_4___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_5_RightCurlyBracketKeyword_1_6__ = new AlternativeAlias(false, false, new GroupAlias(false, false, new TokenAlias(false, false, grammarAccess.getMapDefAccess().getLeftCurlyBracketKeyword_0_0_1()), new TokenAlias(false, false, grammarAccess.getMapDefAccess().getRightCurlyBracketKeyword_0_0_4())), new GroupAlias(false, false, new TokenAlias(false, false, grammarAccess.getMapDefAccess().getLeftCurlyBracketKeyword_1_1()), new TokenAlias(false, false, grammarAccess.getMapDefAccess().getBEGINTerminalRuleCall_1_2()), new TokenAlias(false, false, grammarAccess.getMapDefAccess().getENDTerminalRuleCall_1_5()), new TokenAlias(false, false, grammarAccess.getMapDefAccess().getRightCurlyBracketKeyword_1_6())));
 		match_MapLiteral___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__ = new AlternativeAlias(false, false, new GroupAlias(false, false, new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getLeftCurlyBracketKeyword_0_0_1()), new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getRightCurlyBracketKeyword_0_0_3())), new GroupAlias(false, false, new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getLeftCurlyBracketKeyword_1_1()), new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getBEGINTerminalRuleCall_1_2()), new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getENDTerminalRuleCall_1_4()), new TokenAlias(false, false, grammarAccess.getMapLiteralAccess().getRightCurlyBracketKeyword_1_5())));
-		match_Module___DefinitionsKeyword_4_0_BEGINTerminalRuleCall_4_1_ENDTerminalRuleCall_4_4__q = new GroupAlias(false, true, new TokenAlias(false, false, grammarAccess.getModuleAccess().getDefinitionsKeyword_4_0()), new TokenAlias(false, false, grammarAccess.getModuleAccess().getBEGINTerminalRuleCall_4_1()), new TokenAlias(false, false, grammarAccess.getModuleAccess().getENDTerminalRuleCall_4_4()));
+		match_Module___DefinitionsKeyword_4_0_BEGINTerminalRuleCall_4_1_ENDTerminalRuleCall_4_5__q = new GroupAlias(false, true, new TokenAlias(false, false, grammarAccess.getModuleAccess().getDefinitionsKeyword_4_0()), new TokenAlias(false, false, grammarAccess.getModuleAccess().getBEGINTerminalRuleCall_4_1()), new TokenAlias(false, false, grammarAccess.getModuleAccess().getENDTerminalRuleCall_4_5()));
 	}
 	
 	@Override
@@ -80,8 +80,8 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 				emit_MapDef___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_4___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_5_RightCurlyBracketKeyword_1_6__(semanticObject, getLastNavigableState(), syntaxNodes);
 			else if (match_MapLiteral___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__.equals(syntax))
 				emit_MapLiteral___LeftCurlyBracketKeyword_0_0_1_RightCurlyBracketKeyword_0_0_3___or___LeftCurlyBracketKeyword_1_1_BEGINTerminalRuleCall_1_2_ENDTerminalRuleCall_1_4_RightCurlyBracketKeyword_1_5__(semanticObject, getLastNavigableState(), syntaxNodes);
-			else if (match_Module___DefinitionsKeyword_4_0_BEGINTerminalRuleCall_4_1_ENDTerminalRuleCall_4_4__q.equals(syntax))
-				emit_Module___DefinitionsKeyword_4_0_BEGINTerminalRuleCall_4_1_ENDTerminalRuleCall_4_4__q(semanticObject, getLastNavigableState(), syntaxNodes);
+			else if (match_Module___DefinitionsKeyword_4_0_BEGINTerminalRuleCall_4_1_ENDTerminalRuleCall_4_5__q.equals(syntax))
+				emit_Module___DefinitionsKeyword_4_0_BEGINTerminalRuleCall_4_1_ENDTerminalRuleCall_4_5__q(semanticObject, getLastNavigableState(), syntaxNodes);
 			else acceptNodes(getLastNavigableState(), syntaxNodes);
 		}
 	}
@@ -134,7 +134,7 @@ public class EldmDslSyntacticSequencer extends AbstractSyntacticSequencer {
 	 *     plugs+=PlugDsl (ambiguity) opers+=Operation
 	 *     plugs+=PlugDsl (ambiguity) paths+=SubPath
 	 */
-	protected void emit_Module___DefinitionsKeyword_4_0_BEGINTerminalRuleCall_4_1_ENDTerminalRuleCall_4_4__q(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
+	protected void emit_Module___DefinitionsKeyword_4_0_BEGINTerminalRuleCall_4_1_ENDTerminalRuleCall_4_5__q(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
 		acceptNodes(transition, nodes);
 	}
 	

@@ -265,6 +265,7 @@ class TestDefinition {
         let arr = [1, 2, 3]
         let l1: int = arr.len + arr[0]
         let keys: ..str = a.keys + ['Other']
+        let ln: int =  (a.keys + ['Other']).len
         
     ''')
   }

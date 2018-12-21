@@ -116,7 +116,7 @@ class EldmDslValidator extends AbstractEldmDslValidator {
     tryValidation[
       for (io : contracts) {
         val inferred = io.cond.inferType
-        if (inferred.nativeType !== BOOL)
+        if (inferred.nativeType != BOOL)
           error("Contract should be a bool expression.", io, EldmDslPackage.Literals.CONTRACT__COND)
       }
     ]
@@ -179,9 +179,9 @@ class EldmDslValidator extends AbstractEldmDslValidator {
     
     vr.tryValidation[
       val inferred = vr.result.inferType
-      inferred.inElement(vr.type.inferType)
-      
-      if (vr.type === null)
+      if (vr.type !== null)
+        inferred.inElement(vr.type.inferType)
+      else
         vr.type = EcoreUtil.copy(inferred)
     ]
   }
