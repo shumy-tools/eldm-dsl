@@ -36,7 +36,7 @@ class TypeValidator {
     
     //BEGIN: analysing natives------------------------------------------
     if (superDef.native !== null) {
-      if (inferred.nativeType == superDef.native)
+      if (inferred.nativeType.is(superDef.native))
         return;
       error('''Inferred type not assignable to native '«superDef.native»'.''')
     } else //if (inferred.native !== null)

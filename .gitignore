@@ -4,6 +4,7 @@
 *.xml_gen
 *._trace
 
+.settings/
 xtend-gen/
 src-gen/
 target/

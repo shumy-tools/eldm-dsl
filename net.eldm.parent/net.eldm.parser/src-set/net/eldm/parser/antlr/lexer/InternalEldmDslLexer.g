@@ -37,7 +37,7 @@ Enum : 'enum';
 
 From : 'from';
 
-Func : 'func';
+Lamb : 'lamb';
 
 Mask : 'mask';
 
@@ -53,6 +53,10 @@ And : 'and';
 
 Any : 'any';
 
+Cls : 'cls';
+
+Col : 'col';
+
 Def : 'def';
 
 Del : 'del';
@@ -61,9 +65,13 @@ Flt : 'flt';
 
 For : 'for';
 
+Fun : 'fun';
+
 Get : 'get';
 
 Int : 'int';
+
+Itr : 'itr';
 
 Lda : 'lda';
 
@@ -77,13 +85,15 @@ Ltm : 'ltm';
 
 Map : 'map';
 
+Nat : 'nat';
+
+Num : 'num';
+
 Out : 'out';
 
 Set : 'set';
 
 Str : 'str';
-
-Use : 'use';
 
 Var : 'var';
 
@@ -92,8 +102,6 @@ ExclamationMarkEqualsSign : '!=';
 AsteriskAsterisk : '**';
 
 HyphenMinusGreaterThanSign : '->';
-
-FullStopFullStop : '..';
 
 LessThanSignEqualsSign : '<=';
 
@@ -148,6 +156,12 @@ GreaterThanSign : '>';
 QuestionMark : '?';
 
 CommercialAt : '@';
+
+I : 'I';
+
+L : 'L';
+
+S : 'S';
 
 LeftSquareBracket : '[';
 

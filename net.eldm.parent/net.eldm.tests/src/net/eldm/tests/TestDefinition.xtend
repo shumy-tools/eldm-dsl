@@ -90,7 +90,7 @@ class TestDefinition {
       module /test
       
       definitions:
-        typedef List ..{ id: int }
+        typedef List .I.{ id: int }
         
         typedef Sex enum { id: int, list: List }:
           M { id: 10, list: map@'[ { id: 10 } ]' }
@@ -106,7 +106,7 @@ class TestDefinition {
       module /test
       
       definitions:
-        typedef List ..{ id: int, osx?: int }
+        typedef List .I.{ id: int, osx?: int }
         
         typedef Sex enum { id: int, list: List }:
           M { id: 10, list: [ { id: 10, osx: 10 }, { id: '10' } ] }
@@ -120,7 +120,7 @@ class TestDefinition {
       module /test
       
       definitions:
-        typedef List ..{ id: int, osx?: int }
+        typedef List .I.{ id: int, osx?: int }
         
         typedef Sex enum { id: int, list: List }:
           M { id: 10, list: [ { osx: int@'22' }, map@'{ id: 5, osx: 3 }', { id: int@'12' } ] }
@@ -143,13 +143,13 @@ class TestDefinition {
           name: ptr
           comp: {
             email: email
-            arr: ..{ id?: int, orx = 10 }
+            arr: .I.{ id?: int, orx = 10 }
           }
         }
         
         typedef Other { id: int, date: lda }
         
-        typedef List ..{ id?: int, orx = 10 }
+        typedef List .I.{ id?: int, orx = 10 }
         
         typedef ListRef {
           id?: int
@@ -264,7 +264,7 @@ class TestDefinition {
         
         let arr = [1, 2, 3]
         let l1: int = arr.len + arr[0]
-        let keys: ..str = a.keys + ['Other']
+        let keys: .I.str = a.keys + ['Other']
         let ln: int =  (a.keys + ['Other']).len
         
     ''')

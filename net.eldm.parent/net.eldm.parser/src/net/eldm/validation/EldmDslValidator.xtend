@@ -177,6 +177,7 @@ class EldmDslValidator extends AbstractEldmDslValidator {
     if (vr.name != vr.name.toLowerCase)
       warning("Incorrect name for let-value! Set all chars to lower-case.", vr, EldmDslPackage.Literals.VAR__NAME)
     
+    //println('''VAL: «vr.name»''')
     vr.tryValidation[
       val inferred = vr.result.inferType
       if (vr.type !== null)

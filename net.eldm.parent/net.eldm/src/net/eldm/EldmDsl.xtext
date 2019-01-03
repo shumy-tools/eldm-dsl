@@ -62,7 +62,7 @@ Operation:
     ;
 
 Function:
-  'func' name=ID lambda=LambdaDef ':'
+  'fun' name=ID lambda=LambdaDef ':'
     body=BlockExpression
 ;
 
@@ -83,16 +83,16 @@ BlockExpression: {BlockExpression}
 ;
 
   Expression:
-    Var | Use
+    Var | FlowStatement
   ;
   
     Var:
       (let?='let' | 'var') name=ID (':' type=ElementDef)? '=' result=ValueExpression
     ;
     
-    Use:
+    /*Use:
       'use' use=ValueExpression
-    ;
+    ;*/
   
 // the result expression must be equivalent to an immutable Literal
 ValueExpression:
@@ -129,7 +129,7 @@ ValueExpression:
   UnaryOperation returns ValueExpression:
     ({UnaryOperation} feature='!' operand=UnaryOperation)
     | Primary
-    | FlowExpression
+    //| FlowExpression
   ;
   
   Primary:
@@ -159,12 +159,12 @@ PostfixOperation returns ResultExpression:
 // -----------------------------------------------------------------------------------------------------------------------------------
 // Control/Flow Sequences
 // -----------------------------------------------------------------------------------------------------------------------------------
-FlowExpression returns FlowExpression:
-  IfExpression
-  | ForExpression
+FlowStatement returns FlowStatement:
+  IfStatement
+  | ForStatement
 ;
 
-  IfExpression:
+  IfStatement:
     flow='if' cond=ValueExpression 'then'
       (then=ValueExpression | ':' then=BlockExpression)
     (=>'else'
@@ -172,7 +172,7 @@ FlowExpression returns FlowExpression:
     )?
   ;
   
-  ForExpression:
+  ForStatement:
     flow='for' param=ID 'in' for=ValueExpression
       ('map' each=ValueExpression | ':' each=BlockExpression)
 ;
@@ -192,7 +192,7 @@ Definition:
   ;
 
 TopDef:
-  ElementDef | EnumDef | LambdaDef
+  ElementDef | EnumDef
 ;
   
   ElementDef:
@@ -204,10 +204,12 @@ TopDef:
     native=NativeDef
     | ListDef
     | MapDef
+    | TemplateDef
+    | LambdaDef
   ;
   
     ListDef: {ListDef}
-      '..' type=ElementDef
+      '.' ext=('I'|'S'|'L')  '.' type=ElementDef
     ;
     
     MapDef:
@@ -223,6 +225,10 @@ TopDef:
       MapEntryDef:
         name=ID ((opt?='?'? ':' type=ElementDef) | (opt?='=' value=Literal))?
       ;
+  
+  TemplateDef:
+    '<' ('cls' type=ElementDef | name=ID) '>'
+  ;
   
   EnumDef:
     'enum' type=MapDef? ':'
@@ -240,10 +246,19 @@ TopDef:
   ;
   
 NativeDef:
-  'none' | 'any' | 'open' | 'path'
-  | 'bool' | 'str' | 'int' | 'flt'
-  | 'lda' | 'ltm' | 'ldt'
-  | 'map' | 'lst' | 'enum'
+  'none'
+  | 'any'
+    | 'cls' | 'path' | 'lamb'
+    | 'nat'
+      | 'bool' | 'str'
+      | 'num'
+        | 'int' | 'flt'
+    | 'ldt'
+      | 'lda' | 'ltm'
+    | 'col'
+      | 'map'
+      | 'itr'
+        | 'lst' | 'set'
 ;
 
 // ------------------------------------------------------------------------------------------------------------------------------

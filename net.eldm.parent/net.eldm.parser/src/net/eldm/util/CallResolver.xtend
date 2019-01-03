@@ -32,7 +32,7 @@ class CallResolver {
     })
     
     nativeFuncs.put(MAP, #{
-      'keys' -> funcWith(NONE -> ["..str".typeOf]),
+      'keys' -> funcWith(NONE -> [".I.str".typeOf]),
       'values' -> funcWith(NONE -> [
         if (it instanceof MapDef)
           return defs.map[type.inferType].minType
@@ -40,9 +40,9 @@ class CallResolver {
       ])
     })
     
-    nativeFuncs.put(LST, #{
+    nativeFuncs.put(ITR, #{
       'len' -> funcWith(NONE -> [INT.typeOf]),
-      'filter' -> funcWith("(open -> any)" -> ["..any".typeOf])
+      'filter' -> funcWith("(open -> any)" -> [".I.any".typeOf])
     })
   }
   
@@ -51,9 +51,12 @@ class CallResolver {
     // resolve member calls
     var tDef = type
     for (it : calls) {
-      tDef = switch tDef.nativeType {
+      val nat = tDef.nativeType
+      tDef = switch nat {
         case MAP: tDef.mapCall(it)
-        case LST: tDef.lstCall(it)
+        case ITR, case SET, case LST: tDef.lstCall(it)
+        
+        default: error('''Type '«type.nativeType»' doesn't support any call methods.''')
       }
     }
     
@@ -103,11 +106,7 @@ class CallResolver {
   }
   
   private def InferredDef functionCall(InferredDef tDef, MemberCall call) {
-    val type = tDef.nativeType
-    
-    val func = type.getFunction(call.member)
-    if (func === null)
-      error('''The type '«type»' has no function/member '«call.member»'.''')
+    val func = tDef.findFunction(call.member)
     
     if (func.param.nativeType != NONE && call.lambda === null)
       error('''The function '«call.member»' requires a parameter.''')
@@ -126,6 +125,17 @@ class CallResolver {
       inferred.inElement(func.param.inferType)
       return func.result.apply(tDef)
     }
+  }
+  
+  private def findFunction(InferredDef tDef, String name) {
+    val path = tDef.nativeType.nativePath
+    for (nat : path) {
+      val func = nat.getFunction(name)
+      if (func !== null)
+        return func
+    }
+    
+    error('''The type '«tDef.nativeType»' has no function/member '«name»'.''')
   }
   
   private def getFunction(String type, String name) {
