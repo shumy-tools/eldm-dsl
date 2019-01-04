@@ -41,8 +41,11 @@ class CallResolver {
     })
     
     nativeFuncs.put(ITR, #{
-      'len' -> funcWith(NONE -> [INT.typeOf]),
-      'filter' -> funcWith("(open -> any)" -> [".I.any".typeOf])
+      'filter' -> funcWith("(any -> any)" -> [".I.any".typeOf])
+    })
+    
+    nativeFuncs.put(COL, #{
+      'len' -> funcWith(NONE -> [INT.typeOf])
     })
   }
   
@@ -54,7 +57,7 @@ class CallResolver {
       val nat = tDef.nativeType
       tDef = switch nat {
         case MAP: tDef.mapCall(it)
-        case ITR, case SET, case LST: tDef.lstCall(it)
+        case ITR, case COL, case SET, case LST: tDef.lstCall(it)
         
         default: error('''Type '«type.nativeType»' doesn't support any call methods.''')
       }

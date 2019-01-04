@@ -265,7 +265,7 @@ class TestDefinition {
         let arr = [1, 2, 3]
         let l1: int = arr.len + arr[0]
         let keys: .I.str = a.keys + ['Other']
-        let ln: int =  (a.keys + ['Other']).len
+        //let ln: int =  (a.keys + ['Other']).len // .I.any don't have length
         
     ''')
   }

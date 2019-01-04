@@ -255,8 +255,8 @@ NativeDef:
         | 'int' | 'flt'
     | 'ldt'
       | 'lda' | 'ltm'
+    | 'map'
     | 'col'
-      | 'map'
       | 'itr'
         | 'lst' | 'set'
 ;

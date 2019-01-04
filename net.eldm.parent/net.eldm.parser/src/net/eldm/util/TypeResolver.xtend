@@ -111,28 +111,28 @@ class TypeResolver {
         
         case '>=', case '<=', case '>', case '<':  {
           val min = lType.minType(rType)
-          if (min.isOneOf(INT, FLT, LDA, LTM, LDT))
+          if (min.isOneOf(NUM, LDT))
             BOOL.typeOf
         }
         
         case '==', case '!=': {
           val min = lType.minType(rType)
-          if (min.isOneOf(BOOL, STR, INT, FLT, LDA, LTM, LDT))
+          if (min.isOneOf(NAT, LDT))
             BOOL.typeOf
         }
         
         case '+': {
           val max = lType.maxType(rType)
-          if (max.isOneOf(STR, NUM, COL))
+          if (max.isOneOf(STR, NUM, MAP, ITR, COL))
             max
         }
         
         case '-': {
-          if (lType.isOneOf(STR, INT, FLT)) {
+          if (lType.isOneOf(STR, NUM)) {
             val max = lType.maxType(rType)
-            if (max.isOneOf(STR, INT, FLT))
+            if (max.isOneOf(STR, NUM))
               max
-          } else if (lType.isOneOf(LDA, LTM, LDT, LST, MAP)) {
+          } else if (lType.isOneOf(LDT, MAP, ITR, COL)) {
             //TODO: LST, MAP subtraction is different
             // { id: 10, name: 'Alex' } - { id } -> remove id field
             // ['Alex', 'Bruno', ...] - [0, 1] -> remove 0 and 1 index  
@@ -141,7 +141,7 @@ class TypeResolver {
         
         case '*', case '**', case '/', case '%': {
           val max = lType.maxType(rType)
-          if (max.isOneOf(INT, FLT))
+          if (max.isOneOf(NUM))
             max
         }
         
@@ -186,7 +186,6 @@ class TypeResolver {
       return NONE.typeOf
     
     value.push
-      //if (value.isOneOf(BOOL, STR, INT, FLT, LDA, LTM, LDT, PATH)) {
       if (value.isOneOf(NAT, LDT, PATH)) {
         pop
         return value.nativeType.typeOf

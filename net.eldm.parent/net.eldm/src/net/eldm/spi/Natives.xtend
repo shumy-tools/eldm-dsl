@@ -46,10 +46,9 @@ class Natives {
     public static val LDT = 'ldt'
       public static val LDA = 'lda'
       public static val LTM = 'ltm'
-      
+     
+    public static val MAP = 'map'
     public static val COL = 'col'
-      public static val MAP = 'map'
-      
       public static val ITR = 'itr'
         public static val LST = 'lst'
         public static val SET = 'set'
@@ -78,9 +77,9 @@ class Natives {
         LTM -> null
       },
       
-      COL -> #{
-        MAP -> null,
-        ITR -> #{
+      MAP -> null,
+      ITR -> #{
+        COL -> #{
           LST -> null,
           SET -> null
         }
